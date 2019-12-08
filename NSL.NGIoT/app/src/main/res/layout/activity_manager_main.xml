@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout"
     android:fitsSystemWindows="true"
-    tools:context=".Manager.main_manager"
+    tools:context=".MainManagerActivity"
     tools:openDrawer="start">
 
     <FrameLayout
@@ -16,7 +16,7 @@
     </FrameLayout>
 
     <include
-        layout="@layout/app_bar_manager"
+        layout="@layout/nav_appbar_manager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

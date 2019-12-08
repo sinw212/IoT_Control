@@ -1,4 +1,4 @@
-package com.example.nslngiot.Manager;
+package com.example.nslngiot.ManagerFragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,11 +11,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.nslngiot.R;
 
-public class structureFragment extends Fragment {
+public class StructureFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.manager_structure,container,false);
+        return inflater.inflate(R.layout.fragment_manager_structure,container,false);
     }
 }

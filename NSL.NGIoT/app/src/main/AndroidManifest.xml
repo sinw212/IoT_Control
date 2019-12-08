@@ -9,9 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Manager.main_manager"></activity>
-        <activity android:name=".member_login" />
-        <activity android:name=".manager_login" />
+        <activity android:name=".MainMemberActivity"></activity>
+        <activity android:name=".MainManagerActivity"/>
+        <activity android:name=".LoginMemberActivity" />
+        <activity android:name=".LoginManagerActivity" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

@@ -1,4 +1,4 @@
-package com.example.nslngiot.Manager;
+package com.example.nslngiot.MemberFragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,11 +11,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.nslngiot.R;
 
-public class ruleFragment extends Fragment {
+public class LampFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.manager_rule,container,false);
+        return inflater.inflate(R.layout.fragment_member_lamp,container,false);
     }
 }

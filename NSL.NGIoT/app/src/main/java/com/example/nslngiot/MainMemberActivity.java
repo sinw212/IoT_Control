@@ -1,4 +1,4 @@
-package com.example.nslngiot.Manager;
+package com.example.nslngiot;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -11,11 +11,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.nslngiot.R;
+import com.example.nslngiot.MemberFragment.CalendarFragment;
+import com.example.nslngiot.MemberFragment.IpFragment;
+import com.example.nslngiot.MemberFragment.MeetLogFragment;
+import com.example.nslngiot.MemberFragment.MemberFragment;
+import com.example.nslngiot.MemberFragment.MypageFragment;
+import com.example.nslngiot.MemberFragment.OrganizationFragment;
+import com.example.nslngiot.MemberFragment.RuleFragment;
+import com.example.nslngiot.MemberFragment.StructureFragment;
+import com.example.nslngiot.MemberFragment.StatusFragment;
+import com.example.nslngiot.MemberFragment.LampFragment;
+import com.example.nslngiot.MemberFragment.CurtainFragment;
+
 import com.google.android.material.navigation.NavigationView;
 
 
-public class main_manager extends AppCompatActivity
+public class MainMemberActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
@@ -23,7 +34,7 @@ public class main_manager extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.manager_main);
+        setContentView(R.layout.activity_member_main);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -41,49 +52,57 @@ public class main_manager extends AppCompatActivity
 
         if(savedInstanceState==null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                    new add_userFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_add_user);
+                    new CalendarFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_calendar);
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.nav_add_user:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new add_userFragment()).commit();
-                break;
             case R.id.nav_calendar:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new calendarFragment()).commit();
+                        new CalendarFragment()).commit();
                 break;
             case R.id.nav_meet_log:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new meet_logFragment()).commit();
+                        new MeetLogFragment()).commit();
                 break;
             case R.id.nav_member:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new memberFragment()).commit();
+                        new MemberFragment()).commit();
                 break;
             case R.id.nav_organization:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new organizationFragment()).commit();
+                        new OrganizationFragment()).commit();
                 break;
             case R.id.nav_structure:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new structureFragment()).commit();
+                        new StructureFragment()).commit();
                 break;
             case R.id.nav_ip:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new ipFragment()).commit();
+                        new IpFragment()).commit();
                 break;
             case R.id.nav_rule:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new ruleFragment()).commit();
+                        new RuleFragment()).commit();
                 break;
             case R.id.nav_mypage:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new mypageFragment()).commit();
+                        new MypageFragment()).commit();
+                break;
+            case R.id.nav_status:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
+                        new StatusFragment()).commit();
+                break;
+            case R.id.nav_lamp:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
+                        new LampFragment()).commit();
+                break;
+            case R.id.nav_curtain:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
+                        new CurtainFragment()).commit();
                 break;
         }
 
