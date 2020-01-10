@@ -1,23 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".managerRuleFragment">
+    tools:context=".ManagerIpkeyFragment">
 
 
-    <TextView
-        android:id="@+id/RuleTextView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10sp"
-        android:layout_marginTop="5sp"
-        android:layout_marginRight="10sp"
-        android:layout_marginBottom="10sp"
-        android:text="랩실 규칙"
-        android:textSize="36sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+        android:layout_weight="25"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/ipkeyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginRight="10sp"
+            android:layout_marginBottom="10sp"
+            android:layout_weight="1"
+            android:text="IP, 출입키 현황"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="3"
+            android:scrollbarSize="4dp"
+            android:src="@android:drawable/ic_menu_gallery" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,23 +51,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:drawable/edit_text"
-            android:gravity="top"
             android:ems="10"
-            android:hint="(랩실 규칙)"
+            android:gravity="top"
+            android:hint="(IP, 출입키 현황 업로드)"
             android:inputType="textMultiLine"
             android:lines="8"
 
             android:scrollbars="vertical"
             android:scrollHorizontally="false"
             android:text=""
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black" />
 
     </LinearLayout>
 
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginBottom="10sp"
+        android:layout_weight="25"
         android:orientation="horizontal">
 
         <Button
@@ -61,12 +81,12 @@
             android:text="뒤로가기" />
 
         <Button
-            android:id="@+id/modifyButton"
+            android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5sp"
             android:layout_weight="1"
-            android:text="수정" />
+            android:text="삭제" />
 
         <Button
             android:id="@+id/saveButton"
