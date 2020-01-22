@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MypageFragment">
+    tools:context=".MemberMypageFragment">
 
 
     <TextView
@@ -56,8 +56,8 @@
         android:layout_marginBottom="5sp"
         android:background="@drawable/line_remove"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="이름 : 이름" />
+        android:hint="이름 : 이름"
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/studentnumberEditText"
@@ -68,8 +68,8 @@
         android:layout_marginBottom="5sp"
         android:background="@drawable/line_remove"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="ID : 201801785" />
+        android:hint="ID : 201801785"
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/pwEditText"
@@ -80,8 +80,8 @@
         android:layout_marginBottom="5sp"
         android:background="@drawable/line_remove"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="비밀번호 : (수정할 비밀번호를 입력하세요)" />
+        android:hint="비밀번호 : (수정할 비밀번호를 입력하세요)"
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/pwmodifyEditText"
@@ -92,8 +92,8 @@
         android:layout_marginBottom="10sp"
         android:background="@drawable/line_remove"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="비밀번호 확인 : (다시 한번 입력하세요)" />
+        android:hint="비밀번호 확인 : (다시 한번 입력하세요)"
+        android:inputType="textPersonName" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -150,5 +150,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="120dp"
         android:text="로그아웃" />
 </LinearLayout>

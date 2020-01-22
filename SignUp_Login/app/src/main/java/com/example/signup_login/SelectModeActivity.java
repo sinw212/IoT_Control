@@ -17,7 +17,7 @@ public class SelectModeActivity extends AppCompatActivity {
 
         Button managerButton = (Button) findViewById(R.id.managerButton);
         Button memberButton = (Button) findViewById(R.id.memberButton);
-        Button signupButton = (Button) findViewById(R.id.signupButton);
+        Button signupButton = (Button) findViewById(R.id.signupButton1);
 
         managerButton.setOnClickListener(new View.OnClickListener(){//관리자 모드 버튼 클릭시 관리자 회원가입 화면으로 이동
 
@@ -41,7 +41,7 @@ public class SelectModeActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivity(intent);
             }
         });

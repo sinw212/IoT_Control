@@ -9,18 +9,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MypageFragment"></activity>
-        <activity android:name=".PasswordReissuanceActivity" />
-        <activity android:name=".ManagerLoginActivity" />
-        <activity android:name=".MemberLoginActivity" />
-        <activity android:name=".SelectModeActivity">
+        <activity android:name=".ManagerRuleFragmentTestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MemberMypageFragmentTestActivity"></activity>
+        <activity android:name=".ManagerMypageFragmentTestActivity" />
+        <activity android:name=".PasswordReissuanceActivity" />
+        <activity android:name=".ManagerLoginActivity" />
+        <activity android:name=".MemberLoginActivity" />
+        <activity android:name=".SignupActivity" />
+        <activity android:name=".SelectModeActivity" />
     </application>
 
 </manifest>

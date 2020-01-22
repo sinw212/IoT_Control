@@ -21,10 +21,11 @@
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
         android:gravity="center"
         android:text="로그인"
-        android:textStyle="bold"
-        android:textSize="50dp" />
+        android:textSize="50dp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/nameEditText"

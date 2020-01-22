@@ -9,7 +9,7 @@
     android:orientation="vertical"
     android:paddingLeft="70dp"
     android:paddingRight="70dp"
-    tools:context=".MainActivity">
+    tools:context=".SignupActivity">
 
     <TextView
         android:id="@+id/loginTextView"
