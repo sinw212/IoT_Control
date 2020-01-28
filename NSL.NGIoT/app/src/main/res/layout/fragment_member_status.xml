@@ -1,15 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#7B1FA2">
+    android:orientation="vertical"
+    android:paddingTop="80dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="상태 확인"
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/button_refresh"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/refresh_button"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="재실/물/커피/A4 상태 확인 fragment"
-        android:textSize="30sp"
-        android:layout_centerInParent="true"/>
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="70dp"
+        android:orientation="horizontal">
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="재실여부"
+                android:textSize="25sp"/>
+
+            <TextView
+                android:id="@+id/person_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:hint="사람 있음"
+                android:textSize="20sp"/>
+
+            <ImageButton
+                android:id="@+id/button_personE"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/people_exist"
+                android:gravity="center" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/button_personNE"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/people_nonexist"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:layout_marginLeft="30dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="물 잔여량"
+                android:textSize="25sp"/>
+
+            <TextView
+                android:id="@+id/water_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:hint="충분함"
+                android:textSize="20sp"/>
+
+            <ImageButton
+                android:id="@+id/button_waterE"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/water_exist"
+                android:gravity="center" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/button_waterNE"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/water_nonexist"
+                android:gravity="center" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="커피 잔여량"
+                android:textSize="25sp"/>
+
+            <TextView
+                android:id="@+id/coffee_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:hint="충분함"
+                android:textSize="20sp"/>
+
+            <ImageButton
+                android:id="@+id/button_coffeeE"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/coffee_exist"
+                android:gravity="center" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/button_coffeeNE"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/coffee_nonexist"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:layout_marginLeft="30dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="A4 잔여량"
+                android:textSize="25sp"/>
+
+            <TextView
+                android:id="@+id/a4_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:hint="충분함"
+                android:textSize="20sp"/>
+
+            <ImageButton
+                android:id="@+id/button_a4E"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/a4_exist"
+                android:gravity="center" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/button_a4NE"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/a4_nonexist"
+                android:gravity="center" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="right"
+        android:text="뒤로가기" />
+
+</LinearLayout>

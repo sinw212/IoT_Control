@@ -7,6 +7,11 @@
     tools:context=".MainManagerActivity"
     android:orientation="horizontal">
 
+    <!--<include-->
+        <!--layout="@layout/nav_content_manager"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +25,5 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <include layout="@layout/nav_content_manager" />
 
 </LinearLayout>
