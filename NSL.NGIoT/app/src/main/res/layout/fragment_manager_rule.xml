@@ -1,15 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#7B1FA2">
+    android:orientation="vertical"
+    android:paddingTop="80dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="랩실 규칙 등록 fragment"
+        android:layout_marginLeft="10dp"
+        android:text="랩실 규칙"
+        android:textColor="@android:color/black"
         android:textSize="30sp"
-        android:layout_centerInParent="true"/>
+        android:textStyle="bold" />
 
-</RelativeLayout>
+    <EditText
+        android:id="@+id/et_manager_rule"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@android:drawable/edit_text"
+        android:gravity="top"
+        android:hint="(랩실 규칙)"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:textColor="@android:color/black" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right">
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5sp"
+            android:text="뒤로가기" />
+
+        <Button
+            android:id="@+id/modifyButton1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5sp"
+            android:text="수정" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="등록" />
+    </LinearLayout>
+
+</LinearLayout>

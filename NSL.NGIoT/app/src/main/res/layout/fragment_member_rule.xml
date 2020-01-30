@@ -1,15 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#7B1FA2">
+    android:orientation="vertical"
+    android:paddingTop="80dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="랩실 규칙 보기 fragment"
+        android:layout_marginLeft="10dp"
+        android:text="랩실 규칙"
+        android:textColor="@android:color/black"
         android:textSize="30sp"
-        android:layout_centerInParent="true"/>
+        android:textStyle="bold" />
 
-</RelativeLayout>
+    <EditText
+        android:id="@+id/et_member_rule"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@android:drawable/edit_text"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="뒤로가기" />
+</LinearLayout>

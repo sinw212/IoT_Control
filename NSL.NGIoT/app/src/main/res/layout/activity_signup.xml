@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="70dp"
         android:gravity="center"
-        android:text="관리자 모드\n로그인"
+        android:text="회원가입"
         android:textStyle="bold"
         android:textSize="40dp" />
 
@@ -47,26 +47,11 @@
         android:hint="   PW : "
         android:inputType="textPassword" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/btn_member_signup"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <CheckBox
-            android:id="@+id/cb_autologin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="자동 로그인" />
-
-        <Button
-            android:id="@+id/btn_manager_login"
-            android:layout_width="77dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_weight="1"
-            android:text="로그인"
-            android:textSize="14dp" />
-    </LinearLayout>
+        android:layout_gravity="right"
+        android:text="회원가입" />
 
 </LinearLayout>

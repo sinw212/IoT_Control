@@ -17,9 +17,9 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        Button btn_manager = findViewById(R.id.btn_manager);
-        Button btn_member = findViewById(R.id.btn_member);
-        Button btn_signup = findViewById(R.id.btn_signup);
+        Button btn_manager = findViewById(R.id.btn_manager_login);
+        Button btn_member = findViewById(R.id.btn_member_login);
+        Button btn_signup = findViewById(R.id.btn_member_signup);
 
         btn_manager.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getApplicationContext(), singup.class);
-//                startActivity(intent);
+                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                startActivity(intent);
             }
         });
     }
