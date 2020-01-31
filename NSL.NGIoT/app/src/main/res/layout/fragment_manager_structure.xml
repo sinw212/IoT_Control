@@ -29,8 +29,8 @@
 
         <ImageButton
             android:id="@+id/btn_picture"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="right"
             android:background="@drawable/picture"
             android:gravity="center" />

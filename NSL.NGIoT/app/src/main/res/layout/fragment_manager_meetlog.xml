@@ -22,7 +22,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textview_date"
+            android:id="@+id/tv_date"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
@@ -34,7 +34,7 @@
             android:layout_weight="1"/>
 
         <ImageButton
-            android:id="@+id/button_calender"
+            android:id="@+id/btn_calender"
             android:layout_width="50dp"
             android:layout_height="40dp"
             android:background="@drawable/calendar_icon"

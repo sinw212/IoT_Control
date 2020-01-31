@@ -13,6 +13,7 @@ import com.example.nslngiot.R;
 
 public class MypageFragment extends Fragment {
 
+    //채연이가 뭔가 해놓긴했는데 Fragment가 아니고 Activity여서 아직 안합침
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

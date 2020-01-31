@@ -44,7 +44,8 @@
         <LinearLayout
             android:layout_width="150dp"
             android:layout_height="200dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -63,10 +64,9 @@
 
             <ImageButton
                 android:id="@+id/button_personE"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/people_exist"
-                android:gravity="center" />
+                android:layout_width="150dp"
+                android:layout_height="120dp"
+                android:background="@drawable/people_exist" />
 
             <View
                 android:layout_width="0dp"
@@ -75,8 +75,8 @@
 
             <ImageButton
                 android:id="@+id/button_personNE"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="150dp"
+                android:layout_height="120dp"
                 android:background="@drawable/people_nonexist"
                 android:gravity="center" />
 
@@ -86,7 +86,8 @@
             android:layout_width="150dp"
             android:layout_height="200dp"
             android:layout_marginLeft="30dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -105,10 +106,9 @@
 
             <ImageButton
                 android:id="@+id/button_waterE"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/water_exist"
-                android:gravity="center" />
+                android:layout_width="120dp"
+                android:layout_height="130dp"
+                android:background="@drawable/water_exist" />
 
             <View
                 android:layout_width="0dp"
@@ -117,8 +117,8 @@
 
             <ImageButton
                 android:id="@+id/button_waterNE"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="120dp"
+                android:layout_height="130dp"
                 android:background="@drawable/water_nonexist"
                 android:gravity="center" />
         </LinearLayout>
@@ -135,7 +135,8 @@
         <LinearLayout
             android:layout_width="150dp"
             android:layout_height="200dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -154,10 +155,9 @@
 
             <ImageButton
                 android:id="@+id/button_coffeeE"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/coffee_exist"
-                android:gravity="center" />
+                android:layout_width="150dp"
+                android:layout_height="120dp"
+                android:background="@drawable/coffee_exist" />
 
             <View
                 android:layout_width="0dp"
@@ -166,8 +166,8 @@
 
             <ImageButton
                 android:id="@+id/button_coffeeNE"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="150dp"
+                android:layout_height="120dp"
                 android:background="@drawable/coffee_nonexist"
                 android:gravity="center" />
         </LinearLayout>
@@ -176,7 +176,8 @@
             android:layout_width="150dp"
             android:layout_height="200dp"
             android:layout_marginLeft="30dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -195,10 +196,9 @@
 
             <ImageButton
                 android:id="@+id/button_a4E"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/a4_exist"
-                android:gravity="center" />
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:background="@drawable/a4_exist" />
 
             <View
                 android:layout_width="0dp"
@@ -207,8 +207,8 @@
 
             <ImageButton
                 android:id="@+id/button_a4NE"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
                 android:background="@drawable/a4_nonexist"
                 android:gravity="center" />
         </LinearLayout>
