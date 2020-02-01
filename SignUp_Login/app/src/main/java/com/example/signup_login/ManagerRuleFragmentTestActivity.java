@@ -25,7 +25,6 @@ public class ManagerRuleFragmentTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_rule_fragment_test);
 
-
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.add(R.id.ManagerRuleFragment, new ManagerMypageFragment());//넣고싶은 Fragment를 넣는다.
@@ -43,7 +42,7 @@ public class ManagerRuleFragmentTestActivity extends AppCompatActivity {
 
             }
         });
-
+////////
         //수정버튼을 누르면 EditText의 내용이 "memo.txt"에 저장이 된다.
         modifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
