@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="20dp"
+    android:gravity="center"
+    android:background="@drawable/border2" >
+
+    <TextView
+        android:id="@+id/member_num_list"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView"
+        android:textSize="14dp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/member_name_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView"
+        android:textSize="14dp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/member_phone_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView"
+        android:textSize="14dp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/member_course_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView"
+        android:textSize="14dp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/member_group_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView"
+        android:textSize="14dp"
+        android:gravity="center" />
+</LinearLayout>
