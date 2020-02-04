@@ -12,10 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.XSSFilter;
 
 public class RuleFragment extends Fragment {
 
-    private String manager_rule_value="";
+    private String member_rule_value="";
 
     @Nullable
     @Override
@@ -26,5 +27,10 @@ public class RuleFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        //////////////////////////////방어 코드////////////////////////////
+        //XSS 특수문자 공백처리 및 방어
+        member_rule_value = XSSFilter.xssFilter(member_rule_value);
+        //////////////////////////////////////////////////////////////////
     }
 }

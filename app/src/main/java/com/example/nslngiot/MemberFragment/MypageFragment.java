@@ -23,6 +23,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.MainActivity;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -34,11 +35,6 @@ import java.util.regex.Pattern;
 public class MypageFragment extends Fragment {
     /*===================MEMBER MY Page=================*/
 
-    //SQL 방어 Patter&String
-    final private Pattern SpecialCharsList = Pattern.compile("['\"\\-#()@;=*/+]");
-    final private String defendList = "(union|select|from|where)";
-    final private Pattern sql_pattern = Pattern.compile(defendList, Pattern.CASE_INSENSITIVE);
-
     private final String pw_regex = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,}$"; // 비밀번호 정규식
     private String member_name="";
     private String member_id="";
@@ -46,6 +42,13 @@ public class MypageFragment extends Fragment {
     private String member_new_pw="";
     private String member_modify_pw="";
     private String member_final_Encryption_pw = "";
+
+    //sql 검증 결과 & default false
+    private boolean member_name_filter = false;
+    private boolean member_id_filter = false;
+    private boolean member_corrently_pw_filter = false;
+    private boolean member_new_pw_filter = false;
+    private boolean member_modify_pw_filter = false;
 
     @Nullable
     @Override
@@ -64,7 +67,7 @@ public class MypageFragment extends Fragment {
         EditText name = getView().findViewById(R.id.member_name);
         EditText id = getView().findViewById(R.id.member_id);
         EditText corr_pw = getView().findViewById(R.id.member_corrently_pw);
-        final EditText new_pw = getView().findViewById(R.id.member_new_pw);
+        EditText new_pw = getView().findViewById(R.id.member_new_pw);
         EditText modify_pw = getView().findViewById(R.id.member_modifypw);
 
         member_name = name.getText().toString();
@@ -75,17 +78,11 @@ public class MypageFragment extends Fragment {
 
         //////////////////////////////방어 코드////////////////////////////
         //SQL 인젝션 특수문자 공백처리 및 방어
-        member_name = SpecialCharsList.matcher(member_name).replaceAll("");
-        member_id = SpecialCharsList.matcher(member_id ).replaceAll("");
-        member_corrently_pw = SpecialCharsList.matcher(member_corrently_pw).replaceAll("");
-        member_new_pw = SpecialCharsList.matcher(member_new_pw ).replaceAll("");
-        member_modify_pw = SpecialCharsList.matcher(member_modify_pw).replaceAll("");
-        //공백 처리 후 남은 select / union / from / where 검증
-        final Matcher member_name_matcher = sql_pattern.matcher(member_name);
-        final Matcher member_id_matcher = sql_pattern.matcher(member_id);
-        final Matcher member_corrently_pw_matcher = sql_pattern.matcher(member_corrently_pw);
-        final Matcher member_new_pw_matcher = sql_pattern.matcher(member_new_pw );
-        final Matcher member_modify_pw_matcher = sql_pattern.matcher(member_modify_pw);
+        member_name_filter = SQLFilter.sqlFilter(member_name);
+        member_id_filter =  SQLFilter.sqlFilter(member_id);
+        member_corrently_pw_filter = SQLFilter.sqlFilter(member_corrently_pw);
+        member_new_pw_filter = SQLFilter.sqlFilter(member_new_pw);
+        member_modify_pw_filter = SQLFilter.sqlFilter(member_modify_pw);
         //////////////////////////////////////////////////////////////////
 
 
@@ -111,19 +108,13 @@ public class MypageFragment extends Fragment {
                 } else {
                     // 비밀번호 진행 시 SQL 인젝션 검증 절차 진행
                     //////////////////////////////////////////방어 코드////////////////////////////
-                    if (member_name_matcher.find()) {// SQL패턴 발견 시
+                    if (member_name_filter || member_id_filter ||member_corrently_pw_filter ) {// SQL패턴 발견 시
                         member_name = "";
-                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                    } else if (member_id_matcher.find()) { // SQL패턴 발견 시
                         member_id = "";
-                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                    } else if (member_corrently_pw_matcher.find()) { // SQL패턴 발견 시
                         member_corrently_pw = "";
                         Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                    } else if (member_new_pw_matcher.find()) { // SQL패턴 발견 시
+                    } else if(member_new_pw_filter || member_modify_pw_filter){
                         member_new_pw = "";
-                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                    }else if (member_modify_pw_matcher.find()) { // SQL패턴 발견 시
                         member_modify_pw = "";
                         Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
                     } else if (member_name.length() >= 20 || member_id.length() >= 20 ||member_corrently_pw.length() >= 255) { // DB 값 오류 방지

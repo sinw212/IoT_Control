@@ -16,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -31,6 +32,12 @@ public class SignupActivity extends AppCompatActivity {
     private String id="";
     private String pw="";
     private String encryption_pw="";
+
+
+    //sql 검증 결과 & default false
+    private boolean name_filter = false;
+    private boolean id_filter = false;
+    private boolean pw_filter = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +57,12 @@ public class SignupActivity extends AppCompatActivity {
         pw =sign_pw.getText().toString();
         name =sign_name.getText().toString();
 
-
+        //////////////////////////////방어 코드////////////////////////////
+        //SQL 인젝션 특수문자 공백처리 및 방어
+        name_filter= SQLFilter.sqlFilter(name);
+        id_filter = SQLFilter.sqlFilter(id);
+        pw_filter = SQLFilter.sqlFilter(pw);
+        //////////////////////////////////////////////////////////////////
 
         btn_signup.setOnClickListener(new View.OnClickListener() { //회원 가입 버튼
             @Override
@@ -64,10 +76,20 @@ public class SignupActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "사용할 비밀번호을 입력하세요.", Toast.LENGTH_LONG).show();
                 }else if(name.length()>=20 || id.length()>=20 || pw.length()>=255 ){ // DB 값 오류 방지
                     Toast.makeText(getApplicationContext(), "Name or ID or Password too Long error.", Toast.LENGTH_LONG).show();
-                } else{
+                }
+                else{
                     if(pw.matches(pw_regex)){ // 비밀번호 정책에 올바른 비밀번호 입력 시
-                        encryption_pw = BCrypt.hashpw(pw,BCrypt.gensalt(10)); // 사용할 비밀번호 클라이언트 단에서 해싱10회 진행
-                        joinRequest(); // DB로 개인정보 전송
+                        //////////////////////////////////////////방어 코드////////////////////////////
+                        if(name_filter || id_filter || pw_filter) {// SQL패턴 발견 시
+                            name = "";
+                            id="";
+                            pw="";
+                            Toast.makeText(getApplicationContext(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
+                            finish();
+                        }else{
+                            encryption_pw = BCrypt.hashpw(pw,BCrypt.gensalt(10)); // 사용할 비밀번호 클라이언트 단에서 해싱10회 진행
+                            joinRequest(); // DB로 개인정보 전송
+                        }
                     } else{ // 비밀번호 정책에 위배된 비밀번호 입력 시
                         Toast.makeText(getApplicationContext(), "비밀번호는 특수문자+숫자+영문자 혼합 8자이상입니다.", Toast.LENGTH_LONG).show();
                     }

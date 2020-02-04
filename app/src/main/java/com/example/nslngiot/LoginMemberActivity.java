@@ -17,6 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -29,14 +30,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginMemberActivity extends AppCompatActivity {
 
-    //SQL 방어 Patter&String
-    final private Pattern SpecialCharsList = Pattern.compile("['\"\\-#()@;=*/+]");
-    final private String defendList = "(union|select|from|where)";
-    final private Pattern sql_pattern = Pattern.compile(defendList,Pattern.CASE_INSENSITIVE);
-
     private String name="";
     private String id="";
     private String pw="";
+
+    //sql 검증 결과 & default false
+    private boolean name_filter = false;
+    private boolean id_filter = false;
+    private boolean pw_filter = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +59,9 @@ public class LoginMemberActivity extends AppCompatActivity {
 
         //////////////////////////////방어 코드////////////////////////////
         //SQL 인젝션 특수문자 공백처리 및 방어
-        name = SpecialCharsList.matcher(name).replaceAll("");
-        id = SpecialCharsList.matcher(id).replaceAll("");
-        pw = SpecialCharsList.matcher(pw).replaceAll("");
-        //공백 처리 후 남은 select / union / from / where 검증
-        final Matcher name_matcher = sql_pattern.matcher(name);
-        final Matcher id_matcher = sql_pattern.matcher(id);
-        final Matcher pw_matcher = sql_pattern.matcher(pw);
+        name_filter= SQLFilter.sqlFilter(name);
+        id_filter = SQLFilter.sqlFilter(id);
+        pw_filter = SQLFilter.sqlFilter(pw);
         //////////////////////////////////////////////////////////////////
 
         btn_re_pw.setOnClickListener(new View.OnClickListener() { //비밀번호 재발급 진행
@@ -86,23 +83,13 @@ public class LoginMemberActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "사용할 비밀번호을 입력하세요.", Toast.LENGTH_LONG).show();
                 }else{
                     // 로그인 진행 시 SQL 인젝션 검증 절차 진행
-                            //////////////////////////////////////////방어 코드////////////////////////////
-                    if(name_matcher.find()) {// SQL패턴 발견 시
+                    //////////////////////////////////////////방어 코드////////////////////////////
+                    if (name_filter || id_filter || pw_filter) {// SQL패턴 발견 시
                         name = "";
-                        Toast.makeText(getApplicationContext(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                        finish();
-                    }else if(id_matcher.find()) { // SQL패턴 발견 시
                         id = "";
-                        Toast.makeText(getApplicationContext(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                        finish();
-                    }else if(pw_matcher.find()) { // SQL패턴 발견 시
                         pw = "";
                         Toast.makeText(getApplicationContext(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
                         finish();
-                    }else if(name.length()>=20){ // DB 값 오류 방지
-                        Toast.makeText(getApplicationContext(), "이름 Long error.", Toast.LENGTH_LONG).show();
-                    }else if(id.length()>=20){ // DB 값 오류 방지
-                        Toast.makeText(getApplicationContext(), "학번 Long error.", Toast.LENGTH_LONG).show();
                     }else if(name.length()>=20 || id.length()>=20 ||pw.length()>=255 ){ // DB 값 오류 방지
                         Toast.makeText(getApplicationContext(), "Name or ID or Password too Long error.", Toast.LENGTH_LONG).show();
                         /////////////////////////////////////////////////////////////////////////////////////////////////

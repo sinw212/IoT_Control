@@ -22,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.MainActivity;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -33,11 +34,6 @@ import java.util.regex.Pattern;
 public class MypageFragment extends Fragment {
     /*===================Manager MY Page=================*/
 
-    //SQL 방어 Patter&String
-    final private Pattern SpecialCharsList = Pattern.compile("['\"\\-#()@;=*/+]");
-    final private String defendList = "(union|select|from|where)";
-    final private Pattern sql_pattern = Pattern.compile(defendList, Pattern.CASE_INSENSITIVE);
-
     private final String pw_regex = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,}$"; // 비밀번호 정규식
     private String manager_name = "";
     private String manager_id = "";
@@ -46,6 +42,12 @@ public class MypageFragment extends Fragment {
     private String manager_modify_pw = "";
     private String manager_final_Encryption_pw = "";
 
+    //sql 검증 결과 & default false
+    private boolean manager_name_filter = false;
+    private boolean manager_id_filter = false;
+    private boolean manager_corrently_pw_filter = false;
+    private boolean manager_new_pw_filter = false;
+    private boolean manager_modify_pw_filter = false;
 
     @Nullable
     @Override
@@ -76,17 +78,11 @@ public class MypageFragment extends Fragment {
 
         //////////////////////////////방어 코드////////////////////////////
         //SQL 인젝션 특수문자 공백처리 및 방어
-        manager_name = SpecialCharsList.matcher(manager_name).replaceAll("");
-        manager_id = SpecialCharsList.matcher(manager_id).replaceAll("");
-        manager_corrently_pw = SpecialCharsList.matcher(manager_corrently_pw).replaceAll("");
-        manager_new_pw = SpecialCharsList.matcher(manager_new_pw).replaceAll("");
-        manager_modify_pw = SpecialCharsList.matcher(manager_modify_pw).replaceAll("");
-        //공백 처리 후 남은 select / union / from / where 검증
-        final Matcher manager_name_matcher = sql_pattern.matcher(manager_name);
-        final Matcher manager_id_matcher = sql_pattern.matcher(manager_id);
-        final Matcher manager_corrently_pw_matcher = sql_pattern.matcher(manager_corrently_pw);
-        final Matcher manager_new_pw_matcher = sql_pattern.matcher(manager_new_pw);
-        final Matcher manager_modify_pw_matcher = sql_pattern.matcher(manager_modify_pw);
+        manager_name_filter = SQLFilter.sqlFilter(manager_name);
+        manager_id_filter =  SQLFilter.sqlFilter(manager_id);
+        manager_corrently_pw_filter = SQLFilter.sqlFilter(manager_corrently_pw);
+        manager_new_pw_filter = SQLFilter.sqlFilter(manager_new_pw);
+        manager_modify_pw_filter = SQLFilter.sqlFilter(manager_modify_pw);
         //////////////////////////////////////////////////////////////////
 
 //        btn_manager_Back.setOnClickListener(new View.OnClickListener() { //뒤로가기
@@ -112,19 +108,13 @@ public class MypageFragment extends Fragment {
                 } else {
                     // 비밀번호 진행 시 SQL 인젝션 검증 절차 진행
                     //////////////////////////////////////////방어 코드////////////////////////////
-                    if (manager_name_matcher.find()) {// SQL패턴 발견 시
+                    if (manager_name_filter || manager_id_filter ||manager_corrently_pw_filter ) {// SQL패턴 발견 시
                         manager_name = "";
-                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                    } else if (manager_id_matcher.find()) { // SQL패턴 발견 시
                         manager_id = "";
-                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                    } else if (manager_corrently_pw_matcher.find()) { // SQL패턴 발견 시
                         manager_corrently_pw = "";
                         Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                    } else if (manager_new_pw_matcher.find()) { // SQL패턴 발견 시
+                    } else if(manager_new_pw_filter || manager_modify_pw_filter){
                         manager_new_pw = "";
-                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
-                    } else if (manager_modify_pw_matcher.find()) { // SQL패턴 발견 시
                         manager_modify_pw = "";
                         Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
                     } else if (manager_name.length() >= 20 || manager_id.length() >= 20 || manager_corrently_pw.length() >= 255) { // DB 값 오류 방지
