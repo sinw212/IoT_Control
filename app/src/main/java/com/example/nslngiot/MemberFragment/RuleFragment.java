@@ -15,16 +15,16 @@ import com.example.nslngiot.R;
 
 public class RuleFragment extends Fragment {
 
-//    EditText et_member_rule = getView().findViewById(R.id.et_member_rule);
-    //editText.setHorizontallyScrolling(false);//여러줄로 쓰기 가능하게 하려고
+    private String manager_rule_value="";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        Intent intent = getActivity().getIntent();//manager가 intent로 보낸 규칙을 받아온다.
-//        String rule = intent.getStringExtra("rule");
-//        et_member_rule.setText(rule);
-
-        return inflater.inflate(R.layout.fragment_member_rule,container,false);
+        View v= inflater.inflate(R.layout.fragment_member_rule,container,false);
+        return v;
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 }

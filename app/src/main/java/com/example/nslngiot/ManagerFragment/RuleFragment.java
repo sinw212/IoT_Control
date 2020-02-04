@@ -13,11 +13,16 @@ import com.example.nslngiot.R;
 
 public class RuleFragment extends Fragment {
 
-    //채연이가 뭔가 해놓긴했는데 Fragment가 아니고 Activity여서 아직 안합침
+    private String manager_rule_value="";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_manager_rule,container,false);
+        View v= inflater.inflate(R.layout.fragment_manager_rule,container,false);
+        return v;
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 }

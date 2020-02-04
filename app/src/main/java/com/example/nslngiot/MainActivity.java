@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) { //관리자 모드 눌렀을 시
                 Intent intent = new Intent(getApplicationContext(), LoginManagerActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), LoginMemberActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
