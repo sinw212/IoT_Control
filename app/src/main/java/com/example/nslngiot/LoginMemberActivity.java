@@ -103,8 +103,8 @@ public class LoginMemberActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "이름 Long error.", Toast.LENGTH_LONG).show();
                     }else if(id.length()>=20){ // DB 값 오류 방지
                         Toast.makeText(getApplicationContext(), "학번 Long error.", Toast.LENGTH_LONG).show();
-                    }else if(pw.length()>=255){ // DB 값 오류 방지
-                        Toast.makeText(getApplicationContext(), "비밀번호 Long error.", Toast.LENGTH_LONG).show();
+                    }else if(name.length()>=20 || id.length()>=20 ||pw.length()>=255 ){ // DB 값 오류 방지
+                        Toast.makeText(getApplicationContext(), "Name or ID or Password too Long error.", Toast.LENGTH_LONG).show();
                         /////////////////////////////////////////////////////////////////////////////////////////////////
                     }else {
                         // 검증완료
@@ -126,14 +126,18 @@ public class LoginMemberActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         switch (response.trim()) {
-                            case "로그인성공시 flag":
-                                Toast.makeText(getApplicationContext(), "로그인 완료", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getApplicationContext(), MainMemberActivity.class);
-                                startActivity(intent);
-                                finish();
+                            case "아이디에맞는 비번 성공 리턴 flag":
+                                boolean vaild = BCrypt.checkpw(pw,response);
+                                if(vaild){ // 비밀번호 적합성 검증 성공 시 true
+                                    Toast.makeText(getApplicationContext(), "로그인 완료", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getApplicationContext(), MainMemberActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }else
+                                    Toast.makeText(getApplicationContext(), "비밀번호를 잘못 입력하셨습니다.", Toast.LENGTH_SHORT).show();
                                 break;
-                            case "로그인실패시 flag":
-                                Toast.makeText(getApplicationContext(), "가입 대상자가 아닙니다.", Toast.LENGTH_SHORT).show();
+                            case "아이디에맞는 비번 실패 리턴 flag":
+                                Toast.makeText(getApplicationContext(), "아이디를 잘못 입력하셨습니다.", Toast.LENGTH_SHORT).show();
                                 break;
                             default: // 접속 지연 시 확인 사항
                                 Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
