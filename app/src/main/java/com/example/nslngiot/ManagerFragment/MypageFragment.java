@@ -179,7 +179,7 @@ public class MypageFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // 회원가입 정보 push 진행
+                // 관리자 정보 push
                 params.put("id", manager_id);
                 params.put("pwd", manager_final_Encryption_pw);
                 params.put("name", manager_name);

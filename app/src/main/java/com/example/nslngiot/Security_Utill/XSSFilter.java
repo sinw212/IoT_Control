@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 public class XSSFilter {
+
     public static String xssFilter(String value){
         try {
             value = URLDecoder.decode(value,"euc-kr"); // 인코딩 우회 방지 적용
