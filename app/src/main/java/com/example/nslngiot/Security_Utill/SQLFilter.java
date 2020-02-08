@@ -7,9 +7,9 @@ import java.util.regex.Pattern;
 
 public class SQLFilter {
 
-    final private static Pattern SpecialCharsList = Pattern.compile("['\"\\-#()@;=*/+]");
-    final private static String defendList = "(union|select|from|where|insert|update|delete)";
-    final private static Pattern sql_pattern = Pattern.compile(defendList,Pattern.CASE_INSENSITIVE);
+    private static final Pattern SpecialCharsList = Pattern.compile("['\"\\-#()@;=*/+]");
+    private static final String defendList = "(union|select|from|where|insert|update|delete)";
+    private static final Pattern sql_pattern = Pattern.compile(defendList,Pattern.CASE_INSENSITIVE);
 
     public static boolean sqlFilter(String value){
         boolean result=false; //default 셋팅

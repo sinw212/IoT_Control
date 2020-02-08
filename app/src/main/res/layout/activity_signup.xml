@@ -35,8 +35,17 @@
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   id : (학번을 입력하세요)"
+        android:hint="   ID : (학번을 입력하세요)"
         android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/sign_email"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/line_remove"
+        android:hint="   E-Mail : "
+        android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/sign_pw"

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,7 +29,7 @@ import java.util.Map;
 
 public class RuleFragment extends Fragment {
 
-    private EditText member_rule = getView().findViewById(R.id.member_rule);
+    private TextView member_rule = getView().findViewById(R.id.member_rule);
     private Button btn_member_rule_save = getView().findViewById(R.id.btn_member_back);
 
     @Nullable
@@ -46,7 +47,7 @@ public class RuleFragment extends Fragment {
     }
     // 현재 등록된 규칙 조회 통신
     private void member_Rule_SelectRequest(){
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/User.jsp추후협의");
+        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         StringRequest stringRequest = new StringRequest(
@@ -54,20 +55,14 @@ public class RuleFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        switch (response.trim()){
-                            case "성공":
-                                // XSS 방지
-                                member_rule.setText(XSSFilter.xssFilter(response));
-                                break;
-                            case "실패":
-                                Toast.makeText(getActivity(), "규칙을 등록하지 못했습니다.", Toast.LENGTH_LONG).show();
-                                break;
-                            case "디비오류?":
-                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_LONG).show();
-                                break;
-                            default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                                break;
+                        String[] resPonse_split = response.split(" ");
+                        if("ruleExist".equals(resPonse_split[1])){
+                            member_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                        }else if("ruleNotExist".equals(resPonse_split[1])){
+                            member_rule.setText("현재 규칙이 등록되어있지 않습니다.");
+                        } else if("error".equals(resPonse_split[1])){
+                            member_rule.setText("시스템 오류입니다.");
+                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }
                     }
                 },
@@ -82,7 +77,7 @@ public class RuleFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '규칙등록'이라는 신호 정보 push 진행
-                params.put("?","시그널뭘로하지");
+                params.put("type","ruleShow");
 
                 return params;
             }

@@ -104,7 +104,7 @@ public class LoginMemberActivity extends AppCompatActivity {
     //데이터베이스로 넘김
     private void login_member_Request() {
 
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/User.jsp추후협의");
+        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
         RequestQueue queue = Volley.newRequestQueue(LoginMemberActivity.this);
 
         StringRequest stringRequest = new StringRequest(
@@ -112,24 +112,23 @@ public class LoginMemberActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        switch (response.trim()) {
-                            case "아이디에맞는 비번 성공 리턴 flag":
-                                boolean vaild = BCrypt.checkpw(pw,response);
-                                if(vaild){ // 비밀번호 적합성 검증 성공 시 true
-                                    Toast.makeText(getApplicationContext(), "로그인 완료", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), MainMemberActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }else
-                                    Toast.makeText(getApplicationContext(), "비밀번호를 잘못 입력하셨습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "아이디에맞는 비번 실패 리턴 flag":
-                                Toast.makeText(getApplicationContext(), "아이디를 잘못 입력하셨습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
+                        String[] resPonse_split = response.split(" ");
+                        if("loginFailed".equals(resPonse_split[1])){
+                            Toast.makeText(getApplicationContext(),"아이디를 잘못 입력하였습니다.",Toast.LENGTH_SHORT).show();
                         }
+                        else if("loginSuccess".equals(resPonse_split[1])){
+                            boolean vaild = BCrypt.checkpw(pw, resPonse_split[0]); // 암호화된 비밀번호 추출 및 일치 여부 체크
+                            if (vaild) { // 비밀번호 적합성 검증 성공 시 true
+                                Toast.makeText(getApplicationContext(), "로그인 완료", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), MainManagerActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else   // 비밀번호 불 일치
+                                Toast.makeText(getApplicationContext(),"비밀번호를 잘못 입력하였습니다.",Toast.LENGTH_SHORT).show();
+                        }
+                        else if("error".equals(resPonse_split[1]))
+                            Toast.makeText(getApplicationContext(),"시스템 오류입니다..",Toast.LENGTH_SHORT).show();
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -145,7 +144,7 @@ public class LoginMemberActivity extends AppCompatActivity {
                 // 로그인 정보 push 진행
                 params.put("id", id);
                 params.put("name", name);
-                params.put("type","백엔드와협의");
+                params.put("type","login");
 
                 return params;
             }

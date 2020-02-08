@@ -23,6 +23,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.MainActivity;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -41,7 +42,6 @@ public class MypageFragment extends Fragment {
     private String member_corrently_pw="";
     private String member_new_pw="";
     private String member_modify_pw="";
-    private String member_final_Encryption_pw = "";
 
     //sql 검증 결과 & default false
     private boolean member_name_filter = false;
@@ -85,13 +85,6 @@ public class MypageFragment extends Fragment {
         member_modify_pw_filter = SQLFilter.sqlFilter(member_modify_pw);
         //////////////////////////////////////////////////////////////////
 
-
-//        btn_memeber_Back.setOnClickListener(new View.OnClickListener() { //뒤로가기
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
         btn_memeber_Modifiy.setOnClickListener(new View.OnClickListener() { // 비밀번호 변경
             @Override
             public void onClick(View view) {
@@ -108,27 +101,26 @@ public class MypageFragment extends Fragment {
                 } else {
                     // 비밀번호 진행 시 SQL 인젝션 검증 절차 진행
                     //////////////////////////////////////////방어 코드////////////////////////////
-                    if (member_name_filter || member_id_filter ||member_corrently_pw_filter ) {// SQL패턴 발견 시
-                        member_name = "";
-                        member_id = "";
-                        member_corrently_pw = "";
+                    if (member_name_filter || member_id_filter || member_corrently_pw_filter ) {// SQL패턴 발견 시
                         Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
                     } else if(member_new_pw_filter || member_modify_pw_filter){
-                        member_new_pw = "";
-                        member_modify_pw = "";
                         Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
                     } else if (member_name.length() >= 20 || member_id.length() >= 20 ||member_corrently_pw.length() >= 255) { // DB 값 오류 방지
                         Toast.makeText(getActivity(), "Name or ID or Password too Long error.", Toast.LENGTH_LONG).show();
                     } else if(member_new_pw.length()>=255 || member_modify_pw.length()>=255){ // DB 값 오류 방지
                         Toast.makeText(getActivity(), "New Password or Modify Password too Long error.", Toast.LENGTH_LONG).show();
                     }else {
-                        if(member_new_pw.matches(pw_regex)){ // 비밀번호 정책에 올바른 비밀번호 입력 시
-                            // 변경할 비밀번호 클라이언트 단에서 해싱10회 진행
-                            member_final_Encryption_pw = BCrypt.hashpw(member_new_pw,BCrypt.gensalt(10));
-                            //member_ModifyRequest(); // DB로 개인정보 전송
-                        } else{ // 비밀번호 정책에 위배된 비밀번호 입력 시
-                            Toast.makeText(getActivity(), "수정할 비밀번호는 특수문자+숫자+영문자 혼합 8자이상입니다.", Toast.LENGTH_LONG).show();
-                        }
+
+                        if(member_new_pw.equals(member_modify_pw)) { // 새로운 비밀번호 비교 검증
+                            if(member_new_pw.matches(pw_regex)){ // 비밀번호 정책에 올바른 비밀번호 입력 시
+
+                                // 변경할 비밀번호 클라이언트 단에서 해싱10회 진행
+                                member_new_pw = BCrypt.hashpw(member_new_pw,BCrypt.gensalt(10));
+                                member_ModifyRequest(); // DB로 개인정보 전송
+                            } else// 비밀번호 정책에 위배된 비밀번호 입력 시
+                                Toast.makeText(getActivity(), "수정할 비밀번호는 특수문자+숫자+영문자 혼합 8자이상입니다.", Toast.LENGTH_LONG).show();
+                        } else
+                            Toast.makeText(getActivity(), "변경 할 비밀번호를 올바르게 입력해주세요.", Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -146,52 +138,76 @@ public class MypageFragment extends Fragment {
     //데이터베이스로 넘김
     private void member_ModifyRequest() {
 
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/User.jsp협의");
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
+        final RequestQueue queue = Volley.newRequestQueue(getActivity());
 
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        switch (response.trim()) {
-                            case "수정성공시":
-                                Toast.makeText(getActivity(), "비밀번호가 변경되었습니다..", Toast.LENGTH_SHORT).show();
-                                //여기서 강제로그아웃을 할 것이냐 말 것이냐
-                                break;
-                            case "디비오류":
-                                Toast.makeText(getActivity(), "시스템 오류입니다. 다시시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
-                            default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
+        new Thread(new Runnable() {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                // 사용자 정보 push 진행
-                params.put("id", member_id);
-                params.put("pwd",member_final_Encryption_pw);
-                params.put("name",member_name);
-                params.put("type","협의");
+            public void run() {
+             try{
 
-                return params;
+                 // RSA암호화 하여 전송 ID(학번)/ 현재PW(평문)/ 새로운pw(해싱) 3가지
+                 // rsa로하면 속도가너무느려서 하이브리드 암호가 필요한데, 어디에 대칭키를 숨기지
+                 member_id= RSA.rsaEncryption(member_id,RSA.publicKEY);
+                 member_corrently_pw = RSA.rsaEncryption(member_corrently_pw,RSA.publicKEY);
+                 member_new_pw = RSA.rsaEncryption(member_new_pw,RSA.publicKEY);
+
+                 Thread.sleep(2000); // 암호화 연산시간을 위해 NetWorking 2초 sleep
+
+                 StringRequest stringRequest = new StringRequest(
+                         Request.Method.POST, String.valueOf(url),
+                         new Response.Listener<String>() {
+                             @Override
+                             public void onResponse(String response) {
+
+                                 switch (response.trim()) {
+                                     case "pwdChangeSuccess":
+                                         Toast.makeText(getActivity(), "비밀번호가 변경되었습니다..", Toast.LENGTH_SHORT).show();
+                                         //여기서 강제로그아웃을 할 것이냐 말 것이냐
+                                         break;
+                                     case "pwdChangeFailed":
+                                         Toast.makeText(getActivity(), "현재 비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                                         break;
+                                     case "idNotExist":
+                                         Toast.makeText(getActivity(), "ID(학번)가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                                         break;
+                                     case "error":
+                                         Toast.makeText(getActivity(), "시스템 오류입니다. 다시시도해주세요.", Toast.LENGTH_SHORT).show();
+                                         break;
+                                     default: // 접속 지연 시 확인 사항
+                                         Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                         break;
+                                 }
+                             }
+                         },
+                         new Response.ErrorListener() {
+                             @Override
+                             public void onErrorResponse(VolleyError error) {
+                                 error.printStackTrace();
+                             }
+                         }
+                 ) {
+                     @Override
+                     protected Map<String, String> getParams() throws AuthFailureError {
+                         Map<String, String> params = new HashMap<String, String>();
+                         // 사용자 정보 push 진행
+                         params.put("id", member_id);
+                         params.put("pwd", member_new_pw);
+                         params.put("b_pwd", member_corrently_pw);
+                         params.put("type", "change");
+
+                         return params;
+                     }
+                 };
+
+                 // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
+                 // 항상 새로운 데이터를 위해 false
+                 stringRequest.setShouldCache(false);
+                 queue.add(stringRequest);
+             }catch (InterruptedException e){
+                 System.err.println("Member Fragment InterruptedException error");
+             }
             }
-        };
-
-        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
-        // 항상 새로운 데이터를 위해 false
-        stringRequest.setShouldCache(false);
-        queue.add(stringRequest);
+        }).start();
     }
 }

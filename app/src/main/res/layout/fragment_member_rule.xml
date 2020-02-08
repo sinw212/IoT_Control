@@ -17,7 +17,7 @@
         android:textSize="30sp"
         android:textStyle="bold" />
 
-    <EditText
+    <TextView
         android:id="@+id/member_rule"
         android:layout_width="match_parent"
         android:layout_height="500dp"
