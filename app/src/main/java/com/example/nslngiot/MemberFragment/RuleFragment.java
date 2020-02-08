@@ -21,7 +21,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
 import java.util.HashMap;
@@ -48,7 +50,6 @@ public class RuleFragment extends Fragment {
     // 현재 등록된 규칙 조회 통신
     private void member_Rule_SelectRequest(){
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -78,7 +79,6 @@ public class RuleFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 // '규칙등록'이라는 신호 정보 push 진행
                 params.put("type","ruleShow");
-
                 return params;
             }
         };
@@ -86,6 +86,6 @@ public class RuleFragment extends Fragment {
         // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
-        queue.add(stringRequest);
+        VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
 }

@@ -22,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.LoginManagerActivity;
 import com.example.nslngiot.MainManagerActivity;
+import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
@@ -57,16 +58,16 @@ public class RuleFragment extends Fragment {
                 //XSS 특수문자 공백처리 및 방어
                 manager_rule_value = XSSFilter.xssFilter(manager_rule_value);
                 //////////////////////////////////////////////////////////////////
+
                 manager_Rule_SaveRequest();
                 manager_Rule_SelectRequest();
+
             }
         });
     }
     //규칙 등록 통신
     private void manager_Rule_SaveRequest(){
-
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -107,13 +108,12 @@ public class RuleFragment extends Fragment {
         // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
-        queue.add(stringRequest);
+        VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
 
     // 현재 등록된 규칙 조회 통신
     private void manager_Rule_SelectRequest(){
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -151,6 +151,6 @@ public class RuleFragment extends Fragment {
         // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
-        queue.add(stringRequest);
+        VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
 }

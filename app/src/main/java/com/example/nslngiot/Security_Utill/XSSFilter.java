@@ -17,8 +17,8 @@ public class XSSFilter {
             value = value.replaceAll(" ","&nbsp;");
             value = value.replaceAll("\"","&quto;");
             value = value.replace("script"," ");
-            value = value.replaceAll("iframe"," ");
-            value = value.replaceAll("img"," ");
+            value = value.replace("iframe"," ");
+            value = value.replace("img"," ");
 
         } catch (UnsupportedEncodingException e) {
             System.err.println("XSSFilter error");

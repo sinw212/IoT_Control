@@ -52,7 +52,7 @@
         android:orientation="horizontal">
 
         <CheckBox
-            android:id="@+id/cb_login_Manager_autologin"
+            android:id="@+id/cb_login_Member_autologin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="자동 로그인" />

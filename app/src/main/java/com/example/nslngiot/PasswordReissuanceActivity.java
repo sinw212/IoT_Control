@@ -15,6 +15,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import java.util.HashMap;
@@ -85,7 +86,6 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
 
     private void reissuanceRequest() {
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/무엇");
-        RequestQueue queue = Volley.newRequestQueue(PasswordReissuanceActivity.this);
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -130,7 +130,7 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
         // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
-        queue.add(stringRequest);
+        VolleyQueueSingleTon.getInstance(this.getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
 }

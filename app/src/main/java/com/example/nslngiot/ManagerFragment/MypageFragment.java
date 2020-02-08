@@ -21,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.MainActivity;
+import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.SQLFilter;
@@ -140,76 +141,64 @@ public class MypageFragment extends Fragment {
 
     //데이터베이스로 넘김
     private void manager_ModifyRequest() {
+        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
-        final RequestQueue queue = Volley.newRequestQueue(getActivity());
+        // RSA암호화 하여 전송 ID(학번)/ 현재PW(평문)/ 새로운pw(해싱) 3가지
+//        manager_id=RSA.rsaEncryption(manager_id,RSA.publicKEY);
+//        manager_corrently_pw = RSA.rsaEncryption(manager_corrently_pw,RSA.publicKEY);
+//        manager_new_pw = RSA.rsaEncryption(manager_new_pw,RSA.publicKEY);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    // RSA암호화 하여 전송 ID(학번)/ 현재PW(평문)/ 새로운pw(해싱) 3가지
-                    manager_id=RSA.rsaEncryption(manager_id,RSA.publicKEY);
-                    manager_corrently_pw = RSA.rsaEncryption(manager_corrently_pw,RSA.publicKEY);
-                    manager_new_pw = RSA.rsaEncryption(manager_new_pw,RSA.publicKEY);
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST, String.valueOf(url),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
 
-                    Thread.sleep(2000); // 암호화 연산시간을 위해 NetWorking 2초 sleep
-
-                    StringRequest stringRequest = new StringRequest(
-                            Request.Method.POST, String.valueOf(url),
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-
-                                    switch (response.trim()) {
-                                        case "pwdChangeSuccess":
-                                            Toast.makeText(getActivity(), "비밀번호가 변경되었습니다..", Toast.LENGTH_SHORT).show();
-                                            //여기서 강제로그아웃을 할 것이냐 말 것이냐
-                                            break;
-                                        case "pwdChangeFailed":
-                                            Toast.makeText(getActivity(), "현재 비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
-                                            break;
-                                        case "idNotExist":
-                                            Toast.makeText(getActivity(), "ID(학번)가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
-                                            break;
-                                        case "error":
-                                            Toast.makeText(getActivity(), "시스템 오류입니다. 다시시도해주세요.", Toast.LENGTH_SHORT).show();
-                                            break;
-                                        default: // 접속 지연 시 확인 사항
-                                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                            break;
-                                    }
-                                }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    error.printStackTrace();
-                                }
-                            }
-                    ) {
-                        @Override
-                        protected Map<String, String> getParams() throws AuthFailureError {
-                            Map<String, String> params = new HashMap<String, String>();
-
-                            // 관리자 정보 push
-                            params.put("id", manager_id);
-                            params.put("pwd", manager_new_pw);
-                            params.put("b_pwd", manager_corrently_pw);
-                            params.put("type", "change");
-
-                            return params;
+                        switch (response.trim()) {
+                            case "pwdChangeSuccess":
+                                Toast.makeText(getActivity(), "비밀번호가 변경되었습니다..", Toast.LENGTH_SHORT).show();
+                                //여기서 강제로그아웃을 할 것이냐 말 것이냐
+                                break;
+                            case "pwdChangeFailed":
+                                Toast.makeText(getActivity(), "현재 비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "idNotExist":
+                                Toast.makeText(getActivity(), "ID(학번)가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "error":
+                                Toast.makeText(getActivity(), "시스템 오류입니다. 다시시도해주세요.", Toast.LENGTH_SHORT).show();
+                                break;
+                            default: // 접속 지연 시 확인 사항
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                break;
                         }
-                    };
-
-                    // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
-                    // 항상 새로운 데이터를 위해 false
-                    stringRequest.setShouldCache(false);
-                    queue.add(stringRequest);
-                }catch (InterruptedException e){
-                    System.err.println("Manager Fragment InterruptedException error");
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
                 }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+
+                // 관리자 정보 push
+                params.put("id", manager_id);
+                params.put("pwd", manager_new_pw);
+                params.put("b_pwd", manager_corrently_pw);
+                params.put("type", "change");
+
+                return params;
             }
-        }).start();
+        };
+
+        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
+        // 항상 새로운 데이터를 위해 false
+        stringRequest.setShouldCache(false);
+        VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
+
     }
 }

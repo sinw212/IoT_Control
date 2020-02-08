@@ -2,6 +2,7 @@ package com.example.nslngiot.Security_Utill;
 
 import org.apache.commons.codec.binary.Base64;
 
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -9,19 +10,23 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.HashMap;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 
 public class RSA {
 
+    public static String serverPublicKey=""; // 서버로부터 전달받을 서버공개키
     public static String publicKEY="";
-    public static String privateKEY="";
+    public static String privateKEY=""; // android KeyStore의 '대칭키'에 의해 암호화 저장/유출방지
 
-    public static void rsaKeyGen() throws NoSuchAlgorithmException {
+    public static void rsaKeyGen() throws NoSuchAlgorithmException { // RSA 비대칭키 생성
 
         SecureRandom secureRandom = new SecureRandom(); // 안전한 난수 생성
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -32,17 +37,16 @@ public class RSA {
         PrivateKey privateKey = keyPair.getPrivate();
 
         // publicKey객체를 'String'으로 변환
-        String stringPublicKey = Base64.encodeBase64String(publicKey.getEncoded());
+        publicKEY = Base64.encodeBase64String(publicKey.getEncoded());
+
         // PrivateKey객체를 'String'으로 변환
-        String stringPrivateKey = Base64.encodeBase64String(privateKey.getEncoded());
+        privateKEY = Base64.encodeBase64String(privateKey.getEncoded());
     }
 
     /*암호화*/
-    public static String rsaEncryption(String plainData, String stringPublicKey) {
-
-        String encryptedData = null;
-
-        try {
+    public static String rsaEncryption(String plainData, String stringPublicKey) throws BadPaddingException,
+            IllegalBlockSizeException, InvalidKeySpecException,
+            NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
 
             // 평문으로 전달받은 'String공개키'를 '공개키 객체'로 만드는 과정
             byte[] bytePublicKey = Base64.decodeBase64(stringPublicKey.getBytes());
@@ -52,42 +56,37 @@ public class RSA {
 
             // 만들어진 공개키객체를 기반으로 암호화모드로 설정하는 과정
             Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey); // 암호화 준비
 
             // 암호화 진행
             byte[] byteEncryptedData = cipher.doFinal(plainData.getBytes());
-            // 암호화 데이터를 인코딩
-            encryptedData = Base64.encodeBase64String(byteEncryptedData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return encryptedData;
+            // 암호화 데이터, 인코딩 후 'String'으로 반환
+            return Base64.encodeBase64String(byteEncryptedData);
     }
 
     /*복호화*/
-    public static String rsaDecryption(String encryptedData, String stringPrivateKey) {
+    public static String rsaDecryption(String encryptedData, String stringPrivateKey) throws NoSuchAlgorithmException,
+            InvalidKeySpecException, NoSuchPaddingException,
+            InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
 
-        String decryptedData = "";
-
-        try {
-            //평문으로 전달받은 개인키를 개인키객체로 만드는 과정
-
+            // 평문으로 전달받은 'String개인키'를 '개인키 객체'로 만드는 과정
             byte[] bytePrivateKey =  Base64.decodeBase64(stringPrivateKey.getBytes());
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(bytePrivateKey);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
 
-            //만들어진 개인키객체를 기반으로 암호화모드로 설정하는 과정
+            // 만들어진 개인키객체를 기반으로 복호화모드로 설정하는 과정
             Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            cipher.init(Cipher.DECRYPT_MODE, privateKey); // 복호화 준비
 
-            //암호문을 평문화하는 과정
+            // 암호화된 인코딩 데이터를 디코딩 진행
             byte[] byteEncryptedData = Base64.decodeBase64(encryptedData.getBytes());
+
+            // 복호화 진행
             byte[] byteDecryptedData = cipher.doFinal(byteEncryptedData);
-            decryptedData = new String(byteDecryptedData);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            // 복호화 후 'String'으로 반환
+            return new String(byteDecryptedData);
         }
-        return decryptedData;
-    }
+
 }
