@@ -71,16 +71,14 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/manager_memberlist"
+        android:id="@+id/recyclerview_member_member"
         android:layout_width="match_parent"
-        android:layout_height="430dp"
-        android:layout_marginTop="20dp"/>
-
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="50dp"
+        android:layout_height="350dp"
         android:layout_marginTop="20dp"
-        android:layout_gravity="right"
-        android:text="뒤로가기" />
+        android:scrollbarFadeDuration="0"
+        android:scrollbarSize="5dp"
+        android:scrollbarThumbVertical="@android:color/darker_gray"
+        android:scrollbars="vertical"
+        android:background="@drawable/border"/>
 
 </LinearLayout>

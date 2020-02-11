@@ -1,6 +1,6 @@
 package com.example.nslngiot.Data;
 
-public class MemberData {
+public class ManagerMemberData {
     public String Number;
     public String Name;
     public String Phone;

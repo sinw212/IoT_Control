@@ -41,7 +41,7 @@
             android:gravity="center" />
     </LinearLayout>
 
-    <EditText
+    <TextView
         android:id="@+id/et_member_rule"
         android:layout_width="match_parent"
         android:layout_height="500dp"
@@ -49,14 +49,9 @@
         android:layout_marginBottom="20dp"
         android:background="@android:drawable/edit_text"
         android:inputType="textMultiLine"
-        android:lines="8"
+        android:lines="15"
         android:scrollbars="vertical"
         android:scrollHorizontally="false"
         android:textColor="@android:color/black" />
 
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="right"
-        android:text="뒤로가기" />
 </LinearLayout>

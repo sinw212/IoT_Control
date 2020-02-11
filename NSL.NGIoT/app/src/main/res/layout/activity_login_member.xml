@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id = "@+id/container"
     android:layout_width="match_parent"
@@ -20,7 +20,7 @@
         android:textSize="40dp" />
 
     <EditText
-        android:id="@+id/et_name"
+        android:id="@+id/loginMember_name"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -29,7 +29,7 @@
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/et_id"
+        android:id="@+id/loginMember_id"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -38,7 +38,7 @@
         android:inputType="textPassword" />
 
     <EditText
-        android:id="@+id/et_pw"
+        android:id="@+id/loginMember_pw"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -52,24 +52,22 @@
         android:orientation="horizontal">
 
         <CheckBox
-            android:id="@+id/cb_autologin"
+            android:id="@+id/cb_login_Member_autologin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="자동 로그인" />
 
-        <TextView
-            android:id="@+id/tv_re_pw"
+        <Button
+            android:id="@+id/btn_re_pw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginLeft="10dp"
             android:text="비밀번호 재발급" />
 
         <Button
             android:id="@+id/btn_member_login"
-            android:layout_width="77dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:text="로그인"
             android:textSize="14dp" />
     </LinearLayout>

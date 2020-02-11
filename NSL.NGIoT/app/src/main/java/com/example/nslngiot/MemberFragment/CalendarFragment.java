@@ -25,7 +25,7 @@ public class CalendarFragment extends Fragment {
     View view;
     long mNow;
     Date mDate;
-    SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 DD일");
+    SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
     ArrayList<String> items;
     ListView listview;
     DatePickerDialog.OnDateSetListener myDatePicker;

@@ -18,45 +18,25 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/et_manager_rule"
+        android:id="@+id/manager_rule"
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:background="@android:drawable/edit_text"
         android:gravity="top"
-        android:hint="(랩실 규칙)"
+        android:hint="(랩실 규칙을 작성해주세요.)"
         android:inputType="textMultiLine"
         android:lines="8"
         android:scrollbars="vertical"
         android:scrollHorizontally="false"
         android:textColor="@android:color/black" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/btn_manager_rule_save"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="right">
-
-        <Button
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5sp"
-            android:text="뒤로가기" />
-
-        <Button
-            android:id="@+id/modifyButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5sp"
-            android:text="수정" />
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="등록" />
-    </LinearLayout>
+        android:layout_gravity="right"
+        android:text="등록" />
 
 </LinearLayout>

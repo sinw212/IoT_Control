@@ -17,23 +17,17 @@
         android:textSize="30sp"
         android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/et_member_rule"
+    <TextView
+        android:id="@+id/member_rule"
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:background="@android:drawable/edit_text"
         android:inputType="textMultiLine"
-        android:lines="8"
+        android:lines="10"
         android:scrollbars="vertical"
         android:scrollHorizontally="false"
         android:textColor="@android:color/black" />
 
-        <Button
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="뒤로가기" />
 </LinearLayout>

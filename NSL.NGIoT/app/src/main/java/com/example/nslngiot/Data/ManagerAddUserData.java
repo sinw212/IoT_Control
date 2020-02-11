@@ -2,7 +2,7 @@ package com.example.nslngiot.Data;
 
 import java.util.ArrayList;
 
-public class UserData {
+public class ManagerAddUserData {
     public String Number;
     public String Name;
     public String ID;

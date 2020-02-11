@@ -7,7 +7,7 @@
     android:background="@drawable/border2" >
 
     <TextView
-        android:id="@+id/manager_adduser_number"
+        android:id="@+id/manager_calendar_number"
         android:layout_width="20dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -16,22 +16,13 @@
         android:textSize="14dp" />
 
     <TextView
-        android:id="@+id/manager_adduser_name"
+        android:id="@+id/manager_calendar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="4"
         android:text="TextView"
         android:gravity="center"
         android:textSize="14dp"
         android:maxLength="4" />
 
-    <TextView
-        android:id="@+id/manager_adduser_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView"
-        android:gravity="center"
-        android:textSize="14dp"
-        android:maxLength="9" />
 </LinearLayout>
