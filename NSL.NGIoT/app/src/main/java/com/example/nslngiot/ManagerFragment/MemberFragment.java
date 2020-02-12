@@ -41,14 +41,23 @@ public class MemberFragment extends Fragment {
         m_mrv.setAdapter(m_ma);
         m_mrv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        Button input = (Button)view.findViewById((R.id.btn_add));
-        input.setOnClickListener(new View.OnClickListener(){
+        Button add = (Button)view.findViewById((R.id.btn_add));
+        Button delete = (Button) view.findViewById(R.id.btn_delete);
+
+        add.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View view) {
                 DataInput();
             }
         });
+
+        delete.setOnClickListener((new View.OnClickListener() { // 삭제 버튼
+            public void onClick(View view) {
+                count = m_ma.clearSelectedItem();
+
+            }
+        }));
 
         return  view;
     }

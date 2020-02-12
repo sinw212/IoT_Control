@@ -103,24 +103,16 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
             }
         }));
 
+        if (SelectedItem.get(position, false)) {
+            holder.itemView.setBackgroundColor(Color.GRAY);
+        } else {
+            holder.itemView.setBackgroundColor(Color.WHITE);
+        }
+
         holder.itemView.setOnLongClickListener((new View.OnLongClickListener(){  //회원정보란 길게 클릭시 이벤트 발생
             public boolean onLongClick(View v){
-                if(isItemSelected(position)){
-                    holder.itemView.setBackgroundColor(Color.GRAY);
-                }else{
-                    holder.itemView.setBackgroundColor(Color.WHITE);
-                }
                 toggleItemSelected(position);
-                /*if(SelectedItem.get(position,false)){
-                SelectedItem.put(position, false);
-                v.setBackgroundColor(Color.WHITE);
-              }else{
-                  SelectedItem.put(position, true);
-                  v.setBackgroundColor(Color.GRAY);
-              }*/
-               /* userdata.remove(position); // 삭제
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, userdata.size());*/
+
                 return false;
             }
         }));
@@ -147,15 +139,30 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
         return SelectedItem.get(position, false);
     }
 
-    public void clearSelectedItem(){
+    public int clearSelectedItem() {
         int position;
+        ManagerAddUserData ud;
 
-        for(int i =0; i<SelectedItem.size();i++){
+        for (int i = SelectedItem.size() - 1; i >= 0; i--) {
             position = SelectedItem.keyAt(i);
             userdata.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, userdata.size());
         }
         SelectedItem.clear();
+
+        if (userdata.size() > 0) {//삭제 후 아이템이 남아있을 시 실행
+            for (int i = 0; i < userdata.size(); i++) {//리스트 넘버링 갱신
+                ud = new ManagerAddUserData();
+                ud.setID(userdata.get(i).getID());
+                ud.setName(userdata.get(i).getName());
+                ud.setNumber(Integer.toString((i + 1)));
+                userdata.set(i, ud);
+                notifyItemChanged(i);
+                System.out.println(ud + "\n" + ud.toString());
+
+            }
+        }
+        return userdata.size();
     }
 }

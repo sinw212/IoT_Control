@@ -1,37 +1,55 @@
 package com.example.nslngiot.ManagerFragment;
 
-import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.R;
+import com.github.chrisbanes.photoview.PhotoView;
 
 public class OrganizationFragment extends Fragment {
+    private RequestQueue mQueue;
+    public PhotoView IPImage;
 
-    private static final int REQUEST_CODE = 0;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_manager_organization, container, false);
 
-        Button imageButton = getActivity().findViewById(R.id.btn_picture);
-        imageButton.setOnClickListener(new View.OnClickListener(){
+        mQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
-            @Override
-            public void onClick(View view) {
 
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        });
-        return inflater.inflate(R.layout.fragment_manager_organization,container,false);
+        ImageRequest imageRequest = new ImageRequest("http://sj50419.cafe24.com/min/img/CAM00739.jpg", responseListener, 295, 400, Bitmap.Config.ARGB_8888, errorListener);
+        mQueue.add(imageRequest);
+        IPImage = (PhotoView) view.findViewById(R.id.pho_manager_organization);
+
+        return view;
     }
+
+    com.android.volley.Response.Listener<Bitmap> responseListener = new Response.Listener<Bitmap>() {
+
+        @Override
+        public void onResponse(Bitmap response) {
+            IPImage.setImageBitmap(response);
+        }
+    };
+
+    com.android.volley.Response.ErrorListener errorListener = new Response.ErrorListener() {
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            System.out.println("오류 발생");
+        }
+    };
 }

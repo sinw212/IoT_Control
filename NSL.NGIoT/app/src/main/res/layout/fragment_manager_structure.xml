@@ -36,8 +36,8 @@
             android:gravity="center" />
     </LinearLayout>
 
-    <PhotoView
-        android:id="@+id/imageView_ip"
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/pho_manager_structure"
         android:layout_width="match_parent"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"

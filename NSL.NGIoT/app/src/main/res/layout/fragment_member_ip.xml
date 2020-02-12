@@ -18,8 +18,8 @@
         android:textSize="30sp"
         android:textStyle="bold" />
 
-    <PhotoView
-        android:id="@+id/imageView_ip"
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/pho_member_ip"
         android:layout_width="match_parent"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
