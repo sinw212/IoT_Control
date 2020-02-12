@@ -24,8 +24,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 /**     암호 로직    **/
 // 모든 키는 최초 1회만 생성되어 계속 사용된다.
 // Keystore 초기화 및 AES대칭키 생성 및 컨테이너에 저장
@@ -42,21 +40,25 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         // 네트워크 연결 되어 있으면 진행
-        if(NetworkCheck.networkCheck(SplashActivity.this)){
-            try {
+//        if(NetworkCheck.networkCheck(SplashActivity.this)){
+//            try {
+//
+//                RSA.rsaKeyGen(); // 최초 한번 클라이언트의 RSA 비대칭키 생성
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+//                    KEYSTORE.keyStore_init(); // 최초 1회 KeyStore에 저장할 AES 대칭키 생성
+//                rsaKeyRequest(); // 서버로부터 RSA공개키 요청
+//
+//            } catch (NoSuchAlgorithmException e) {
+//                System.err.println("Splash Activty NoSuchAlgorithmException error");
+//            }
+//        }else{
+//            Toast.makeText(this, "네트워크연결이 되지 않습니다.\n" + "네트워크 수신상태를 확인하세요.", Toast.LENGTH_SHORT).show();
+//            finish();
+//        }
 
-                RSA.rsaKeyGen(); // 최초 한번 클라이언트의 RSA 비대칭키 생성
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    KEYSTORE.keyStore_init(); // 최초 1회 KeyStore에 저장할 AES 대칭키 생성
-                rsaKeyRequest(); // 서버로부터 RSA공개키 요청
-
-            } catch (NoSuchAlgorithmException e) {
-                System.err.println("Splash Activty NoSuchAlgorithmException error");
-            }
-        }else{
-            Toast.makeText(this, "네트워크연결이 되지 않습니다.\n" + "네트워크 수신상태를 확인하세요.", Toast.LENGTH_SHORT).show();
-            finish();
-        }
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void rsaKeyRequest(){ // RSA암호화에 사용할 공개키를 서버에게 요청

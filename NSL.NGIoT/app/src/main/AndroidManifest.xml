@@ -29,6 +29,7 @@
         <activity android:name=".LoginManagerActivity" />
         <activity android:name=".SignupActivity"/>
         <activity android:name=".PasswordReissuanceActivity"/>
+        <activity android:name=".ManagerCalendarAddActivity"/>
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

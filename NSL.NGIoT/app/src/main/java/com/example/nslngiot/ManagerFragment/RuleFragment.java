@@ -99,7 +99,7 @@ public class RuleFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 // '규칙등록'이라는 신호 정보 push 진행
                 params.put("text",manager_rule_value);
-                params.put("type","ruleUpload");
+                params.put("type","ruleAdd");
 
                 return params;
             }

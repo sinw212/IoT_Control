@@ -44,7 +44,7 @@ public class LampFragment extends Fragment {
         btn_refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 테스트 용으로 한 것. 아두이노 통신 수정 해야함
+                // 테스트 용으로 한 것. 아두이노 통신(조도센서) 수정 해야함
 
                 // 랩실 전등 상태 확인
                 if(Integer.valueOf(String.valueOf(sdfNow)) >= 30 && Integer.valueOf(String.valueOf(sdfNow)) < 60) {
@@ -64,7 +64,7 @@ public class LampFragment extends Fragment {
         btn_lamp_on.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 아두이노 통신 부분
+                // 아두이노 통신(불 스위치 모터) 부분
             }
         });
 
@@ -72,7 +72,7 @@ public class LampFragment extends Fragment {
         btn_lamp_off.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 아두이노 통신 부분
+                // 아두이노 통신(불 스위치 모터) 부분
             }
         });
 

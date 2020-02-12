@@ -44,6 +44,10 @@ public class LoginManagerActivity extends AppCompatActivity {
     private boolean id_filter = false;
     private boolean pw_filter = false;
 
+    EditText login_pw;
+    EditText login_id;
+    EditText login_name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +57,9 @@ public class LoginManagerActivity extends AppCompatActivity {
 
         Button btn_manager_login = findViewById(R.id.btn_manager_login);
 
-        EditText login_pw = (EditText) findViewById(R.id.login_Manager_pw);
-        EditText login_id = (EditText) findViewById(R.id.login_Manager_id);
-        EditText login_name = (EditText) findViewById(R.id.login_Manager_name);
+        login_pw = (EditText) findViewById(R.id.login_Manager_pw);
+        login_id = (EditText) findViewById(R.id.login_Manager_id);
+        login_name = (EditText) findViewById(R.id.login_Manager_name);
         final CheckBox auto_login = (CheckBox)findViewById(R.id.cb_login_Manager_autologin);
 
         login_Preferences = getSharedPreferences("AUTOLOGIN", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
@@ -73,10 +77,6 @@ public class LoginManagerActivity extends AppCompatActivity {
             finish();
         }
 
-        name = login_name.getText().toString();
-        id = login_id.getText().toString();
-        pw = login_pw.getText().toString();
-
         //////////////////////////////방어 코드////////////////////////////
         //SQL 인젝션 특수문자 공백처리 및 방어
         name_filter= SQLFilter.sqlFilter(name);
@@ -87,6 +87,11 @@ public class LoginManagerActivity extends AppCompatActivity {
         btn_manager_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                name = login_name.getText().toString();
+                id = login_id.getText().toString();
+                pw = login_pw.getText().toString();
+
                 if ("".equals(name) || name.length() == 0) { // 이름의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "이름를 입력하세요.", Toast.LENGTH_LONG).show();
                 } else if ("".equals(id) || id.length() == 0) { // 아이디(학번)의 공백 입력 및 널문자 입력 시

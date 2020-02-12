@@ -41,6 +41,10 @@ public class SignupActivity extends AppCompatActivity {
     private boolean pw_filter = false;
     private boolean mail_filter = false;
 
+    private EditText sign_pw;
+    private EditText sign_id;
+    private EditText sign_name;
+    private EditText sign_mail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,15 +55,10 @@ public class SignupActivity extends AppCompatActivity {
         Button btn_signup = findViewById(R.id.btn_member_signup);
         Button btn_cancle = findViewById(R.id.btn_member_cancle);
 
-        EditText sign_pw = (EditText)findViewById(R.id.sign_pw);
-        EditText sign_id = (EditText)findViewById(R.id.sign_id);
-        EditText sign_name= (EditText)findViewById(R.id.sign_name);
-        EditText sign_mail= (EditText)findViewById(R.id.sign_email);
-
-        id =sign_id.getText().toString();
-        pw =sign_pw.getText().toString();
-        name =sign_name.getText().toString();
-        email = sign_mail.getText().toString();
+        sign_pw = (EditText)findViewById(R.id.sign_pw);
+        sign_id = (EditText)findViewById(R.id.sign_id);
+        sign_name= (EditText)findViewById(R.id.sign_name);
+        sign_mail= (EditText)findViewById(R.id.sign_email);
 
         //////////////////////////////방어 코드////////////////////////////
         //SQL 인젝션 특수문자 공백처리 및 방어
@@ -72,6 +71,11 @@ public class SignupActivity extends AppCompatActivity {
         btn_signup.setOnClickListener(new View.OnClickListener() { //회원 가입 버튼
             @Override
             public void onClick(View v) {
+
+                id =sign_id.getText().toString();
+                pw =sign_pw.getText().toString();
+                name =sign_name.getText().toString();
+                email = sign_mail.getText().toString();
 
                 if("".equals(name) || name.length() == 0) { // 이름의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "사용할 이름를 입력하세요.", Toast.LENGTH_LONG).show();

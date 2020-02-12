@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.nslngiot.Data.ManagerMemberData;
+
 import com.example.nslngiot.R;
 
 import java.util.ArrayList;
@@ -67,6 +68,7 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
         holder.phoneText.setText(item.getPhone());
         holder.courseText.setText(item.getCourse());
         holder.groupText.setText(item.getGroup());
+
 
         holder.itemView.setOnClickListener((new View.OnClickListener() {  //회원정보란 클릭시 수정 이벤트 발생
             public void onClick(View v) {
@@ -176,7 +178,6 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
 
                 memberdata.set(i, md);
                 notifyItemChanged(i);
-
             }
         }
         return memberdata.size();
