@@ -79,7 +79,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:layout_marginRight="20sp"
         android:orientation="horizontal">
 
         <Button
@@ -108,13 +107,13 @@
         android:textSize="30sp"
         android:textStyle="bold" />
 
-
     <Button
         android:id="@+id/btn_manager_mypage_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:text="로그아웃" />
+        android:text="로그아웃"
+        android:textSize="18sp" />
 
 </LinearLayout>

@@ -6,7 +6,7 @@
     android:background="@drawable/border2" >
 
     <TextView
-        android:id="@+id/member_num_list"
+        android:id="@+id/manager_member_number"
         android:layout_width="20dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -15,7 +15,7 @@
         android:gravity="center" />
 
     <TextView
-        android:id="@+id/member_name_list"
+        android:id="@+id/manager_member_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -24,7 +24,7 @@
         android:gravity="center" />
 
     <TextView
-        android:id="@+id/member_phone_list"
+        android:id="@+id/manager_member_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -33,7 +33,7 @@
         android:gravity="center" />
 
     <TextView
-        android:id="@+id/member_course_list"
+        android:id="@+id/manager_member_course"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -42,7 +42,7 @@
         android:gravity="center" />
 
     <TextView
-        android:id="@+id/member_group_list"
+        android:id="@+id/manager_member_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"

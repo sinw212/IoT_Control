@@ -8,14 +8,32 @@
     android:paddingLeft="20dp"
     android:paddingRight="20dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:text="형광등 제어"
-        android:textColor="@android:color/black"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="형광등 제어"
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/btn_refresh"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/refresh_button"
+            android:gravity="center" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -36,7 +54,7 @@
                 android:textSize="30sp" />
 
             <ImageButton
-                android:id="@+id/button_lampon"
+                android:id="@+id/btn_lamp_on"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/lamp_on"
@@ -56,7 +74,7 @@
                 android:textSize="30sp" />
 
             <ImageButton
-                android:id="@+id/button_lampoff"
+                android:id="@+id/btn_lamp_off"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/lamp_off"
@@ -64,12 +82,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="200dp"
-        android:layout_gravity="right"
-        android:text="뒤로가기" />
 
 </LinearLayout>

@@ -1,6 +1,6 @@
 package com.example.nslngiot.ManagerFragment;
 
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,18 +15,13 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.nslngiot.LoginManagerActivity;
-import com.example.nslngiot.MainManagerActivity;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +29,8 @@ import java.util.Map;
 public class RuleFragment extends Fragment {
 
     private String manager_rule_value="";
-    private EditText manager_rule = getView().findViewById(R.id.manager_rule);
-    private Button btn_manager_rule_save = getView().findViewById(R.id.btn_manager_rule_save);
+    private EditText manager_rule;
+    private Button btn_manager_rule_save;
 
     @Nullable
     @Override
@@ -46,6 +41,8 @@ public class RuleFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        initView();
 
         // 등록된 랩실 규칙 확인 진행
         manager_Rule_SelectRequest();
@@ -74,17 +71,17 @@ public class RuleFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                       switch (response.trim()){
-                           case "ruleAdded":
-                               Toast.makeText(getActivity(), "규칙을 등록하였습니다.", Toast.LENGTH_LONG).show();
-                               break;
-                           case "error":
-                               Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_LONG).show();
-                               break;
-                           default: // 접속 지연 시 확인 사항
-                               Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                               break;
-                       }
+                        switch (response.trim()){
+                            case "ruleAdded":
+                                Toast.makeText(getActivity(), "규칙을 등록하였습니다.", Toast.LENGTH_LONG).show();
+                                break;
+                            case "error":
+                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_LONG).show();
+                                break;
+                            default: // 접속 지연 시 확인 사항
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                                break;
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -99,7 +96,7 @@ public class RuleFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 // '규칙등록'이라는 신호 정보 push 진행
                 params.put("text",manager_rule_value);
-                params.put("type","ruleUpload");
+                params.put("type","ruleAdd");
 
                 return params;
             }
@@ -152,5 +149,9 @@ public class RuleFragment extends Fragment {
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
+    }
+    private void initView(){
+        manager_rule = getView().findViewById(R.id.manager_rule);
+        btn_manager_rule_save = getView().findViewById(R.id.btn_manager_rule_save);
     }
 }

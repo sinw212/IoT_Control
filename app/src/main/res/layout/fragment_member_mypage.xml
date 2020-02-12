@@ -48,6 +48,7 @@
         android:background="@drawable/line_remove"
         android:hint="   ID(학번) "
         android:inputType="textPassword" />
+
     <EditText
         android:id="@+id/member_corrently_pw"
         android:layout_width="match_parent"
@@ -56,6 +57,7 @@
         android:background="@drawable/line_remove"
         android:hint="   현재 비밀번호"
         android:inputType="textPassword" />
+
 
     <EditText
         android:id="@+id/member_new_pw"
@@ -79,7 +81,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:layout_marginRight="20sp"
         android:orientation="horizontal">
 
         <Button
