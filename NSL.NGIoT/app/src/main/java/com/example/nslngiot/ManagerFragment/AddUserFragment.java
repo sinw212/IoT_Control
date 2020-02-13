@@ -90,7 +90,7 @@ public class AddUserFragment extends Fragment {
 
     public void DataInput() {
 
-        etId = getView().findViewById(R.id.add_input_ID);
+        etId = getView().findViewById(R.id.edit_manager_ID);
         etName = getView().findViewById(R.id.edit_manager_name);
 
         ID = etId.getText().toString();
