@@ -42,7 +42,9 @@ public class KEYSTORE {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
 
+
             if(!keyStore.containsAlias(alias)){ // 지정된 별칭으로 키 미생성 시 새롭게 키 생성
+
                 // 생성할 키 알고리즘
                 keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES,"AndroidKeyStore");
                 keyGenParameterSpec = new KeyGenParameterSpec.Builder(

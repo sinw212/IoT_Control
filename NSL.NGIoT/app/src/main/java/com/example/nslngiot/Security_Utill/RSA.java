@@ -19,7 +19,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-
 public class RSA {
 
     public static String serverPublicKey=""; // 서버로부터 전달받을 서버공개키

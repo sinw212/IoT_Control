@@ -10,11 +10,9 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.SQLFilter;
 
@@ -29,22 +27,27 @@ public class SignupActivity extends AppCompatActivity {
 
     private final String pw_regex = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,}$"; // 비밀번호 정규식
     private final String e_maile_regex = "^[a-zA-Z0-9]+\\@[a-zA-Z]+\\.[a-zA-Z]+$"; // 이메일 정규식
-    private String email="";
-    private String name="";
-    private String id="";
-    private String pw="";
-    private String encryption_pw="";
+
+    private String email="",
+            name="",
+            id="",
+            pw="",
+            encryption_pw="";
 
     //sql 검증 결과 & default false
-    private boolean name_filter = false;
-    private boolean id_filter = false;
-    private boolean pw_filter = false;
-    private boolean mail_filter = false;
+    private boolean name_filter = false,
+            id_filter = false,
+            pw_filter = false,
+            mail_filter = false;
 
-    private EditText sign_pw;
-    private EditText sign_id;
-    private EditText sign_name;
-    private EditText sign_mail;
+    private EditText sign_pw,
+            sign_id,
+            sign_name,
+            sign_mail;
+
+    private Button btn_signup,
+            btn_cancle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,38 +55,33 @@ public class SignupActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        Button btn_signup = findViewById(R.id.btn_member_signup);
-        Button btn_cancle = findViewById(R.id.btn_member_cancle);
-
-        sign_pw = (EditText)findViewById(R.id.sign_pw);
-        sign_id = (EditText)findViewById(R.id.sign_id);
-        sign_name= (EditText)findViewById(R.id.sign_name);
-        sign_mail= (EditText)findViewById(R.id.sign_email);
-
-        //////////////////////////////방어 코드////////////////////////////
-        //SQL 인젝션 특수문자 공백처리 및 방어
-        name_filter= SQLFilter.sqlFilter(name);
-        id_filter = SQLFilter.sqlFilter(id);
-        pw_filter = SQLFilter.sqlFilter(pw);
-        mail_filter = SQLFilter.sqlFilter(email);
-        //////////////////////////////////////////////////////////////////
+        initView();
 
         btn_signup.setOnClickListener(new View.OnClickListener() { //회원 가입 버튼
             @Override
             public void onClick(View v) {
-
                 id =sign_id.getText().toString();
                 pw =sign_pw.getText().toString();
                 name =sign_name.getText().toString();
                 email = sign_mail.getText().toString();
+                //////////////////////////////방어 코드////////////////////////////
+                //SQL 인젝션 특수문자 공백처리 및 방어
+                name_filter= SQLFilter.sqlFilter(name);
+                id_filter = SQLFilter.sqlFilter(id);
+                pw_filter = SQLFilter.sqlFilter(pw);
+                mail_filter = SQLFilter.sqlFilter(email);
+                //////////////////////////////////////////////////////////////////
 
-                if("".equals(name) || name.length() == 0) { // 이름의 공백 입력 및 널문자 입력 시
+                if("".equals(name)) { // 이름의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "사용할 이름를 입력하세요.", Toast.LENGTH_LONG).show();
-                }else if("".equals(id) || id.length() == 0) { // 아이디(학번)의 공백 입력 및 널문자 입력 시
+                }else if("".equals(id)) { // 아이디(학번)의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "사용할 학번을 입력하세요.", Toast.LENGTH_LONG).show();
-                }else if("".equals(pw) || pw.length() == 0) { // 비밀번호의 공백 입력 및 널문자 입력 시
+                }else if("".equals(pw)) { // 비밀번호의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "사용할 비밀번호을 입력하세요.", Toast.LENGTH_LONG).show();
-                }else if(name.length()>=20 || id.length()>=20 || pw.length()>=255 || email.length()>=30){ // DB 값 오류 방지
+                }else if("".equals(email)){ // 이메일의 공백 입력 및 널문자 입력 시
+                    Toast.makeText(getApplicationContext(), "사용할 이메일을 입력하세요.", Toast.LENGTH_LONG).show();
+                }
+                else if(name.length()>=20 || id.length()>=20 || pw.length()>=255 || email.length()>=30){ // DB 값 오류 방지
                     Toast.makeText(getApplicationContext(), "Name or ID or Password or Email too Long error.", Toast.LENGTH_LONG).show();
                 } else {
                     if(pw.matches(pw_regex)) { // 비밀번호 정책에 올바른 비밀번호 입력 시
@@ -96,7 +94,7 @@ public class SignupActivity extends AppCompatActivity {
                                 joinRequest();
                             }
                         } else // 이메일을 올바르게 입력하지 않을 시
-                            Toast.makeText(getApplicationContext(), "올바른 형식의 이메일을 입력해주세요. ex) sample23@daum.net", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "올바른 형식의 이메일을 입력해주세요.\n"+ "예시) sample23@daum.net", Toast.LENGTH_LONG).show();
                     } else // 비밀번호 정책에 위배된 비밀번호 입력 시
                         Toast.makeText(getApplicationContext(), "비밀번호는 특수문자+숫자+영문자 혼합 8자이상입니다.", Toast.LENGTH_LONG).show();
                 }
@@ -110,6 +108,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
+
 
     // 회원가입 DB로 전송
     private void joinRequest() {
@@ -156,7 +155,7 @@ public class SignupActivity extends AppCompatActivity {
                 params.put("id", id);
                 params.put("pwd",encryption_pw);
                 params.put("name", name);
-                params.put("mail수욜에 협의",email);
+                params.put("mail",email);
                 params.put("type","join");
 
                 return params;
@@ -167,5 +166,14 @@ public class SignupActivity extends AppCompatActivity {
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(this.getApplicationContext()).addToRequestQueue(stringRequest);
+    }
+
+    private void initView() {
+        btn_signup = findViewById(R.id.btn_member_signup);
+        btn_cancle = findViewById(R.id.btn_member_cancle);
+        sign_pw = (EditText)findViewById(R.id.sign_pw);
+        sign_id = (EditText)findViewById(R.id.sign_id);
+        sign_name= (EditText)findViewById(R.id.sign_name);
+        sign_mail= (EditText)findViewById(R.id.sign_email);
     }
 }

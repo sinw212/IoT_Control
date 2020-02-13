@@ -1,6 +1,5 @@
 package com.example.nslngiot.ManagerFragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,18 +14,13 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.nslngiot.LoginManagerActivity;
-import com.example.nslngiot.MainManagerActivity;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +28,8 @@ import java.util.Map;
 public class RuleFragment extends Fragment {
 
     private String manager_rule_value="";
-    private EditText manager_rule = getView().findViewById(R.id.manager_rule);
-    private Button btn_manager_rule_save = getView().findViewById(R.id.btn_manager_rule_save);
+    private EditText manager_rule;
+    private Button btn_manager_rule_save;
 
     @Nullable
     @Override
@@ -46,6 +40,8 @@ public class RuleFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        initView();
 
         // 등록된 랩실 규칙 확인 진행
         manager_Rule_SelectRequest();
@@ -152,5 +148,9 @@ public class RuleFragment extends Fragment {
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
+    }
+    private void initView(){
+        manager_rule = getView().findViewById(R.id.manager_rule);
+        btn_manager_rule_save = getView().findViewById(R.id.btn_manager_rule_save);
     }
 }

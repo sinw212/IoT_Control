@@ -1,6 +1,5 @@
 package com.example.nslngiot;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -10,11 +9,9 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.SQLFilter;
 
@@ -26,14 +23,21 @@ import androidx.appcompat.app.AppCompatActivity;
 public class PasswordReissuanceActivity extends AppCompatActivity {
 
     private final String e_maile_regex = "^[a-zA-Z0-9]+\\@[a-zA-Z]+\\.[a-zA-Z]+$"; // 이메일 정규식
-    private String member_name = "";
-    private String member_id = "";
-    private String member_mail = "";
+
+    private String member_name = "",
+            member_id = "",
+            member_mail = "";
 
     //sql 검증 결과 & default false
-    private boolean name_filter = false;
-    private boolean id_filter = false;
-    private boolean mail_filter = false;
+    private boolean name_filter = false,
+            id_filter = false,
+            mail_filter = false;
+
+    private EditText re_name,
+            re_id,
+            re_mail;
+
+    private Button btn_pw_re ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,30 +46,26 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        EditText re_name = findViewById(R.id.member_re_name);
-        EditText re_id = findViewById(R.id.member_re_id);
-        final EditText re_mail = findViewById(R.id.member_re_mail);
-        Button btn_pw_re = findViewById(R.id.btn_pw_re);
-
-        //////////////////////////////방어 코드////////////////////////////
-        //SQL 인젝션 특수문자 공백처리 및 방어
-        member_name = re_name.getText().toString();
-        member_id = re_id.getText().toString();
-        member_mail = re_mail.getText().toString();
-        //////////////////////////////////////////////////////////////////
-
-        name_filter = SQLFilter.sqlFilter(member_name);
-        id_filter = SQLFilter.sqlFilter(member_id);
-        mail_filter = SQLFilter.sqlFilter(member_mail);
+        initView();
 
         btn_pw_re.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ("".equals(member_name) || member_name.length() == 0) { // 이름의 공백 입력 및 널문자 입력 시
+                member_name = re_name.getText().toString();
+                member_id = re_id.getText().toString();
+                member_mail = re_mail.getText().toString();
+                //////////////////////////////방어 코드////////////////////////////
+                //SQL 인젝션 특수문자 공백처리 및 방어
+                name_filter = SQLFilter.sqlFilter(member_name);
+                id_filter = SQLFilter.sqlFilter(member_id);
+                mail_filter = SQLFilter.sqlFilter(member_mail);
+                //////////////////////////////////////////////////////////////////
+
+                if ("".equals(member_name)) { // 이름의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "이름을 입력해 주세요.", Toast.LENGTH_SHORT).show();
-                } else if ("".equals(member_id) || member_id.length() == 0) { // 아이디(학번)의 공백 입력 및 널문자 입력 시
+                } else if ("".equals(member_id)) { // 아이디(학번)의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "학번을 입력해 주세요.", Toast.LENGTH_SHORT).show();
-                } else if ("".equals(member_mail) || member_mail.length() == 0) { // 이메일의 공백 입력 및 널문자 입력 시
+                } else if ("".equals(member_mail)) { // 이메일의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "발급받을 이메일을 입력해 주세요.", Toast.LENGTH_SHORT).show();
                 } else if (member_name.length() >= 20 || member_id.length() >= 20 || member_mail.length() >= 30) { // DB 값 오류 방지
                     Toast.makeText(getApplicationContext(), "Name or ID or Email too Long error.", Toast.LENGTH_LONG).show();
@@ -78,7 +78,7 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                             reissuanceRequest();
                     }
                     else // 이메일을 올바르게 입력하지 않을 시
-                        Toast.makeText(getApplicationContext(), "올바른 형식의 이메일을 입력해주세요. ex) sample23@daum.net", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "올바른 형식의 이메일을 입력해주세요.\n"+ "예시) sample23@daum.net", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -133,4 +133,11 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
         VolleyQueueSingleTon.getInstance(this.getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
+
+    private void initView() {
+        re_name = findViewById(R.id.member_re_name);
+        re_id = findViewById(R.id.member_re_id);
+        re_mail = findViewById(R.id.member_re_mail);
+        btn_pw_re = findViewById(R.id.btn_pw_re);
+    }
 }

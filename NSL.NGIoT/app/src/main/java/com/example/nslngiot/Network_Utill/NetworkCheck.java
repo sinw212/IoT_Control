@@ -34,15 +34,15 @@ public class NetworkCheck {
 
         if (isWifiConn)
             Toast.makeText(context, "Wi-Fi망에 접속중입니다.", Toast.LENGTH_SHORT).show();
-        else
+        else if(isMobileConn)
             Toast.makeText(context, "3G망에 접속중입니다.", Toast.LENGTH_SHORT).show();
+        else
 
 
         if (!isMobileConn && !isWifiConn) {
             /*
              * 네트워크 연결이 되지 않을경우 종료
              */
-            Toast.makeText(context, "네트워크에 연결할수 없습니다.", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

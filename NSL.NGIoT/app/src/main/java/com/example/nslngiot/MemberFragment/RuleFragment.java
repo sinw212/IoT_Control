@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class RuleFragment extends Fragment {
 
-    private TextView member_rule = getView().findViewById(R.id.member_rule);
+    private TextView member_rule;
 
     @Nullable
     @Override
@@ -43,6 +43,7 @@ public class RuleFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        member_rule = getView().findViewById(R.id.member_rule);
         // 등록된 랩실 규칙 조회
         member_Rule_SelectRequest();
     }
