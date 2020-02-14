@@ -1,7 +1,9 @@
 package com.example.nslngiot.MemberFragment;
 
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +40,7 @@ public class MypageFragment extends Fragment {
     /*===================MEMBER MY Page=================*/
 
     private final String pw_regex = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[$@$!%*#?&])[A-Za-z[0-9]$@$!%*#?&]{8,}$"; // 비밀번호 정규식
+    private SharedPreferences login_Preferences;
 
     private String member_name="",
             member_id="",
@@ -77,11 +80,11 @@ public class MypageFragment extends Fragment {
         btn_member_Modifiy.setOnClickListener(new View.OnClickListener() { // 비밀번호 변경
             @Override
             public void onClick(View view) {
-                member_name = name.getText().toString();
-                member_id = id.getText().toString();
-                member_corrently_pw= corr_pw.getText().toString();
-                member_new_pw = new_pw.getText().toString();
-                member_modify_pw = modify_pw.getText().toString();
+                member_name = name.getText().toString().trim();
+                member_id = id.getText().toString().trim();
+                member_corrently_pw= corr_pw.getText().toString().trim();
+                member_new_pw = new_pw.getText().toString().trim();
+                member_modify_pw = modify_pw.getText().toString().trim();
 
                 //////////////////////////////방어 코드////////////////////////////
                 //SQL 인젝션 특수문자 공백처리 및 방어
@@ -131,11 +134,16 @@ public class MypageFragment extends Fragment {
             }
         });
 
+        // 로그아웃 진행
         btn_member_logout.setOnClickListener(new View.OnClickListener() { // 로그아웃
             @Override
             public void onClick(View view) {
+                login_Preferences = getActivity().getSharedPreferences("AUTOLOGIN", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
+                SharedPreferences.Editor editor = login_Preferences.edit();
+                editor.clear(); // 자동 로그인 정보 삭제
+                editor.apply();
                 Intent intent = new Intent(getActivity(), MainActivity.class);
-                //추후에 쉐어드프리퍼런스 삽입예정
+                getActivity().startActivity(intent);
                 getActivity().finish();
             }
         });
@@ -144,7 +152,7 @@ public class MypageFragment extends Fragment {
     //데이터베이스로 넘김
     private void member_ModifyRequest() {
 
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
+       final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -154,8 +162,15 @@ public class MypageFragment extends Fragment {
 
                         switch (response.trim()) {
                             case "pwdChangeSuccess":
-                                Toast.makeText(getActivity(), "비밀번호가 변경되었습니다..", Toast.LENGTH_SHORT).show();
-                                //여기서 강제로그아웃을 할 것이냐 말 것이냐
+                                Toast.makeText(getActivity(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show();
+                                // 비밀번호 변경 후, 재 로그인을 위해 자동 로그인&현재 로그인상태 해제
+//                                login_Preferences = getActivity().getSharedPreferences("AUTOLOGIN", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
+//                                SharedPreferences.Editor editor = login_Preferences.edit();
+//                                editor.clear(); // 자동 로그인 정보 삭제
+//                                editor.apply();
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                getActivity().startActivity(intent);
+                                getActivity().finish();
                                 break;
                             case "pwdChangeFailed":
                                 Toast.makeText(getActivity(), "현재 비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();

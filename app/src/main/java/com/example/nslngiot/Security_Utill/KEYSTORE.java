@@ -17,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
+import java.util.Properties;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -31,32 +32,28 @@ import androidx.annotation.RequiresApi;
 
 public class KEYSTORE {
 
-    private final static String alias = "NetworkSecurity"; // KeyStore alias
-    private static KeyGenerator keyGenerator;
-    private static KeyGenParameterSpec keyGenParameterSpec;
-
+    public final static String alias = "com.example.nslngiot"; // KeyStore alias
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void keyStore_init(){
-
+        //내일 RSA 해보기, 현재 AES는 Keystore에서 대칭키를 추출할 수 없다는 내용을 봣음
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
 
-
             if(!keyStore.containsAlias(alias)){ // 지정된 별칭으로 키 미생성 시 새롭게 키 생성
-
+                System.out.println("keystore 별칭없음");
                 // 생성할 키 알고리즘
-                keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES,"AndroidKeyStore");
-                keyGenParameterSpec = new KeyGenParameterSpec.Builder(
-                        // 별칭 / key사용목적 암호화&복호화
-                        alias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                KeyGenerator generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
+
+                generator.init(new KeyGenParameterSpec.Builder (alias, // 별칭 / key사용목적 암호화&복호화
+                        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                         .setBlockModes(KeyProperties.BLOCK_MODE_CBC) // 운용할 블록모드
                         .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7) // 사용할 패딩 값
                         .setRandomizedEncryptionRequired(false) // 무작위 암호화 방지
-                        .build(); // 초기화 완료
-
-                keyGenerator.init(keyGenParameterSpec); // 키 생성 초기화
-                keyGenerator.generateKey(); // 초기화된 키 생성을 통해 비밀키 반환
+                        .build()
+                );
+                SecretKey secret = generator.generateKey();
+                System.err.println(Base64.encodeBase64String(secret.getEncoded()));
             }
 
         } catch (NoSuchAlgorithmException e) {
@@ -83,7 +80,7 @@ public class KEYSTORE {
         String key = "";
 
         try {
-            KeyStore keyStore = java.security.KeyStore.getInstance("AndroidKeyStore"); // Android KeyStore 접근
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore"); // Android KeyStore 접근
             keyStore.load(null); // 로드
             KeyStore.SecretKeyEntry secretKeyEntry =
                     (KeyStore.SecretKeyEntry) keyStore.getEntry(alias,null); // 별칭에 맞게 비밀키 접근
@@ -144,8 +141,8 @@ public class KEYSTORE {
         String key = "";
 
         try {
-            KeyStore keyStore = java.security.KeyStore.getInstance("AndroidKeyStore"); // Android KeyStore 접근
-            keyStore.load(null); // 로드
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore"); // Android KeyStore 접근
+            keyStore.load(null,null); // 로드
             KeyStore.SecretKeyEntry secretKeyEntry =
                     (KeyStore.SecretKeyEntry) keyStore.getEntry(alias,null); // 별칭에 맞게 비밀키 접근
             SecretKey secretKey = secretKeyEntry.getSecretKey(); // 비밀키 반환

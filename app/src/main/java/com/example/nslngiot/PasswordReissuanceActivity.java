@@ -1,5 +1,6 @@
 package com.example.nslngiot;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -51,9 +52,9 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
         btn_pw_re.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                member_name = re_name.getText().toString();
-                member_id = re_id.getText().toString();
-                member_mail = re_mail.getText().toString();
+                member_name = re_name.getText().toString().trim();
+                member_id = re_id.getText().toString().trim();
+                member_mail = re_mail.getText().toString().trim();
                 //////////////////////////////방어 코드////////////////////////////
                 //SQL 인젝션 특수문자 공백처리 및 방어
                 name_filter = SQLFilter.sqlFilter(member_name);
@@ -85,7 +86,7 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
     }
 
     private void reissuanceRequest() {
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/무엇");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -93,14 +94,17 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         switch (response.trim()) {
-                            case "재발급성공시":
-                                Toast.makeText(getApplicationContext(), member_mail + " 의 이메일로 임시 비밀번호 재발급 완료", Toast.LENGTH_SHORT).show();
+                            case "emailSendSuccess":
+                                Toast.makeText(getApplicationContext(), member_mail + " 의 이메일\n"+"임시 비밀번호 재발급 완료", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(),PasswordReissuanceActivity.class);
+                                startActivity(intent);
+                                finish();
                                 break;
-                            case "notMember":
-                                Toast.makeText(getApplicationContext(), "11", Toast.LENGTH_SHORT).show();
+                            case "userNotExist":
+                                Toast.makeText(getApplicationContext(), "학번/이름/메일을 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
                                 break;
                             case "error":
-                                Toast.makeText(getApplicationContext(), "11.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "서버 오류입니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                 break;
                             default: // 접속 지연 시 확인 사항
                                 Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
@@ -121,8 +125,8 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 // 회원가입 정보 push 진행
                 params.put("id", member_id);
                 params.put("name", member_name);
-                params.put("?", member_mail);
-                params.put("type", "무엇");
+                params.put("mail", member_mail);
+                params.put("type", "find");
                 return params;
             }
         };
@@ -132,7 +136,6 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(this.getApplicationContext()).addToRequestQueue(stringRequest);
     }
-
 
     private void initView() {
         re_name = findViewById(R.id.member_re_name);

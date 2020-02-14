@@ -7,15 +7,31 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AES {
+
+    public static String secretKEY="";
+
+    // AES 대칭키 생성
+    public static void aesKeyGen() throws NoSuchAlgorithmException {
+
+        KeyGenerator generator = KeyGenerator.getInstance("AES"); // 키생성에 사용할 암호 알고리즘
+        SecureRandom secureRandom = new SecureRandom(); // 안전한 난수 생성 'math random'보다 보안 강도가 높음
+        generator.init(256, secureRandom); // 충분한 키 길이 및 난수를 이용하여 키 초기화
+        Key secureKey = generator.generateKey();
+
+        secretKEY = Base64.encodeBase64String(secureKey.getEncoded()); // 대칭키 객체를 'String'으로 변환
+    }
+
 
     public static String aesEncryption(String str, String key) throws UnsupportedEncodingException,
             NoSuchPaddingException, NoSuchAlgorithmException,
