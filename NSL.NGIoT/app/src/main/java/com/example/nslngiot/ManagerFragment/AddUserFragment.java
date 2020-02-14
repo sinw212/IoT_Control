@@ -64,14 +64,16 @@ public class AddUserFragment extends Fragment {
         Button input = (Button) view.findViewById((R.id.btn_add));
         Button Delete = (Button) view.findViewById(R.id.btn_delete);
 
+        // 등록 버튼
         input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DataInput();
             }
-        });//등록 버튼
+        });
 
-        Delete.setOnClickListener((new View.OnClickListener() { // 삭제 버튼
+        // 삭제 버튼
+        Delete.setOnClickListener((new View.OnClickListener() {
             public void onClick(View view) {
                 Count = m_ua.clearSelectedItem();
             }

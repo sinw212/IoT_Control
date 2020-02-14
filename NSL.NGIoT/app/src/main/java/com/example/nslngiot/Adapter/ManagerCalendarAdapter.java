@@ -71,8 +71,8 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 View view = LayoutInflater.from(context).inflate(R.layout.dialog_manager_calendar_editbox, null, false);
                 builder.setView(view);
-                Button ButtonSubmit = view.findViewById(R.id.btn_submit);//수정 버튼 클릭
-                final EditText editTextTitle = view.findViewById(R.id.et_ID);
+                Button ButtonSubmit = view.findViewById(R.id.btn_submit); //수정 버튼 클릭
+                final EditText editTextTitle = view.findViewById(R.id.et_title);
                 final EditText editTextDetail = view.findViewById(R.id.et_detail);
 
                 editTextTitle.setText(calendardata.get(position).getTitle());
@@ -106,14 +106,15 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
                 dialog.show();
             }
         }));
+
         if (SelectedItem.get(position, false)) {
             holder.itemView.setBackgroundColor(Color.GRAY);
         } else {
             holder.itemView.setBackgroundColor(Color.WHITE);
         }
-        holder.itemView.setOnLongClickListener((new View.OnLongClickListener() {  //일 길게 클릭시 이벤트 발생
-            public boolean onLongClick(View v) {
 
+        holder.itemView.setOnLongClickListener((new View.OnLongClickListener() {  //일정 길게 클릭시 이벤트 발생
+            public boolean onLongClick(View v) {
                 toggleItemSelected(position);
                 return false;
             }
@@ -153,7 +154,7 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
         }
         SelectedItem.clear();
 
-        if (calendardata.size() > 0) {//삭제 후 아이템이 남아있을 시 실행
+        if (calendardata.size() > 0) { //삭제 후 아이템이 남아있을 시 실행
             for (int i = 0; i < calendardata.size(); i++) {//리스트 넘버링 갱신
                 cd = new ManagerCalendarData();
                 cd.setTitle(calendardata.get(i).getTitle());

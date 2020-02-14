@@ -128,6 +128,7 @@ public class LoginManagerActivity extends AppCompatActivity {
             }
         });
     }
+
     //데이터베이스로 넘김
     private void login_manager_Request() {
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
@@ -185,7 +186,6 @@ public class LoginManagerActivity extends AppCompatActivity {
         btn_manager_login = findViewById(R.id.btn_manager_login);
         login_pw = (EditText)findViewById(R.id.login_Manager_pw);
         login_id = (EditText)findViewById(R.id.login_Manager_id);
-        login_name= (EditText)findViewById(R.id.login_Manager_name);
         auto_login = (CheckBox)findViewById(R.id.cb_login_Manager_autologin);
     }
 }

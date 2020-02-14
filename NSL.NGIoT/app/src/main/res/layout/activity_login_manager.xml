@@ -19,16 +19,6 @@
         android:textStyle="bold"
         android:textSize="40dp" />
 
-
-    <EditText
-        android:id="@+id/login_Manager_name"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/line_remove"
-        android:hint="   이름 : "
-        android:inputType="textPersonName" />
-
     <EditText
         android:id="@+id/login_Manager_id"
         android:layout_width="match_parent"

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_gravity="center"
     android:paddingTop="80dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp">
@@ -42,7 +43,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/et_member_rule"
+        android:id="@+id/member_meetlog"
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:layout_marginTop="20dp"

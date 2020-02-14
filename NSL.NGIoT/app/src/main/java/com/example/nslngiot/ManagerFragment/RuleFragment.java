@@ -61,6 +61,7 @@ public class RuleFragment extends Fragment {
             }
         });
     }
+
     //규칙 등록 통신
     private void manager_Rule_SaveRequest(){
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
@@ -149,6 +150,7 @@ public class RuleFragment extends Fragment {
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
+
     private void initView(){
         manager_rule = getView().findViewById(R.id.manager_rule);
         btn_manager_rule_save = getView().findViewById(R.id.btn_manager_rule_save);

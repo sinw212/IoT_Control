@@ -44,9 +44,11 @@ public class RuleFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         member_rule = getView().findViewById(R.id.member_rule);
+
         // 등록된 랩실 규칙 조회
         member_Rule_SelectRequest();
     }
+
     // 현재 등록된 규칙 조회 통신
     private void member_Rule_SelectRequest(){
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
