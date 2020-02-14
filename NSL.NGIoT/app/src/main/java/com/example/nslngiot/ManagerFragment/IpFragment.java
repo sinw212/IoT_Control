@@ -1,10 +1,14 @@
 package com.example.nslngiot.ManagerFragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,10 +22,16 @@ import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.R;
 import com.github.chrisbanes.photoview.PhotoView;
 
+import java.io.InputStream;
+
+import static android.app.Activity.RESULT_OK;
+
 public class IpFragment extends Fragment {
 
     private RequestQueue mQueue;
     public PhotoView IPImage;
+
+
 
     @Nullable
     @Override
@@ -35,7 +45,35 @@ public class IpFragment extends Fragment {
         mQueue.add(imageRequest);
         IPImage = (PhotoView) view.findViewById(R.id.pho_IP);
 
+        Button gallery = getActivity().findViewById(R.id.btn_modify);
+        Button upload = getActivity().findViewById(R.id.btn_add);
+
+        gallery.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, 1);
+            }
+        });
+
         return view;
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+
+        if(requestCode != 1||resultCode != RESULT_OK){
+            return;
+        }
+        Uri dataUri = data.getData();
+        IPImage.setImageURI(dataUri);
+
+        try{
+            //InputStream in = getContentResolver().openInputStream(dataUri);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     com.android.volley.Response.Listener<Bitmap> responseListener = new Response.Listener<Bitmap>() {

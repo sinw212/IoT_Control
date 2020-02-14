@@ -3,33 +3,33 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
+    <TextView
         android:id="@+id/et_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="이름을 입력해주세요. "
+
         android:layout_gravity="center"
         android:inputType="text"
 
         />
 
 
-    <EditText
+    <TextView
         android:id="@+id/et_ID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="학번을 입력해주세요. "
+
         android:layout_gravity="center"
         android:inputType="text"
 
         />
 
-    <Button
-        android:id="@+id/btn_submit"
+    <TextView
+        android:id="@+id/et_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="수정" />
+        />
 
 
 
