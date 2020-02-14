@@ -7,14 +7,15 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.nslngiot.Data.ManagerAddUserData;
+import com.example.nslngiot.ManagerFragment.AddUserFragment;
 import com.example.nslngiot.R;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -23,7 +24,9 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
     private ArrayList<ManagerAddUserData> userdata;
     public Context context;
     private SparseBooleanArray SelectedItem = new SparseBooleanArray(0);
-
+    public String Name;
+    public String Id;
+    public String Email;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView numText;
@@ -72,14 +75,19 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 View view = LayoutInflater.from(context).inflate(R.layout.dialog_manager_adduser_editbox, null, false);
                 builder.setView(view);
-                Button ButtonSubmit = (Button) view.findViewById(R.id.btn_submit);//수정 버튼 클릭
-                final EditText editTextName = (EditText) view.findViewById(R.id.et_name);
-                final EditText editTextID = (EditText) view.findViewById(R.id.et_ID);
 
-                editTextID.setText(userdata.get(position).getID());
-                editTextName.setText(userdata.get(position).getName());
+                final TextView TextName = view.findViewById(R.id.et_name);
+                final TextView TextID = view.findViewById(R.id.et_ID);
+                TextView TextEmail = view.findViewById(R.id.et_email);
 
-                if (isItemSelected(position)) {
+                TextName.setText(Name);
+                TextID.setText(Id);
+                TextEmail.setText(Email);
+                /*TextID.setText(userdata.get(position).getID());
+                TextName.setText(userdata.get(position).getName());
+                */
+
+                if (isItemSelected(position)) {//색상 변경
                     holder.itemView.setBackgroundColor(Color.GRAY);
                 } else {
                     holder.itemView.setBackgroundColor(Color.WHITE);
@@ -87,24 +95,20 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
 
 
                 final AlertDialog dialog = builder.create();
-                ButtonSubmit.setOnClickListener(new View.OnClickListener() {
+                /*ButtonSubmit.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         String strID = editTextID.getText().toString();
                         String strName = editTextName.getText().toString();
                         String strNumber = userdata.get(position).getNumber();
-
-                        ManagerAddUserData ud = new ManagerAddUserData();
-
+                        UserData ud = new UserData();
                         ud.setNumber(strNumber);
                         ud.setID(strID);
                         ud.setName(strName);
-
                         userdata.set(position, ud);
-
                         notifyItemChanged(position);
                         dialog.dismiss();
                     }
-                });
+                });*/
                 dialog.show();
             }
         }));
@@ -143,12 +147,14 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
         return SelectedItem.get(position, false);
     }
 
-    public int clearSelectedItem() {
+    public void clearSelectedItem() {
         int position;
         ManagerAddUserData ud;
 
         for (int i = SelectedItem.size() - 1; i >= 0; i--) {
             position = SelectedItem.keyAt(i);
+            Name = (userdata.get(position).getName());
+            Id = (userdata.get(position).getID());
             userdata.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, userdata.size());
@@ -167,6 +173,20 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
 
             }
         }
-        return userdata.size();
     }
+
+    public void setData(String name, String id, String email) {
+        this.Name = name;
+        this.Id = id;
+        this.Email = email;
+    }
+
+    public void clear() {
+        int size =userdata.size()-1;
+        for (int i = size; i >= 0; i--) {
+            userdata.remove(i);
+        }
+        notifyDataSetChanged();
+    }
+
 }

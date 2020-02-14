@@ -19,13 +19,14 @@
         android:textStyle="bold"
         android:textSize="40dp" />
 
+
     <EditText
         android:id="@+id/login_Manager_id"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   id : (학번을 입력하세요)"
+        android:hint="   ID :"
         android:inputType="textPassword" />
 
     <EditText

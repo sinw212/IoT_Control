@@ -43,19 +43,21 @@ public class RuleFragment extends Fragment {
 
         initView();
 
-        // 등록된 랩실 규칙 확인 진행
+        // 등록된 랩실 규칙 확인
         manager_Rule_SelectRequest();
 
         btn_manager_rule_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                manager_rule_value = manager_rule.getText().toString();
+                manager_rule_value = manager_rule.getText().toString().trim();
                 //////////////////////////////방어 코드////////////////////////////
                 //XSS 특수문자 공백처리 및 방어
                 manager_rule_value = XSSFilter.xssFilter(manager_rule_value);
                 //////////////////////////////////////////////////////////////////
 
+                // 랩실 규칙 등록
                 manager_Rule_SaveRequest();
+                // 등록된 랩실 규칙 확인
                 manager_Rule_SelectRequest();
 
             }
@@ -64,7 +66,7 @@ public class RuleFragment extends Fragment {
 
     //규칙 등록 통신
     private void manager_Rule_SaveRequest(){
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -108,23 +110,25 @@ public class RuleFragment extends Fragment {
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
 
-    // 현재 등록된 규칙 조회 통신
+    // 현재 등록된 규칙 조회
     private void manager_Rule_SelectRequest(){
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        String[] resPonse_split = response.split(" ");
-                        if("ruleExist".equals(resPonse_split[1])){
-                            manager_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
-                        }else if("ruleNotExist".equals(resPonse_split[1])){
+                        if("ruleNotExist".equals(response.trim())) // 등록된 규칙이 없을 시
                             manager_rule.setText("현재 규칙이 등록되어있지 않습니다.");
-                        } else if("error".equals(resPonse_split[1])){
+                        else if("error".equals(response.trim())){ // 시스템 오류
                             manager_rule.setText("시스템 오류입니다.");
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                        }else{
+                            String[] resPonse_split = response.split(" ");
+                            if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
+                                manager_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                            }
                         }
                     }
                 },
@@ -150,7 +154,6 @@ public class RuleFragment extends Fragment {
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
-
     private void initView(){
         manager_rule = getView().findViewById(R.id.manager_rule);
         btn_manager_rule_save = getView().findViewById(R.id.btn_manager_rule_save);

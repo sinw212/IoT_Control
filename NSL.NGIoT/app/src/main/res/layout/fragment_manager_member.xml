@@ -96,7 +96,6 @@
             android:background="@drawable/roundborder"
             android:gravity="center"
             android:hint="(이름)"
-            android:inputType="text"
             android:textSize="14dp" />
 
         <EditText
@@ -104,11 +103,10 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:hint="(전화번호)"
-            android:gravity="center"
-            android:textSize="14dp"
             android:background="@drawable/roundborder"
-            android:inputType="number"/>
+            android:gravity="center"
+            android:hint="(전화번호)"
+            android:textSize="14dp" />
 
         <EditText
             android:id="@+id/member_course"
@@ -126,11 +124,10 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:hint="(소속)"
-            android:gravity="center"
-            android:textSize="14dp"
             android:background="@drawable/roundborder"
-            android:inputType = "text" />
+            android:gravity="center"
+            android:hint="(소속)"
+            android:textSize="14dp" />
     </LinearLayout>
 
     <LinearLayout

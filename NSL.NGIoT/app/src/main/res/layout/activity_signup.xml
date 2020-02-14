@@ -39,15 +39,6 @@
         android:inputType="textPassword" />
 
     <EditText
-        android:id="@+id/sign_email"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/line_remove"
-        android:hint="   E-Mail : "
-        android:inputType="textEmailAddress" />
-
-    <EditText
         android:id="@+id/sign_pw"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -55,6 +46,15 @@
         android:background="@drawable/line_remove"
         android:hint="   PW : "
         android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/sign_email"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/line_remove"
+        android:hint="   E-Mail : "
+        android:inputType="textEmailAddress" />
 
     <LinearLayout
         android:layout_width="match_parent"

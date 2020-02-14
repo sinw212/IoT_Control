@@ -9,19 +9,28 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.NetworkCheck;
-import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
+import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.codec.binary.Base64;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 
 /**     암호 로직    **/
@@ -43,6 +52,10 @@ public class SplashActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            KEYSTORE.keyStore_init(); // 최초 1회 KeyStore에 저장할 AES 대칭키 생성
+        }
+
         // 네트워크 연결 되어 있으면 진행
         if(NetworkCheck.networkCheck(SplashActivity.this)) {
             PrograssTask task = new PrograssTask();
@@ -60,7 +73,7 @@ public class SplashActivity extends Activity {
         @Override
         protected void onPreExecute(){
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setMessage("암호화 설정중입니다");
+            progressDialog.setMessage("완전한 암호화 설정중입니다");
             progressDialog.setCanceledOnTouchOutside(false); // 프로그래스 끄기 방지
             progressDialog.show();
             super.onPreExecute();
@@ -84,13 +97,68 @@ public class SplashActivity extends Activity {
             progressDialog.dismiss();
             super.onPostExecute(result);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                KEYSTORE.keyStore_init(); // 최초 1회 KeyStore에 저장할 AES 대칭키 생성
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                try {
 
-            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-            startActivity(intent);
-            finish();
-            Toast.makeText(SplashActivity.this, "암호화 설정완료", Toast.LENGTH_SHORT).show();
+                    RSA.rsaKeyGen();
+                    AES.aesKeyGen();
+                    String aesTest ="네트워크 시큐리티";
+                    String rsaTest = "네뚹";
+                    String KeyTest = "이주완";
+                    System.out.println("AES public Key:" + AES.secretKEY);
+                    System.out.println("RSA public Key:" + RSA.publicKEY); // 비밀키는 'String'형태로 반환
+                    System.out.println("RSA private Key:" +RSA.privateKEY); // 비밀키는 'String'형태로 반환
+                    System.out.println("암호테스트");
+                    aesTest = AES.aesEncryption(aesTest,AES.secretKEY);
+                    rsaTest = RSA.rsaEncryption(rsaTest,RSA.publicKEY);
+                    // KeyTest = KEYSTORE.keyStore_Encryption(KeyTest);
+                    System.out.println("암호테스트 AES: "+aesTest);
+                    System.out.println("암호테스트 RSA: "+rsaTest);
+                    // System.out.println("암호테스트 Keystore:" + KeyTest); // 비밀키는 'String'형태로 반환
+
+                    System.out.println("복호테스트");
+                    aesTest = AES.aesDecryption(aesTest,AES.secretKEY);
+                    rsaTest = RSA.rsaDecryption(rsaTest,RSA.privateKEY);
+                    //  KeyTest = KEYSTORE.keyStore_Decryption(KeyTest);
+                    System.out.println("복호테스트 AES: "+aesTest);
+                    System.out.println("복호테스트 RSA: "+rsaTest);
+                    //   System.out.println("복호테스트 Keystore: " + KeyTest); // 비밀키는 'String'형태로 반환
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(intent);
+                finish();
+                Toast.makeText(SplashActivity.this, "완전 암호화 설정완료", Toast.LENGTH_SHORT).show();
+            }else{
+                try {
+                    RSA.rsaKeyGen();
+                    AES.aesKeyGen();
+                    Toast.makeText(SplashActivity.this, "버전 부족으로 완전 암호화는 설정하지못했습니다.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

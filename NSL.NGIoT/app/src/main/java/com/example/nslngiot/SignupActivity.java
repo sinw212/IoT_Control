@@ -2,6 +2,7 @@ package com.example.nslngiot;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -60,10 +62,10 @@ public class SignupActivity extends AppCompatActivity {
         btn_signup.setOnClickListener(new View.OnClickListener() { //회원 가입 버튼
             @Override
             public void onClick(View v) {
-                id =sign_id.getText().toString();
-                pw =sign_pw.getText().toString();
-                name =sign_name.getText().toString();
-                email = sign_mail.getText().toString();
+                id =sign_id.getText().toString().trim();
+                pw =sign_pw.getText().toString().trim();
+                name =sign_name.getText().toString().trim();
+                email = sign_mail.getText().toString().trim();
                 //////////////////////////////방어 코드////////////////////////////
                 //SQL 인젝션 특수문자 공백처리 및 방어
                 name_filter= SQLFilter.sqlFilter(name);
@@ -112,7 +114,7 @@ public class SignupActivity extends AppCompatActivity {
 
     // 회원가입 DB로 전송
     private void joinRequest() {
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),

@@ -20,19 +20,29 @@ import com.example.nslngiot.R;
 import java.util.ArrayList;
 
 public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdapter.ViewHolder> {
-    private ArrayList<ManagerMemberData> memberdata= null;
+    private ArrayList<ManagerMemberData> memberdata = null;
+    public String Name;
+    public String Phone;
+    public String Detp;
+    public String Team;
+    public String b_name;
+    public String b_phone;
+    public String a_name;
+    public String a_phone;
+    public String a_detp;
+    public String a_team;
 
     public Context context;
     private SparseBooleanArray SelectedItem = new SparseBooleanArray(0);
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView numText;
         TextView nameText;
         TextView phoneText;
         TextView courseText;
         TextView groupText;
 
-        ViewHolder(View itemView){
+        ViewHolder(View itemView) {
             super(itemView);
 
             numText = itemView.findViewById(R.id.manager_member_number);
@@ -44,15 +54,15 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
     }
 
 
-    public ManagerMemberAdapter(ArrayList<ManagerMemberData> list){
+    public ManagerMemberAdapter(ArrayList<ManagerMemberData> list) {
         memberdata = list;
     }
 
 
     @Override
-    public ManagerMemberAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public ManagerMemberAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View view = inflater.inflate(R.layout.list_manager_member, parent, false);
         ManagerMemberAdapter.ViewHolder vh = new ManagerMemberAdapter.ViewHolder(view);
@@ -60,7 +70,7 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
     }
 
     @Override
-    public void onBindViewHolder(final ManagerMemberAdapter.ViewHolder holder, final int position){
+    public void onBindViewHolder(final ManagerMemberAdapter.ViewHolder holder, final int position) {
         ManagerMemberData item = memberdata.get(position);
 
         holder.numText.setText(item.getNumber());
@@ -76,11 +86,14 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 View view = LayoutInflater.from(context).inflate(R.layout.dialog_manager_member_editbox, null, false);
                 builder.setView(view);
-                Button ButtonSubmit = (Button) view.findViewById(R.id.btn_submit_member);//수정 버튼 클릭
-                final EditText editTextName = (EditText) view.findViewById(R.id.et_name);
-                final EditText editTextPhone = (EditText) view.findViewById(R.id.et_phone);
-                EditText editTextCourse = (EditText)view.findViewById(R.id.et_course);
-                EditText editTextGroup = (EditText)view.findViewById(R.id.et_group);
+                Button ButtonSubmit = view.findViewById(R.id.btn_submit_member);//수정 버튼 클릭
+
+                final EditText editTextName = view.findViewById(R.id.et_name);
+                final EditText editTextPhone = view.findViewById(R.id.et_phone);
+                EditText editTextCourse = view.findViewById(R.id.et_course);
+                EditText editTextGroup = view.findViewById(R.id.et_group);
+                b_name = editTextName.getText().toString();
+                b_phone = editTextPhone.getText().toString();
 
                 editTextPhone.setText(memberdata.get(position).getPhone());
                 editTextName.setText(memberdata.get(position).getName());
@@ -100,22 +113,13 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                     public void onClick(View v) {
                         String strPhone = editTextPhone.getText().toString();
                         String strName = editTextName.getText().toString();
-                        String strNumber = memberdata.get(position).getNumber();
                         String strCourse = memberdata.get(position).getCourse();
                         String strGroup = memberdata.get(position).getGroup();
 
-                        ManagerMemberData md = new ManagerMemberData();
-
-                        md.setNumber(strNumber);
-                        md.setPhone(strPhone);
-                        md.setName(strName);
-                        md.setGroup(strGroup);
-                        md.setCourse(strCourse);
-
-
-                        memberdata.set(position, md);
-
-                        notifyItemChanged(position);
+                        a_name = strName;
+                        a_phone = strPhone;
+                        a_detp = strCourse;
+                        a_team = strGroup;
                         dialog.dismiss();
                     }
                 });
@@ -137,7 +141,7 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
     }
 
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
         return memberdata.size();
     }
 
@@ -161,6 +165,12 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
 
         for (int i = SelectedItem.size() - 1; i >= 0; i--) {
             position = SelectedItem.keyAt(i);
+
+            Name = (memberdata.get(position).getName());
+            Phone = (memberdata.get(position).getPhone());
+            Detp = (memberdata.get(position).getCourse());
+            Team = (memberdata.get(position).getGroup());
+
             memberdata.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, memberdata.size());
@@ -178,8 +188,26 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
 
                 memberdata.set(i, md);
                 notifyItemChanged(i);
+
+
             }
         }
         return memberdata.size();
     }
+
+    public void setData(String name, String phone, String detp, String team) {
+        this.Name = name;
+        this.Phone = phone;
+        this.Detp = detp;
+        this.Team = team;
+    }
+
+    public void clear() {
+        int size =memberdata.size()-1;
+        for (int i = size; i >= 0; i--) {
+            memberdata.remove(i);
+        }
+        notifyDataSetChanged();
+    }
+
 }

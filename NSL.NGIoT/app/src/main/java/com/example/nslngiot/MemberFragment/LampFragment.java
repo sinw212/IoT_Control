@@ -98,7 +98,7 @@ public class LampFragment extends Fragment {
 //                            btn_lamp_off.setEnabled(true);
                         } else if("error".equals(response)) {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                        }
+                        } //noAndroid도 있다고 했던거 같은데 뭐였드라
                     }
                 },
                 new Response.ErrorListener() {
