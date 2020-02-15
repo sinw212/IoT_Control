@@ -10,6 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Button btn_manager,
+            btn_member,
+            btn_signup;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,15 +21,14 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        Button btn_manager = findViewById(R.id.btn_manager_login);
-        Button btn_member = findViewById(R.id.btn_member_login);
-        Button btn_signup = findViewById(R.id.btn_signup);
+        initView();
 
         btn_manager.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { //관리자 모드 눌렀을 시
+            public void onClick(View v) { // 관리자 모드 눌렀을 시
                 Intent intent = new Intent(getApplicationContext(), LoginManagerActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), LoginMemberActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -44,5 +48,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    private void initView(){
+        btn_manager = findViewById(R.id.btn_manager_login);
+        btn_member = findViewById(R.id.btn_member_login);
+        btn_signup = findViewById(R.id.btn_signup);
     }
 }

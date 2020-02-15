@@ -22,13 +22,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class CalendarFragment extends Fragment {
-    View view;
     long mNow;
     Date mDate;
-    SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 DD일");
-    ArrayList<String> items;
-    ListView listview;
-    DatePickerDialog.OnDateSetListener myDatePicker;
+    SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+    ImageButton btn_calendar;
     TextView tv_date;
 
     Calendar c;
@@ -38,13 +35,19 @@ public class CalendarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_member_calendar,container,false);
+        View v = inflater.inflate(R.layout.fragment_member_calendar,container,false);
+        return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         // 오늘 날짜 표현
-        tv_date = (TextView) view.findViewById(R.id.tv_date);
+        tv_date = getView().findViewById(R.id.tv_date);
         tv_date.setText(getTime());
 
-        ImageButton button_calendar = (ImageButton) view.findViewById(R.id.btn_calendar);
+        btn_calendar = getView().findViewById(R.id.btn_calendar);
 
         // Calendar
         //DatePicker Listener
@@ -73,7 +76,7 @@ public class CalendarFragment extends Fragment {
         nMon = c.get(Calendar.MONTH);
         nDay = c.get(Calendar.DAY_OF_MONTH);
 
-        button_calendar.setOnClickListener(new ImageButton.OnClickListener() {
+        btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -83,8 +86,6 @@ public class CalendarFragment extends Fragment {
                 oDialog.show();
             }
         });
-
-        return view;
     }
 
     public String getTime() {

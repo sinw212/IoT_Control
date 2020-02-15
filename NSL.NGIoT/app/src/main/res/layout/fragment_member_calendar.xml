@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_gravity="center"
     android:paddingTop="80dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp">
@@ -66,16 +67,15 @@
 
     </LinearLayout>
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="450dp"
-        android:layout_marginTop="15dp" />
-
-    <Button
-    android:layout_width="100dp"
-    android:layout_height="50dp"
-    android:layout_marginTop="20dp"
-    android:layout_gravity="right"
-    android:text="뒤로가기" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_member_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_marginTop="20dp"
+        android:scrollbarFadeDuration="0"
+        android:scrollbarSize="5dp"
+        android:scrollbarThumbVertical="@android:color/darker_gray"
+        android:scrollbars="vertical"
+        android:background="@drawable/border"/>
 
 </LinearLayout>

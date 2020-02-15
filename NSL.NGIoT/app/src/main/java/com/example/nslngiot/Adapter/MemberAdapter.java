@@ -46,11 +46,11 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.ViewHolder
         ViewHolder(View itemView) {
             super(itemView);
 
-            numText = itemView.findViewById(R.id.tv_member_num_list);
-            nameText = itemView.findViewById(R.id.tv_member_name_list);
-            phoneText = itemView.findViewById(R.id.tv_member_phone_list);
-            courseText = itemView.findViewById(R.id.tv_member_course_list);
-            groupText = itemView.findViewById(R.id.tv_member_group_list);
+            numText = itemView.findViewById(R.id.manager_member_number);
+            nameText = itemView.findViewById(R.id.manager_member_number);
+            phoneText = itemView.findViewById(R.id.manager_member_phone);
+            courseText = itemView.findViewById(R.id.manager_member_course);
+            groupText = itemView.findViewById(R.id.manager_member_group);
         }
     }
 
@@ -89,10 +89,10 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.ViewHolder
                 builder.setView(view);
                 Button ButtonSubmit = view.findViewById(R.id.btn_submit_member);//수정 버튼 클릭
 
-                final EditText editTextName = view.findViewById(R.id.edit_member_name);
-                final EditText editTextPhone = view.findViewById(R.id.edit_member_phone);
-                EditText editTextCourse = view.findViewById(R.id.edit_member_course);
-                EditText editTextGroup = view.findViewById(R.id.edit_member_group);
+                final EditText editTextName = view.findViewById(R.id.member_name);
+                final EditText editTextPhone = view.findViewById(R.id.member_phone);
+                EditText editTextCourse = view.findViewById(R.id.member_course);
+                EditText editTextGroup = view.findViewById(R.id.member_group);
                 b_name = editTextName.getText().toString();
                 b_phone = editTextPhone.getText().toString();
 

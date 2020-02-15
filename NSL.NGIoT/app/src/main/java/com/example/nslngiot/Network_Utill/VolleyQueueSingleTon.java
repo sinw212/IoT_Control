@@ -1,6 +1,4 @@
-package com.example.nslngiot.NetWork;
-
-
+package com.example.nslngiot.Network_Utill;
 
 import android.content.Context;
 

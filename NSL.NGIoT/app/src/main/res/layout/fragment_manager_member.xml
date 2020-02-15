@@ -2,9 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingLeft="20dp"
+    android:paddingTop="0dp"
     android:paddingRight="20dp">
 
     <TextView
@@ -19,7 +21,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         android:background="@drawable/border"
         android:orientation="horizontal">
 
@@ -70,17 +72,24 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/manager_memberlist"
+        android:id="@+id/recyclerview_manager_member"
         android:layout_width="match_parent"
-        android:layout_height="400dp" />
+        android:layout_height="350dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/border"
+        android:scrollbarFadeDuration="0"
+        android:scrollbarSize="5dp"
+        android:scrollbarThumbVertical="@android:color/darker_gray"
+        android:scrollbars="vertical" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:layout_marginTop="0dp"
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/edit_member_name"
+            android:id="@+id/member_name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -90,7 +99,7 @@
             android:textSize="14dp" />
 
         <EditText
-            android:id="@+id/edit_member_phone"
+            android:id="@+id/member_phone"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -100,17 +109,18 @@
             android:textSize="14dp" />
 
         <EditText
-            android:id="@+id/edit_member_course"
+            android:id="@+id/member_course"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/roundborder"
             android:gravity="center"
             android:hint="(과정)"
+            android:inputType="text"
             android:textSize="14dp" />
 
         <EditText
-            android:id="@+id/edit_member_group"
+            android:id="@+id/member_group"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -123,18 +133,19 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
         android:gravity="right"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_add_member"
+            android:id="@+id/btn_add"
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_marginLeft="5dp"
             android:text="등록" />
 
         <Button
-            android:id="@+id/btn_delete_member"
+            android:id="@+id/btn_delete"
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_marginLeft="5dp"

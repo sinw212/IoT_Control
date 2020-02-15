@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_gravity="center"
     android:paddingTop="80dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp">
@@ -27,7 +28,7 @@
             android:layout_weight="1"/>
 
         <ImageButton
-            android:id="@+id/button_refresh"
+            android:id="@+id/btn_refresh"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/refresh_button"
@@ -62,23 +63,29 @@
                 android:hint="사람 있음"
                 android:textSize="20sp"/>
 
-            <ImageButton
-                android:id="@+id/button_personE"
+            <LinearLayout
                 android:layout_width="150dp"
-                android:layout_height="120dp"
-                android:background="@drawable/people_exist" />
+                android:layout_height="120dp">
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+                <ImageButton
+                    android:id="@+id/btn_personE"
+                    android:layout_width="150dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/people_exist" />
 
-            <ImageButton
-                android:id="@+id/button_personNE"
-                android:layout_width="150dp"
-                android:layout_height="120dp"
-                android:background="@drawable/people_nonexist"
-                android:gravity="center" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:id="@+id/btn_personNE"
+                    android:layout_width="150dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/people_nonexist"
+                    android:gravity="center" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -104,23 +111,30 @@
                 android:hint="충분함"
                 android:textSize="20sp"/>
 
-            <ImageButton
-                android:id="@+id/button_waterE"
+            <LinearLayout
                 android:layout_width="120dp"
-                android:layout_height="130dp"
-                android:background="@drawable/water_exist" />
+                android:layout_height="130dp" >
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+                <ImageButton
+                    android:id="@+id/btn_waterE"
+                    android:layout_width="120dp"
+                    android:layout_height="130dp"
+                    android:background="@drawable/water_exist" />
 
-            <ImageButton
-                android:id="@+id/button_waterNE"
-                android:layout_width="120dp"
-                android:layout_height="130dp"
-                android:background="@drawable/water_nonexist"
-                android:gravity="center" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:id="@+id/btn_waterNE"
+                    android:layout_width="120dp"
+                    android:layout_height="130dp"
+                    android:background="@drawable/water_nonexist"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
@@ -153,23 +167,30 @@
                 android:hint="충분함"
                 android:textSize="20sp"/>
 
-            <ImageButton
-                android:id="@+id/button_coffeeE"
+            <LinearLayout
                 android:layout_width="150dp"
-                android:layout_height="120dp"
-                android:background="@drawable/coffee_exist" />
+                android:layout_height="120dp">
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+                <ImageButton
+                    android:id="@+id/btn_coffeeE"
+                    android:layout_width="150dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/coffee_exist" />
 
-            <ImageButton
-                android:id="@+id/button_coffeeNE"
-                android:layout_width="150dp"
-                android:layout_height="120dp"
-                android:background="@drawable/coffee_nonexist"
-                android:gravity="center" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:id="@+id/btn_coffeeNE"
+                    android:layout_width="150dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/coffee_nonexist"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -194,33 +215,32 @@
                 android:hint="충분함"
                 android:textSize="20sp"/>
 
-            <ImageButton
-                android:id="@+id/button_a4E"
+            <LinearLayout
                 android:layout_width="130dp"
-                android:layout_height="130dp"
-                android:background="@drawable/a4_exist" />
+                android:layout_height="130dp">
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+                <ImageButton
+                    android:id="@+id/btn_a4E"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:background="@drawable/a4_exist" />
 
-            <ImageButton
-                android:id="@+id/button_a4NE"
-                android:layout_width="130dp"
-                android:layout_height="130dp"
-                android:background="@drawable/a4_nonexist"
-                android:gravity="center" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:id="@+id/btn_a4NE"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:background="@drawable/a4_nonexist"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
-
-
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="50dp"
-        android:layout_gravity="right"
-        android:text="뒤로가기" />
 
 </LinearLayout>

@@ -2,9 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingLeft="20dp"
+    android:paddingTop="0dp"
     android:paddingRight="20dp">
 
     <LinearLayout
@@ -36,30 +38,17 @@
     </LinearLayout>
 
     <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/pho_IP"
+        android:id="@+id/pho_manager_ip"
         android:layout_width="match_parent"
-
-
-        android:layout_height="500dp"
-        android:layout_gravity="center" />
+        android:layout_height="321dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right">
-
-        <Button
-            android:id="@+id/btn_back"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:text="뒤로가기" />
-
-        <Button
-            android:id="@+id/btn_modify"
-            android:layout_width="70dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="5dp"
-            android:text="수정" />
 
         <Button
             android:id="@+id/btn_add"
@@ -69,4 +58,5 @@
             android:text="등록" />
 
     </LinearLayout>
+
 </LinearLayout>

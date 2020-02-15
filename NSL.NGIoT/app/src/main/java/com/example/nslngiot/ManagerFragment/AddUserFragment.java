@@ -1,7 +1,6 @@
 package com.example.nslngiot.ManagerFragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,29 +19,25 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.nslngiot.Adapter.UserAdapter;
-import com.example.nslngiot.Data.UserData;
-import com.example.nslngiot.NetWork.VolleyQueueSingleTon;
+import com.example.nslngiot.Adapter.ManagerAddUserAdapter;
+import com.example.nslngiot.Data.ManagerAddUserData;
+import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.Thread.sleep;
-
-
 public class AddUserFragment extends Fragment {
 
     public RecyclerView m_urv = null;
-    public UserAdapter m_ua = null;
+    public ManagerAddUserAdapter m_ua = null;
 
-    ArrayList<UserData> m_userlist = new ArrayList<>();
+    ArrayList<ManagerAddUserData> m_userlist = new ArrayList<>();
 
 
     private Button input, Delete;
@@ -66,8 +61,8 @@ public class AddUserFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_manager_adduser, container, false);
 
-        etId = view.findViewById(R.id.edit_manaager_ID);
-        etName = view.findViewById(R.id.edit_manaager_name);
+        etId = view.findViewById(R.id.edit_manager_ID);
+        etName = view.findViewById(R.id.edit_manager_name);
         input = view.findViewById((R.id.btn_add));
         Delete = view.findViewById(R.id.btn_delete);
 
@@ -110,7 +105,7 @@ public class AddUserFragment extends Fragment {
     }
 
     public void additem(String Num, String Name, String ID) {//리사이클러뷰에 리스트 추가
-        UserData item = new UserData();
+        ManagerAddUserData item = new ManagerAddUserData();
 
         item.setNumber(Num);
         item.setName(Name);
@@ -228,8 +223,8 @@ public class AddUserFragment extends Fragment {
                 additem(Integer.toString(i + 1), jname, jid);
 
             }
-            m_urv = getActivity().findViewById(R.id.list_manger_adduser);
-            m_ua = new UserAdapter(m_userlist);
+            m_urv = getActivity().findViewById(R.id.recyclerview_manager_adduser);
+            m_ua = new ManagerAddUserAdapter(m_userlist);
             m_urv.setAdapter(m_ua);
             m_urv.setLayoutManager(new LinearLayoutManager(getActivity()));
             m_ua.notifyDataSetChanged();

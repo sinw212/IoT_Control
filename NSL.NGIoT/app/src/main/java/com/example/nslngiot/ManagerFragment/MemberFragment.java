@@ -19,12 +19,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.nslngiot.Adapter.MemberAdapter;
+import com.example.nslngiot.Adapter.ManagerMemberAdapter;
 
-import com.example.nslngiot.Data.MemberData;
-import com.example.nslngiot.NetWork.VolleyQueueSingleTon;
+import com.example.nslngiot.Data.ManagerMemberData;
+import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
-import com.github.chrisbanes.photoview.PhotoView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,8 +36,8 @@ import java.util.Map;
 public class MemberFragment extends Fragment {
 
     public RecyclerView m_mrv = null;
-    public MemberAdapter m_ma = null;
-    ArrayList<MemberData> m_memberlist = new ArrayList<MemberData>();
+    public ManagerMemberAdapter m_ma = null;
+    ArrayList<ManagerMemberData> m_memberlist = new ArrayList<ManagerMemberData>();
     private String url = "http://210.125.212.191:8888/IoT/MemberState.jsp";
 
     public String Name;
@@ -62,13 +61,13 @@ public class MemberFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_manager_member, container, false);
 
-        EditName = view.findViewById(R.id.edit_member_name);
-        Editphone = view.findViewById(R.id.edit_member_phone);
-        EditCourse = view.findViewById(R.id.edit_member_course);
-        EditGroup = view.findViewById(R.id.edit_member_group);
+        EditName = view.findViewById(R.id.member_name);
+        Editphone = view.findViewById(R.id.member_phone);
+        EditCourse = view.findViewById(R.id.member_course);
+        EditGroup = view.findViewById(R.id.member_group);
 
-        input = view.findViewById((R.id.btn_add_member));
-        Delete = view.findViewById(R.id.btn_delete_member);
+        input = view.findViewById((R.id.btn_add));
+        Delete = view.findViewById(R.id.btn_delete);
 
 
         return view;
@@ -111,7 +110,7 @@ public class MemberFragment extends Fragment {
     }
 
     public void additem(String Num, String Name, String phone, String course, String group) {
-        MemberData item = new MemberData();
+        ManagerMemberData item = new ManagerMemberData();
         item.setNumber(Num);
         item.setName(Name);
         item.setPhone(phone);
@@ -247,8 +246,8 @@ public class MemberFragment extends Fragment {
                 System.out.println(jname + jphone + jdetp + jteam);
                 additem(Integer.toString(i + 1), jname, jphone, jdetp, jteam);
             }
-            m_mrv = getActivity().findViewById(R.id.manager_memberlist);
-            m_ma = new MemberAdapter(m_memberlist);
+            m_mrv = getActivity().findViewById(R.id.recyclerview_manager_member);
+            m_ma = new ManagerMemberAdapter(m_memberlist);
             m_mrv.setAdapter(m_ma);
             m_mrv.setLayoutManager(new LinearLayoutManager(getActivity()));
             m_ma.notifyDataSetChanged();

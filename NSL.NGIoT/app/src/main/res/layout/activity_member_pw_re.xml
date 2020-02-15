@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id = "@+id/container"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -21,7 +21,7 @@
 
 
     <EditText
-        android:id="@+id/et_name"
+        android:id="@+id/member_re_name"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -30,21 +30,21 @@
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/et_id"
+        android:id="@+id/member_re_id"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   id : (학번을 입력하세요)"
+        android:hint="   ID : (학번을 입력하세요)"
         android:inputType="textPassword" />
 
     <EditText
-        android:id="@+id/et_pw"
+        android:id="@+id/member_re_mail"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   PW : "
+        android:hint="   E-Mail : "
         android:inputType="textPassword" />
 
     <Button
@@ -52,6 +52,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:text="재발급" />
+        android:text="재발급 신청" />
 
 </LinearLayout>

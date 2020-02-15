@@ -16,8 +16,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.nslngiot.Adapter.MemberAdapter;
-import com.example.nslngiot.Adapter.UserAdapter;
+import com.example.nslngiot.Adapter.ManagerMemberAdapter;
 import com.example.nslngiot.R;
 
 import org.json.JSONArray;
@@ -30,7 +29,7 @@ import java.util.Map;
 public class MemberFragment extends Fragment {
 
     public RecyclerView m_mrv;
-    public MemberAdapter m_ma;
+    public ManagerMemberAdapter m_ma;
     private String url = "http://210.125.212.191:8888/IoT/MemberState.jsp";
 
     @Nullable
@@ -38,7 +37,7 @@ public class MemberFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_member_member, container, false);
-        m_mrv = getActivity().findViewById(R.id.list_manger_adduser);
+        m_mrv = getActivity().findViewById(R.id.recyclerview_member_member);
         //m_ma = new MemberAdapter(m_memberlist);
         m_mrv.setAdapter(m_ma);
         m_mrv.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -81,7 +80,7 @@ public class MemberFragment extends Fragment {
     public void listrespon(String response) {//조회 리스폰
         try {
 
-            m_mrv = getActivity().findViewById(R.id.list_manger_adduser);
+            m_mrv = getActivity().findViewById(R.id.recyclerview_member_member);
             //m_ma = new MemberAdapter(m_mlist);
             m_mrv.setAdapter(m_ma);
             m_mrv.setLayoutManager(new LinearLayoutManager(getActivity()));
