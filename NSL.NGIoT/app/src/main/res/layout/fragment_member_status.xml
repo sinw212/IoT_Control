@@ -27,7 +27,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/btn_refresh"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -60,32 +60,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
-                android:hint="사람 있음"
                 android:textSize="20sp"/>
 
-            <LinearLayout
+            <ImageView
+                android:id="@+id/imgview_person"
                 android:layout_width="150dp"
-                android:layout_height="120dp">
-
-                <ImageButton
-                    android:id="@+id/btn_personE"
-                    android:layout_width="150dp"
-                    android:layout_height="120dp"
-                    android:background="@drawable/people_exist" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <ImageButton
-                    android:id="@+id/btn_personNE"
-                    android:layout_width="150dp"
-                    android:layout_height="120dp"
-                    android:background="@drawable/people_nonexist"
-                    android:gravity="center" />
-
-            </LinearLayout>
+                android:layout_height="120dp" />
 
         </LinearLayout>
 
@@ -108,32 +88,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
-                android:hint="충분함"
                 android:textSize="20sp"/>
 
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="130dp" >
-
-                <ImageButton
-                    android:id="@+id/btn_waterE"
-                    android:layout_width="120dp"
-                    android:layout_height="130dp"
-                    android:background="@drawable/water_exist" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <ImageButton
-                    android:id="@+id/btn_waterNE"
-                    android:layout_width="120dp"
-                    android:layout_height="130dp"
-                    android:background="@drawable/water_nonexist"
-                    android:gravity="center" />
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/imgview_water"
+                android:layout_width="150dp"
+                android:layout_height="120dp" />
 
         </LinearLayout>
 
@@ -164,32 +124,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
-                android:hint="충분함"
                 android:textSize="20sp"/>
 
-            <LinearLayout
+            <ImageView
+                android:id="@+id/imgview_coffee"
                 android:layout_width="150dp"
-                android:layout_height="120dp">
-
-                <ImageButton
-                    android:id="@+id/btn_coffeeE"
-                    android:layout_width="150dp"
-                    android:layout_height="120dp"
-                    android:background="@drawable/coffee_exist" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <ImageButton
-                    android:id="@+id/btn_coffeeNE"
-                    android:layout_width="150dp"
-                    android:layout_height="120dp"
-                    android:background="@drawable/coffee_nonexist"
-                    android:gravity="center" />
-
-            </LinearLayout>
+                android:layout_height="120dp" />
 
         </LinearLayout>
 
@@ -212,32 +152,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
-                android:hint="충분함"
                 android:textSize="20sp"/>
 
-            <LinearLayout
-                android:layout_width="130dp"
-                android:layout_height="130dp">
-
-                <ImageButton
-                    android:id="@+id/btn_a4E"
-                    android:layout_width="130dp"
-                    android:layout_height="130dp"
-                    android:background="@drawable/a4_exist" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <ImageButton
-                    android:id="@+id/btn_a4NE"
-                    android:layout_width="130dp"
-                    android:layout_height="130dp"
-                    android:background="@drawable/a4_nonexist"
-                    android:gravity="center" />
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/imgview_a4"
+                android:layout_width="150dp"
+                android:layout_height="120dp" />
 
         </LinearLayout>
 

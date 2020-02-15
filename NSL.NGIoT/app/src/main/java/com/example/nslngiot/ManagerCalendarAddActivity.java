@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -32,24 +33,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ManagerCalendarAddActivity extends AppCompatActivity {
-    View view;
     long mNow;
     Date mDate;
     SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
-    DatePickerDialog.OnDateSetListener myDatePicker;
     TextView tv_date;
 
     Calendar c;
     int nYear,nMon,nDay;
     DatePickerDialog.OnDateSetListener mDateSetListener;
 
-    public RecyclerView m_crv = null;
-    public ManagerCalendarAdapter m_ca = null;
-    public int Count = 0;
-    ArrayList<ManagerCalendarData> m_calendarlist = new ArrayList<ManagerCalendarData>();
-
     private EditText manager_title;
     private EditText manager_detail;
+    private ImageButton btn_calendar;
+    private Button btn_add;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +58,10 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
         tv_date = findViewById(R.id.tv_date);
         tv_date.setText(getTime());
 
-        ImageButton btn_calendar = findViewById(R.id.btn_calendar);
-
-        Button btn_add = view.findViewById(R.id.btn_add);
+        manager_title = findViewById(R.id.manager_calendar_title);
+        manager_detail = findViewById(R.id.manager_calendar_detail);
+        btn_calendar = findViewById(R.id.btn_calendar);
+        btn_add = findViewById(R.id.btn_add);
 
         // Calendar
         //DatePicker Listener
@@ -108,7 +105,7 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                // 일정 등록
+                // 랩실 일정 등록
                 manager_Meetlog_SaveRequest();
 
                 finish(); // 이전 fragment로 이동
@@ -126,14 +123,16 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         switch (response.trim()){
-                            case "cfAdded":
-                                Toast.makeText(getApplicationContext(), "회의록을 등록하였습니다.", Toast.LENGTH_LONG).show();
+                            case "scheduleAddSuccess": // 일정 등록 성공했을 때
+                                Toast.makeText(getApplicationContext(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
                                 break;
-                            case "error":
-//                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_LONG).show();
+                            case "scheduleAlreadyEist": // 제목이 겹칠 때
+                                Toast.makeText(getApplicationContext(), "이미 존재하는 일정입니다.", Toast.LENGTH_SHORT).show();
+                            case "error": // 오류
+                                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
                                 break;
                             default: // 접속 지연 시 확인 사항
-//                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "default Error", Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }

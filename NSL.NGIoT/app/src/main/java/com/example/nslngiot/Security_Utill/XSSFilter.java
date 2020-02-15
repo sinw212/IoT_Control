@@ -14,7 +14,6 @@ public class XSSFilter {
             value = value.replaceAll("&","&#38;");
             value = value.replaceAll("#","&#35;");
             value = value.replaceAll("'","&apos;");
-            value = value.replaceAll(" ","&nbsp;");
             value = value.replaceAll("\"","&quto;");
             value = value.replace("script"," ");
             value = value.replace("iframe"," ");
