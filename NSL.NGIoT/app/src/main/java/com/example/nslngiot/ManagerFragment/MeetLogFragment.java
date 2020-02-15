@@ -192,7 +192,7 @@ public class MeetLogFragment extends Fragment {
                     public void onResponse(String response) {
                         if("error".equals(response.trim())){ //시스템 에러일때
                             manager_meetlog.setText("시스템 오류입니다.");
-                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
                             manager_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
                         }else{
@@ -200,7 +200,7 @@ public class MeetLogFragment extends Fragment {
                             if("cfExist".equals(resPonse_split[1])){
                                 manager_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
                             }else
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },

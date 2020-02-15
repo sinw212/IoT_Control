@@ -92,7 +92,7 @@ public class MemberFragment extends Fragment {
                 EditCourse.setText("");
                 EditGroup.setText("");
 
-                m_ma.clear();
+//                m_ma.clear();
                 member_manager_Request(3);
             }
 
@@ -101,7 +101,7 @@ public class MemberFragment extends Fragment {
 
         Delete.setOnClickListener((new View.OnClickListener() { // 삭제 버튼
             public void onClick(View view) {
-                m_ma.clearSelectedItem();
+//                m_ma.clearSelectedItem();
                 member_manager_Request(2);
 
             }
@@ -164,10 +164,10 @@ public class MemberFragment extends Fragment {
                         break;
 
                     case 2://삭제
-                        params.put("name", m_ma.Name);
-                        params.put("phoe", m_ma.Phone);
-                        params.put("detp", m_ma.Detp);
-                        params.put("team", m_ma.Team);
+//                        params.put("name", m_ma.Name);
+//                        params.put("phoe", m_ma.Phone);
+//                        params.put("detp", m_ma.Detp);
+//                        params.put("team", m_ma.Team);
                         params.put("type", "memDelete");
                         break;
 
@@ -175,12 +175,12 @@ public class MemberFragment extends Fragment {
                         params.put("type", "memShow");
                         break;
                     case 4://데이터 수정
-                        params.put("b_name", m_ma.b_name);
-                        params.put("b_phone", m_ma.b_phone);
-                        params.put("name", m_ma.a_name);
-                        params.put("phone", m_ma.a_phone);
-                        params.put("detp", m_ma.a_detp);
-                        params.put("team", m_ma.a_team);
+//                        params.put("b_name", m_ma.b_name);
+//                        params.put("b_phone", m_ma.b_phone);
+//                        params.put("name", m_ma.a_name);
+//                        params.put("phone", m_ma.a_phone);
+//                        params.put("detp", m_ma.a_detp);
+//                        params.put("team", m_ma.a_team);
                         params.put("type", "memModify");
                 }
 
@@ -197,16 +197,16 @@ public class MemberFragment extends Fragment {
     public void addrespon(String response) {//등록 리스폰
         switch (response) {
             case "memAleadyExist"://해당 ID가 이미 존재 시
-                Toast.makeText(getActivity(), "이미 존재하는 아이디입니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "이미 존재하는 아이디입니다.", Toast.LENGTH_SHORT).show();
                 break;
             case "memAddSuccess"://정상적으로 입력되었을시
-                Toast.makeText(getActivity(), "입력되었습니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "입력되었습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case "error"://오류
-                Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                 break;
             default:
-                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -214,16 +214,16 @@ public class MemberFragment extends Fragment {
     public void deleterespon(String response) {//삭제 리스폰
         switch (response) {
             case "memDeleted"://삭제 성공 시
-                Toast.makeText(getActivity(), "삭제되었습니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "삭제되었습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case "memNotExist"://삭제할 내용이 없을 시
-                Toast.makeText(getActivity(), "삭제 할 내용이 없습니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "삭제 할 내용이 없습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case "error"://오류
-                Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                 break;
             default:
-                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -247,7 +247,7 @@ public class MemberFragment extends Fragment {
                 additem(Integer.toString(i + 1), jname, jphone, jdetp, jteam);
             }
             m_mrv = getActivity().findViewById(R.id.recyclerview_manager_member);
-            m_ma = new ManagerMemberAdapter(m_memberlist);
+//            m_ma = new ManagerMemberAdapter(m_memberlist);
             m_mrv.setAdapter(m_ma);
             m_mrv.setLayoutManager(new LinearLayoutManager(getActivity()));
             m_ma.notifyDataSetChanged();
@@ -262,16 +262,16 @@ public class MemberFragment extends Fragment {
     public void modifyrespon(String response) {//정보 확인 리스폰
         switch (response) {
             case "memModifySuccess"://수정 성공 시
-                Toast.makeText(getActivity(), "삭제되었습니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "삭제되었습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case "memNotExist"://수정할 내용이 없을 시
-                Toast.makeText(getActivity(), "삭제 할 내용이 없습니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "삭제 할 내용이 없습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case "error"://오류
-                Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                 break;
             default:
-                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

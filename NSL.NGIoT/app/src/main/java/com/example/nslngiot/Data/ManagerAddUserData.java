@@ -1,7 +1,5 @@
 package com.example.nslngiot.Data;
 
-import java.util.ArrayList;
-
 public class ManagerAddUserData {
     private String Number;
     private String Name;

@@ -4,9 +4,12 @@ import android.content.Context;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 public class VolleyQueueSingleTon {
+
+    public static StringRequest addUserselectSingleTon; // ManagerAddUserAdapter& AdduerFragment에서 인원현황 정보 조회 공유를 위한 변수
 
     private static VolleyQueueSingleTon volleyQueueSingleTonInstance;
     private RequestQueue requestQueue;

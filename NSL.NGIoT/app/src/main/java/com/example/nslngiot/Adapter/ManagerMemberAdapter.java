@@ -1,7 +1,9 @@
 package com.example.nslngiot.Adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -10,30 +12,90 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.nslngiot.Data.ManagerAddUserData;
 import com.example.nslngiot.Data.ManagerMemberData;
 
+import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 
 import java.util.ArrayList;
 
 public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdapter.ViewHolder> {
-    private ArrayList<ManagerMemberData> memberdata = null;
-    public String Name;
-    public String Phone;
-    public String Detp;
-    public String Team;
-    public String b_name;
-    public String b_phone;
-    public String a_name;
-    public String a_phone;
-    public String a_detp;
-    public String a_team;
 
-    public Context context;
-    private SparseBooleanArray SelectedItem = new SparseBooleanArray(0);
+    private Context context;
+    private ArrayList<ManagerMemberData> memberData;
+
+
+
+    // ManagerMember어댑터에서 관리하는 아이템의 개수를 반환
+    // ManagerAddUser어댑터에서 관리하는 아이템의 개수를 반환
+    @Override
+    public int getItemCount() {
+        return memberData.size();
+    }
+
+
+    public ManagerMemberAdapter(Context context){
+        this.context = context;
+    }
+
+    @NonNull
+    @Override
+    public ManagerMemberAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+        View view =LayoutInflater.from(viewGroup.getContext()).inflate(
+                R.layout.list_manager_member,viewGroup,false); // 뷰생성
+        ManagerMemberAdapter.ViewHolder viewHolder = new ManagerMemberAdapter.ViewHolder(view);
+        return  viewHolder;
+    }
+
+    // 실제 각 뷰 홀더에 데이터를 연결해주는 함수
+    @Override
+    public  void onBindViewHolder(ManagerMemberAdapter.ViewHolder holder , final int position) {
+
+        final ManagerMemberData item = memberData.get(position); // 위치에 따른 아이템 반환
+
+        holder.numText.setText(item.getNumber());// ManagerMemberData의 getNumber값을 numtext에 삽입
+        holder.nameText.setText(item.getName());
+        holder.phoneText.setText(item.getPhone());
+        holder.courseText.setText(item.getCourse());
+        holder.groupText.setText(item.getGroup());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(context)
+                        .setCancelable(false)
+                        .setTitle(item.getName()+" "+item.getName()+"님")
+                        .setMessage(item.getCourse()+"과정의"+item.getName()+"님을 삭제/수정 하시겠습니까?\n")
+                        .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // 삭제 진행
+//                                addUser_delete_Request(item.getName(),item.getID());
+
+//                                if(VolleyQueueSingleTon.addUserselectSingleTon != null){
+//                                    // 인원 현황 정보 조회 진행
+//                                    VolleyQueueSingleTon.addUserselectSingleTon.setShouldCache(false);
+//                                    VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.addUserselectSingleTon);
+//                                }
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(context, "취소"+" "+item.getCourse()+"과정의 "+item.getName(), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                }).show();
+            } //수정? user테이블에 수정하고자하는 데이터 전송 / 삭제 누르면 삭제  취소 수정 삭제
+        });
+        //인원현황 취소 수정 삭제
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView numText;
@@ -42,172 +104,19 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
         TextView courseText;
         TextView groupText;
 
-        ViewHolder(View itemView) {
-            super(itemView);
-
+        public ViewHolder(View itemView) {
+            super(itemView); // 입력 받은 값을 뷰홀더에 삽입
             numText = itemView.findViewById(R.id.manager_member_number);
             nameText = itemView.findViewById(R.id.manager_member_name);
             phoneText = itemView.findViewById(R.id.manager_member_phone);
-            courseText = itemView.findViewById(R.id.manager_member_course);
-            groupText = itemView.findViewById(R.id.manager_member_group);
+            courseText =itemView.findViewById(R.id.manager_member_course);
+            groupText=itemView.findViewById(R.id.manager_member_group);
+
         }
     }
 
-
-    public ManagerMemberAdapter(ArrayList<ManagerMemberData> list) {
-        memberdata = list;
+    public ManagerMemberAdapter (Activity activity, ArrayList<ManagerMemberData> list) {
+        this.memberData = list; // 처리하고자하는 아이템 리스트
+        this.context = activity; // 보여지는 액티비티
     }
-
-
-    @Override
-    public ManagerMemberAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        View view = inflater.inflate(R.layout.list_manager_member, parent, false);
-        ManagerMemberAdapter.ViewHolder vh = new ManagerMemberAdapter.ViewHolder(view);
-        return vh;
-    }
-
-    @Override
-    public void onBindViewHolder(final ManagerMemberAdapter.ViewHolder holder, final int position) {
-        ManagerMemberData item = memberdata.get(position);
-
-        holder.numText.setText(item.getNumber());
-        holder.nameText.setText(item.getName());
-        holder.phoneText.setText(item.getPhone());
-        holder.courseText.setText(item.getCourse());
-        holder.groupText.setText(item.getGroup());
-
-
-        holder.itemView.setOnClickListener((new View.OnClickListener() {  //회원정보란 클릭시 수정 이벤트 발생
-            public void onClick(View v) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                View view = LayoutInflater.from(context).inflate(R.layout.dialog_manager_member_editbox, null, false);
-                builder.setView(view);
-                Button ButtonSubmit = view.findViewById(R.id.btn_submit_member);//수정 버튼 클릭
-
-                final EditText editTextName = view.findViewById(R.id.et_name);
-                final EditText editTextPhone = view.findViewById(R.id.et_phone);
-                EditText editTextCourse = view.findViewById(R.id.et_course);
-                EditText editTextGroup = view.findViewById(R.id.et_group);
-                b_name = editTextName.getText().toString();
-                b_phone = editTextPhone.getText().toString();
-
-                editTextPhone.setText(memberdata.get(position).getPhone());
-                editTextName.setText(memberdata.get(position).getName());
-                editTextCourse.setText(memberdata.get(position).getCourse());
-                editTextGroup.setText(memberdata.get(position).getGroup());
-
-
-                if (isItemSelected(position)) {
-                    holder.itemView.setBackgroundColor(Color.GRAY);
-                } else {
-                    holder.itemView.setBackgroundColor(Color.WHITE);
-                }
-
-
-                final AlertDialog dialog = builder.create();
-                ButtonSubmit.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        String strPhone = editTextPhone.getText().toString();
-                        String strName = editTextName.getText().toString();
-                        String strCourse = memberdata.get(position).getCourse();
-                        String strGroup = memberdata.get(position).getGroup();
-
-                        a_name = strName;
-                        a_phone = strPhone;
-                        a_detp = strCourse;
-                        a_team = strGroup;
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-            }
-        }));
-        if (SelectedItem.get(position, false)) {
-            holder.itemView.setBackgroundColor(Color.GRAY);
-        } else {
-            holder.itemView.setBackgroundColor(Color.WHITE);
-        }
-        holder.itemView.setOnLongClickListener((new View.OnLongClickListener() {  //회원정보란 길게 클릭시 이벤트 발생
-            public boolean onLongClick(View v) {
-
-                toggleItemSelected(position);
-                return false;
-            }
-        }));
-    }
-
-    @Override
-    public int getItemCount() {
-        return memberdata.size();
-    }
-
-    private void toggleItemSelected(int position) {
-        if (SelectedItem.get(position, false) == true) {
-            SelectedItem.delete((position));
-            notifyItemChanged(position);
-        } else {
-            SelectedItem.put(position, true);
-            notifyItemChanged(position);
-        }
-    }
-
-    private boolean isItemSelected(int position) {
-        return SelectedItem.get(position, false);
-    }
-
-    public int clearSelectedItem() {
-        int position;
-        ManagerMemberData md;
-
-        for (int i = SelectedItem.size() - 1; i >= 0; i--) {
-            position = SelectedItem.keyAt(i);
-
-            Name = (memberdata.get(position).getName());
-            Phone = (memberdata.get(position).getPhone());
-            Detp = (memberdata.get(position).getCourse());
-            Team = (memberdata.get(position).getGroup());
-
-            memberdata.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, memberdata.size());
-        }
-        SelectedItem.clear();
-
-        if (memberdata.size() > 0) {//삭제 후 아이템이 남아있을 시 실행
-            for (int i = 0; i < memberdata.size(); i++) {//리스트 넘버링 갱신
-                md = new ManagerMemberData();
-                md.setPhone(memberdata.get(i).getPhone());
-                md.setName(memberdata.get(i).getName());
-                md.setCourse(memberdata.get(i).getCourse());
-                md.setGroup(memberdata.get(i).getGroup());
-                md.setNumber(Integer.toString((i + 1)));
-
-                memberdata.set(i, md);
-                notifyItemChanged(i);
-
-
-            }
-        }
-        return memberdata.size();
-    }
-
-    public void setData(String name, String phone, String detp, String team) {
-        this.Name = name;
-        this.Phone = phone;
-        this.Detp = detp;
-        this.Team = team;
-    }
-
-    public void clear() {
-        int size =memberdata.size()-1;
-        for (int i = size; i >= 0; i--) {
-            memberdata.remove(i);
-        }
-        notifyDataSetChanged();
-    }
-
 }
