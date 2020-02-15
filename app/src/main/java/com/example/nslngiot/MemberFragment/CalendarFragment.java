@@ -22,10 +22,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class CalendarFragment extends Fragment {
-    View view;
     long mNow;
     Date mDate;
     SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+    ImageButton btn_calendar;
     TextView tv_date;
 
     Calendar c;
@@ -35,13 +35,19 @@ public class CalendarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_member_calendar,container,false);
+        View v = inflater.inflate(R.layout.fragment_member_calendar,container,false);
+        return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         // 오늘 날짜 표현
-        tv_date = view.findViewById(R.id.tv_date);
+        tv_date = getView().findViewById(R.id.tv_date);
         tv_date.setText(getTime());
 
-        ImageButton btn_calendar = view.findViewById(R.id.btn_calendar);
+        btn_calendar = getView().findViewById(R.id.btn_calendar);
 
         // Calendar
         //DatePicker Listener
@@ -80,8 +86,6 @@ public class CalendarFragment extends Fragment {
                 oDialog.show();
             }
         });
-
-        return view;
     }
 
     public String getTime() {

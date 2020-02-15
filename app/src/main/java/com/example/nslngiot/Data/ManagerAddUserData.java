@@ -1,11 +1,11 @@
 package com.example.nslngiot.Data;
 
-import java.util.ArrayList;
 
 public class ManagerAddUserData {
-    public String Number;
-    public String Name;
-    public String ID;
+
+    private String Number;
+    private String Name;
+    private String ID;
 
     public void setNumber(String number){
         this.Number = number;

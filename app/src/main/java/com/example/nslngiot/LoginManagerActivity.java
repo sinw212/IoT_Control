@@ -86,7 +86,7 @@ public class LoginManagerActivity extends AppCompatActivity {
                 }else if("".equals(pw)) { // 비밀번호의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "사용할 비밀번호을 입력하세요.", Toast.LENGTH_LONG).show();
                 }else if(!"admin915".equals(id)){ // 관리자 접근 권한 확인
-                  Toast.makeText(getApplicationContext(),"관리자ID가 아닙니다.",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"관리자ID가 아닙니다.",Toast.LENGTH_LONG).show();
                 } else{
                     // 로그인 진행 시 SQL 인젝션 검증 절차 진행
                     //////////////////////////////////////////방어 코드////////////////////////////

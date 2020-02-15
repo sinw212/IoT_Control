@@ -6,24 +6,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/et_name"
+    <EditText
+        android:id="@+id/et_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:hint="제목을 입력해주세요. "
         android:layout_gravity="center"
         android:inputType="text" />
 
-    <TextView
-        android:id="@+id/et_ID"
+    <EditText
+        android:id="@+id/et_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="내용을 입력해주세요. "
+        android:layout_gravity="center"
+        android:inputType="textMultiLine"
+        android:lines="8" />
+
+    <Button
+        android:id="@+id/btn_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:inputType="text" />
-
-    <TextView
-        android:id="@+id/et_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:text="수정" />
 
 </LinearLayout>

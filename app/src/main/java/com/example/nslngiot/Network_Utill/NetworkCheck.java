@@ -39,7 +39,6 @@ public class NetworkCheck {
         else
 
 
-
         if (!isMobileConn && !isWifiConn) {
             /*
              * 네트워크 연결이 되지 않을경우 종료

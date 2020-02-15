@@ -47,7 +47,7 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-       initView();
+        initView();
 
         btn_pw_re.setOnClickListener(new View.OnClickListener() {
             @Override

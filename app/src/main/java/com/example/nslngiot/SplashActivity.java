@@ -50,7 +50,7 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             KEYSTORE.keyStore_init(); // 최초 1회 KeyStore에 저장할 AES 대칭키 생성
@@ -111,18 +111,18 @@ public class SplashActivity extends Activity {
                     System.out.println("암호테스트");
                     aesTest = AES.aesEncryption(aesTest,AES.secretKEY);
                     rsaTest = RSA.rsaEncryption(rsaTest,RSA.publicKEY);
-                   // KeyTest = KEYSTORE.keyStore_Encryption(KeyTest);
+                    // KeyTest = KEYSTORE.keyStore_Encryption(KeyTest);
                     System.out.println("암호테스트 AES: "+aesTest);
                     System.out.println("암호테스트 RSA: "+rsaTest);
-                   // System.out.println("암호테스트 Keystore:" + KeyTest); // 비밀키는 'String'형태로 반환
+                    // System.out.println("암호테스트 Keystore:" + KeyTest); // 비밀키는 'String'형태로 반환
 
                     System.out.println("복호테스트");
                     aesTest = AES.aesDecryption(aesTest,AES.secretKEY);
                     rsaTest = RSA.rsaDecryption(rsaTest,RSA.privateKEY);
-                  //  KeyTest = KEYSTORE.keyStore_Decryption(KeyTest);
+                    //  KeyTest = KEYSTORE.keyStore_Decryption(KeyTest);
                     System.out.println("복호테스트 AES: "+aesTest);
                     System.out.println("복호테스트 RSA: "+rsaTest);
-                 //   System.out.println("복호테스트 Keystore: " + KeyTest); // 비밀키는 'String'형태로 반환
+                    //   System.out.println("복호테스트 Keystore: " + KeyTest); // 비밀키는 'String'형태로 반환
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -216,6 +216,3 @@ public class SplashActivity extends Activity {
 //            } catch (NoSuchAlgorithmException e) {
 //                System.err.println("Splash Activty NoSuchAlgorithmException error");
 //            }
-
-
-

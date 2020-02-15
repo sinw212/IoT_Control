@@ -1,172 +1,163 @@
 package com.example.nslngiot.Adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.util.SparseBooleanArray;
+import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Data.ManagerAddUserData;
+import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAdapter.ViewHolder> {
 
-    private ArrayList<ManagerAddUserData> userdata;
-    public Context context;
-    private SparseBooleanArray SelectedItem = new SparseBooleanArray(0);
+    private Context context;
+    private ArrayList<ManagerAddUserData> addUserData;
 
+    // ManagerAddUser어댑터에서 관리하는 아이템의 개수를 반환
+    @Override
+    public int getItemCount() {
+        return addUserData.size();
+    }
+
+    public ManagerAddUserAdapter(Context context){
+        this.context = context;
+    }
+
+    @NonNull
+    @Override
+    public ManagerAddUserAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+        View view =LayoutInflater.from(viewGroup.getContext()).inflate(
+                R.layout.list_manager_useradd,viewGroup,false); // 뷰생성
+        ViewHolder viewHolder = new ViewHolder(view);
+        return  viewHolder;
+    }
+
+    // 실제 각 뷰 홀더에 데이터를 연결해주는 함수
+    @Override
+    public  void onBindViewHolder(ManagerAddUserAdapter.ViewHolder holder , final int position) {
+
+        final ManagerAddUserData item = addUserData.get(position); // 위치에 따른 아이템 반환
+
+        holder.numText.setText(item.getNumber()); // ManagerAddUserData의 getNumber값을 numtext에 삽입
+        holder.nameText.setText(item.getName()); // -
+        holder.idText.setText(item.getID()); // -
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(context)
+                        .setCancelable(false)
+                        .setTitle(item.getID()+" "+item.getName()+"님")
+                        .setMessage(item.getID()+" "+item.getName()+"님을 삭제/수정 하시겠습니까?\n")
+                        .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // 삭제 진행
+                                addUser_delete_Request(item.getName(),item.getID());
+
+                                if(VolleyQueueSingleTon.addUserselectSingleTon != null){
+                                    // 인원 현황 정보 조회 진행
+                                    VolleyQueueSingleTon.addUserselectSingleTon.setShouldCache(false);
+                                    VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.addUserselectSingleTon);
+                                }
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(context, "취소"+" "+item.getID()+" "+item.getName(), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                }).show();
+            } //수정? user테이블에 수정하고자하는 데이터 전송 / 삭제 누르면 삭제  취소 수정 삭제
+        });
+        //인원현황 취소 수정 삭제
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView numText;
         TextView nameText;
         TextView idText;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-
+        public ViewHolder(View itemView) {
+            super(itemView); // 입력 받은 값을 뷰홀더에 삽입
             numText = itemView.findViewById(R.id.manager_adduser_number);
             nameText = itemView.findViewById(R.id.manager_adduser_name);
             idText = itemView.findViewById(R.id.manager_adduser_id);
-
         }
     }
 
-
-    public ManagerAddUserAdapter(ArrayList<ManagerAddUserData> list) {
-        userdata = list;
+    public ManagerAddUserAdapter (Activity activity, ArrayList<ManagerAddUserData> list) {
+        this.addUserData = list; // 처리하고자하는 아이템 리스트
+        this.context = activity; // 보여지는 액티비티
     }
 
 
-    @Override
-    public ManagerAddUserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    // 회원정보 삭제
+    public void addUser_delete_Request(final String name, final String id) {
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/User.jsp");
 
-        View view = inflater.inflate(R.layout.list_manager_useradd, parent, false);
-        ManagerAddUserAdapter.ViewHolder vh = new ManagerAddUserAdapter.ViewHolder(view);
-
-        return vh;
-    }
-
-    @Override
-    public void onBindViewHolder(final ManagerAddUserAdapter.ViewHolder holder, final int position) {
-
-        ManagerAddUserData item = userdata.get(position);
-
-        holder.numText.setText(item.getNumber());
-        holder.nameText.setText(item.getName());
-        holder.idText.setText(item.getID());
-
-        holder.itemView.setOnClickListener((new View.OnClickListener() {  //회원정보란 클릭시 수정 이벤트 발생
-            public void onClick(View v) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                View view = LayoutInflater.from(context).inflate(R.layout.dialog_manager_adduser_editbox, null, false);
-                builder.setView(view);
-                Button ButtonSubmit = (Button) view.findViewById(R.id.btn_submit);//수정 버튼 클릭
-                final EditText editTextName = (EditText) view.findViewById(R.id.et_name);
-                final EditText editTextID = (EditText) view.findViewById(R.id.et_ID);
-
-                editTextID.setText(userdata.get(position).getID());
-                editTextName.setText(userdata.get(position).getName());
-
-                if (isItemSelected(position)) {
-                    holder.itemView.setBackgroundColor(Color.GRAY);
-                } else {
-                    holder.itemView.setBackgroundColor(Color.WHITE);
-                }
-
-
-                final AlertDialog dialog = builder.create();
-                ButtonSubmit.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        String strID = editTextID.getText().toString();
-                        String strName = editTextName.getText().toString();
-                        String strNumber = userdata.get(position).getNumber();
-
-                        ManagerAddUserData ud = new ManagerAddUserData();
-
-                        ud.setNumber(strNumber);
-                        ud.setID(strID);
-                        ud.setName(strName);
-
-                        userdata.set(position, ud);
-
-                        notifyItemChanged(position);
-                        dialog.dismiss();
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST, String.valueOf(url),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        switch (response.trim()) {
+                            case "deleteAllSuccess":// 삭제했을 시
+                                Toast.makeText(context, "회원 정보 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "addUserDataNotExist":// 삭제 실패했을 시
+                                Toast.makeText(context, "회원 정보 삭제를 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "error": // 오류
+                                Toast.makeText(context, "시스템 에러", Toast.LENGTH_SHORT).show();
+                                break;
+                            default:
+                                Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
                     }
-                });
-                dialog.show();
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("name", name);
+                params.put("id", id);
+                params.put("type", "addUser_Delete");
+                return params;
             }
-        }));
-        if (SelectedItem.get(position, false)) {
-            holder.itemView.setBackgroundColor(Color.GRAY);
-        } else {
-            holder.itemView.setBackgroundColor(Color.WHITE);
-        }
-        holder.itemView.setOnLongClickListener((new View.OnLongClickListener() {  //회원정보란 길게 클릭시 이벤트 발생
-            public boolean onLongClick(View v) {
+        };
 
-                toggleItemSelected(position);
-                return false;
-            }
-        }));
-
+        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
+        // 항상 새로운 데이터를 위해 false
+        stringRequest.setShouldCache(false);
+        VolleyQueueSingleTon.getInstance(context).addToRequestQueue(stringRequest);
     }
 
-    @Override
-    public int getItemCount() {
-
-        return userdata.size();
-    }
-
-    private void toggleItemSelected(int position) {
-        if (SelectedItem.get(position, false) == true) {
-            SelectedItem.delete((position));
-            notifyItemChanged(position);
-        } else {
-            SelectedItem.put(position, true);
-            notifyItemChanged(position);
-        }
-    }
-
-    private boolean isItemSelected(int position) {
-        return SelectedItem.get(position, false);
-    }
-
-    public int clearSelectedItem() {
-        int position;
-        ManagerAddUserData ud;
-
-        for (int i = SelectedItem.size() - 1; i >= 0; i--) {
-            position = SelectedItem.keyAt(i);
-            userdata.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, userdata.size());
-        }
-        SelectedItem.clear();
-
-        if (userdata.size() > 0) {//삭제 후 아이템이 남아있을 시 실행
-            for (int i = 0; i < userdata.size(); i++) {//리스트 넘버링 갱신
-                ud = new ManagerAddUserData();
-                ud.setID(userdata.get(i).getID());
-                ud.setName(userdata.get(i).getName());
-                ud.setNumber(Integer.toString((i + 1)));
-                userdata.set(i, ud);
-                notifyItemChanged(i);
-                System.out.println(ud + "\n" + ud.toString());
-
-            }
-        }
-        return userdata.size();
-    }
 }

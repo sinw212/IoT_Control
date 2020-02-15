@@ -114,7 +114,7 @@ public class SignupActivity extends AppCompatActivity {
 
     // 회원가입 DB로 전송
     private void joinRequest() {
-       final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),

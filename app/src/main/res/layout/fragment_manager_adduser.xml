@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_gravity="center"
     android:paddingTop="80dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp">
@@ -56,57 +57,44 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_manager_adduser"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_marginTop="20dp"
-        android:scrollbarFadeDuration="0"
-        android:scrollbarSize="5dp"
-        android:scrollbarThumbVertical="@android:color/darker_gray"
-        android:scrollbars="vertical"
-        android:background="@drawable/border"/>
+        android:layout_height="450dp"
+        android:layout_marginTop="20dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/add_input_ID"
-            android:layout_width="70dp"
+            android:id="@+id/edit_manager_ID"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/roundborder"
             android:gravity="center"
-            android:textSize="12dp"
-            android:hint="(학번)"
-            android:inputType = "number" />
+            android:hint="(추가 학번 입력란)"
+            android:inputType="number"
+            android:maxLength="9"
+            android:textSize="12dp" />
 
         <EditText
             android:id="@+id/edit_manager_name"
-            android:layout_width="70dp"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/roundborder"
             android:gravity="center"
-            android:layout_marginLeft="5dp"
             android:hint="(이름)"
-            android:textSize="12dp"
-            android:maxLength="4" />
+            android:maxLength="4"
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/btn_add"
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_marginLeft="5dp"
-            android:text="등록"/>
-
-        <Button
-            android:id="@+id/btn_delete"
-            android:layout_width="70dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="5dp"
-            android:text="삭제"/>
+            android:text="등록" />
 
     </LinearLayout>
-
 </LinearLayout>

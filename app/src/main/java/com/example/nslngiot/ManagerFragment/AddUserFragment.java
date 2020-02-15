@@ -1,13 +1,12 @@
 package com.example.nslngiot.ManagerFragment;
 
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,118 +21,171 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Adapter.ManagerAddUserAdapter;
 import com.example.nslngiot.Data.ManagerAddUserData;
+import com.example.nslngiot.MainManagerActivity;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class AddUserFragment extends Fragment {
 
-    public RecyclerView m_urv = null;
-    public ManagerAddUserAdapter m_ua = null;
-    public int Count = 0;
-    ArrayList<ManagerAddUserData> m_userlist = new ArrayList<ManagerAddUserData>();
+    private RecyclerView recyclerView = null;
+    private LinearLayoutManager layoutManager = null;
+    private ManagerAddUserAdapter managerAddUserAdapter = null;
+    private ArrayList<ManagerAddUserData> arrayList;
 
-    private EditText etName;
-    private EditText etId;
+    private Button input;
+    private EditText etName,etId;
     private String url = "http://210.125.212.191:8888/IoT/User.jsp";
-    public String ID;
-    public String Name;
+    public String ID,Name;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_manager_adduser, container, false);
-
-
-        m_urv = view.findViewById(R.id.recyclerview_manager_adduser);
-        m_ua = new ManagerAddUserAdapter(m_userlist);
-        m_urv.setAdapter(m_ua);
-        m_urv.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-
-        Button input = (Button) view.findViewById((R.id.btn_add));
-        Button Delete = (Button) view.findViewById(R.id.btn_delete);
-
-        input.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DataInput();
-            }
-        });//등록 버튼
-
-        Delete.setOnClickListener((new View.OnClickListener() { // 삭제 버튼
-            public void onClick(View view) {
-                Count = m_ua.clearSelectedItem();
-            }
-        }));
         return view;
     }
 
-    public void additem(String Num, String Name, String ID) {
-        ManagerAddUserData item = new ManagerAddUserData();
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        item.setNumber(Num);
-        item.setName(Name);
-        item.setID(ID);
-        m_userlist.add(item);
-    }
-
-    public void DataInput() {
-
-        etId = getView().findViewById(R.id.add_input_ID);
+        etId = getView().findViewById(R.id.edit_manager_ID);
         etName = getView().findViewById(R.id.edit_manager_name);
+        input = getView().findViewById((R.id.btn_add));
+        recyclerView  = (RecyclerView)getView().findViewById(R.id.recyclerview_manager_adduser);
 
-        ID = etId.getText().toString();
-        Name = etName.getText().toString();
 
-        Count++;// Json 데이터 길이로 넘버링
-        additem(Integer.toString(Count), String.valueOf(etName.getText()), String.valueOf(etId.getText()));
-        m_ua.notifyDataSetChanged();
-        add_manager_Request();
-        etId.setText(" ");
-        etName.setText(" ");
+        // 조회 시작
+        addUser_select_Request();
+
+        // 등록 버튼
+        input.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ID = etId.getText().toString().trim();
+                Name = etName.getText().toString().trim();
+
+                if("".equals(Name) || "".equals(ID)){
+                    Toast.makeText(getActivity(), "올바른 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }else{
+                    addUser_Added_Request(); // 회원 정보 등록
+
+                    etId.setText("");
+                    etName.setText("");
+                    addUser_select_Request(); // 변경된 회원 정보 조회
+                }
+            }
+        });
+
+
     }
 
+    // 회원정보 조회
+    private void addUser_select_Request() {
+        VolleyQueueSingleTon.addUserselectSingleTon = new StringRequest(
+                Request.Method.POST, String.valueOf(url),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            layoutManager = new LinearLayoutManager(getActivity());
+                            recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
+                            recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
+                            // 기존 데이터와 겹치지 않기 위해생성자를 매번 새롭게 생성
+                            arrayList = new ArrayList<ManagerAddUserData>();
 
-    public void add_manager_Request() {
-
-
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                System.out.println("리스폰스444 : " + response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("에러333 : " + error);
-            }
-        }
+                            JSONArray jarray = new JSONArray(response);
+                            int size = jarray.length();
+                            for (int i = 0; i < size; i++) {
+                                JSONObject row = jarray.getJSONObject(i);
+                                ManagerAddUserData managerAddUserData = new ManagerAddUserData();
+                                managerAddUserData.setID(row.getString("id"));
+                                managerAddUserData.setName(row.getString("name"));
+                                managerAddUserData.setNumber(String.valueOf(i+1));
+                                arrayList.add(managerAddUserData);
+                            }
+                            // 어댑터에 add한 다량의 데이터 할당
+                            managerAddUserAdapter = new ManagerAddUserAdapter(getActivity(),arrayList);
+                            // 리사이클러뷰에 어답타 연결
+                            recyclerView .setAdapter(managerAddUserAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
         ) {
+            @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-
-                params.put("name", Name);
-                params.put("id", ID);
-                params.put("type", "addUser_Add");
-
-
+                params.put("type", "addUser_List");
                 return params;
             }
         };
 
+        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
+        // 항상 새로운 데이터를 위해 false
+        VolleyQueueSingleTon.addUserselectSingleTon.setShouldCache(false);
+        VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(VolleyQueueSingleTon.addUserselectSingleTon);
+    }
 
+
+    // 회원 정보 삽입
+    private void addUser_Added_Request() {
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST, String.valueOf(url),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        switch (response) {
+                            case "IDAleadyExist"://해당 ID가 이미 존재 시
+                                Toast.makeText(getActivity(), "이미 존재하는 아이디입니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "addUser_addSuccess"://정상적으로 입력되었을시
+                                Toast.makeText(getActivity(), "입력되었습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "error"://오류
+                                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                                break;
+                            default:
+                                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("name", Name);
+                params.put("id", ID);
+                params.put("type", "addUser_Add");
+                return params;
+            }
+        };
+
+        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
+        // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }

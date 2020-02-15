@@ -1,6 +1,5 @@
 package com.example.nslngiot.MemberFragment;
 
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -152,7 +151,7 @@ public class MypageFragment extends Fragment {
     //데이터베이스로 넘김
     private void member_ModifyRequest() {
 
-       final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
