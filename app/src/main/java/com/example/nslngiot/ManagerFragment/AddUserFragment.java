@@ -21,7 +21,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Adapter.ManagerAddUserAdapter;
 import com.example.nslngiot.Data.ManagerAddUserData;
-import com.example.nslngiot.MainManagerActivity;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 
@@ -39,24 +38,27 @@ public class AddUserFragment extends Fragment {
     private LinearLayoutManager layoutManager = null;
     private ManagerAddUserAdapter managerAddUserAdapter = null;
     private ArrayList<ManagerAddUserData> arrayList;
+    private ManagerAddUserData managerAddUserData;
 
     private Button input;
     private EditText etName,etId;
     private String url = "http://210.125.212.191:8888/IoT/User.jsp";
-    public String ID,Name;
+    private String ID,Name;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_manager_adduser, container, false);
+
         return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        ID="";
+        Name = "";
         etId = getView().findViewById(R.id.edit_manager_ID);
         etName = getView().findViewById(R.id.edit_manager_name);
         input = getView().findViewById((R.id.btn_add));
@@ -66,7 +68,7 @@ public class AddUserFragment extends Fragment {
         // 조회 시작
         addUser_select_Request();
 
-        // 등록 버튼
+        // 신규 인원 등록 (등록을 해야 회원 가입이 가능)
         input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,11 +79,21 @@ public class AddUserFragment extends Fragment {
                 if("".equals(Name) || "".equals(ID)){
                     Toast.makeText(getActivity(), "올바른 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 }else{
-                    addUser_Added_Request(); // 회원 정보 등록
-
                     etId.setText("");
                     etName.setText("");
-                    addUser_select_Request(); // 변경된 회원 정보 조회
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                addUser_Added_Request(); // 회원 정보 등록
+                                Thread.sleep(100); // 0.1 초 슬립
+                                addUser_select_Request(); // 변경된 회원 정보 조회
+                            } catch (InterruptedException e) {
+                                System.err.println("AddUserFragment InterruptedException error");
+                            }
+                        }
+                    }).start();
+
                 }
             }
         });
@@ -91,8 +103,8 @@ public class AddUserFragment extends Fragment {
 
     // 회원정보 조회
     private void addUser_select_Request() {
-        VolleyQueueSingleTon.addUserselectSingleTon = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+        VolleyQueueSingleTon.addUser_selectSharing = new StringRequest(
+                Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -107,7 +119,7 @@ public class AddUserFragment extends Fragment {
                             int size = jarray.length();
                             for (int i = 0; i < size; i++) {
                                 JSONObject row = jarray.getJSONObject(i);
-                                ManagerAddUserData managerAddUserData = new ManagerAddUserData();
+                                managerAddUserData = new ManagerAddUserData();
                                 managerAddUserData.setID(row.getString("id"));
                                 managerAddUserData.setName(row.getString("name"));
                                 managerAddUserData.setNumber(String.valueOf(i+1));
@@ -139,15 +151,15 @@ public class AddUserFragment extends Fragment {
 
         // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
         // 항상 새로운 데이터를 위해 false
-        VolleyQueueSingleTon.addUserselectSingleTon.setShouldCache(false);
-        VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(VolleyQueueSingleTon.addUserselectSingleTon);
+        VolleyQueueSingleTon.addUser_selectSharing.setShouldCache(false);
+        VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(VolleyQueueSingleTon.addUser_selectSharing);
     }
 
 
     // 회원 정보 삽입
     private void addUser_Added_Request() {
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+                Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

@@ -75,13 +75,13 @@ public class RuleFragment extends Fragment {
                     public void onResponse(String response) {
                         switch (response.trim()){
                             case "ruleAdded":
-                                Toast.makeText(getActivity(), "규칙을 등록하였습니다.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "규칙을 등록하였습니다.", Toast.LENGTH_SHORT).show();
                                 break;
                             case "error":
-                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_SHORT).show();
                                 break;
                             default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }
@@ -125,7 +125,7 @@ public class RuleFragment extends Fragment {
                             manager_rule.setText("시스템 오류입니다.");
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }else{
-                            String[] resPonse_split = response.split(" ");
+                            String[] resPonse_split = response.split("-");
                             if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
                                 manager_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
                             }

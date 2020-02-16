@@ -63,7 +63,7 @@ public class RuleFragment extends Fragment {
                             member_rule.setText("시스템 오류입니다.");
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }else{
-                            String[] resPonse_split = response.split(" ");
+                            String[] resPonse_split = response.split("-");
                             if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
                                 member_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
                             }

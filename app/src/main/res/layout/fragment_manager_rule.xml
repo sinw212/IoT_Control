@@ -26,6 +26,7 @@
         android:layout_marginBottom="20dp"
         android:background="@android:drawable/edit_text"
         android:gravity="top"
+        android:selectAllOnFocus="true"
         android:hint="(랩실 규칙을 작성해주세요.)"
         android:inputType="textMultiLine"
         android:lines="8"

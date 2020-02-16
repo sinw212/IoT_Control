@@ -1,5 +1,6 @@
 package com.example.nslngiot.MemberFragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +32,8 @@ import java.util.Map;
 
 public class LampFragment extends Fragment {
     Button btn_refresh, btn_lamp_on, btn_lamp_off;
+    TextView lamp_state;
+    LinearLayout lamp_on_state, lamp_off_state;
 
     @Nullable
     @Override
@@ -45,6 +50,9 @@ public class LampFragment extends Fragment {
         btn_refresh = getView().findViewById(R.id.btn_refresh);
         btn_lamp_on = getView().findViewById(R.id.btn_lamp_on);
         btn_lamp_off = getView().findViewById(R.id.btn_lamp_off);
+        lamp_state = getView().findViewById(R.id.lamp_state);
+        lamp_on_state = getView().findViewById(R.id.lamp_on_state);
+        lamp_off_state = getView().findViewById(R.id.lamp_off_state);
 
         member_Lamp_SelectRequest();
 
@@ -86,16 +94,18 @@ public class LampFragment extends Fragment {
                         Log.d("전등",response);
                         if("on".equals(response.trim())) {
                             //불 켜져 있을 때
-                            btn_lamp_on.setVisibility(View.VISIBLE);
-                            btn_lamp_off.setVisibility(View.INVISIBLE);
-//                            btn_lamp_on.setEnabled(true);
-//                            btn_lamp_off.setEnabled(false);
+                            lamp_state.setText("현재 상태 : ON");
+                            btn_lamp_on.setEnabled(false);
+                            btn_lamp_off.setEnabled(true);
+                            lamp_on_state.setBackgroundColor(Color.GRAY);
+                            lamp_off_state.setBackgroundColor(Color.WHITE);
                         } else if("off".equals(response.trim())) {
                             //불 꺼져 있을 때
-                            btn_lamp_on.setVisibility(View.INVISIBLE);
-                            btn_lamp_off.setVisibility(View.VISIBLE);
-//                            btn_lamp_on.setEnabled(false);
-//                            btn_lamp_off.setEnabled(true);
+                            lamp_state.setText("현재상태 : OFF");
+                            btn_lamp_on.setEnabled(true);
+                            btn_lamp_off.setEnabled(false);
+                            lamp_off_state.setBackgroundColor(Color.GRAY);
+                            lamp_on_state.setBackgroundColor(Color.WHITE);
                         } else if("error".equals(response)) {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         } //noAndroid도 있다고 했던거 같은데 뭐였드라

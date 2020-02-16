@@ -1,53 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="20dp"
+    android:layout_height="wrap_content"
     android:gravity="center"
-    android:background="@drawable/border2" >
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/manager_member_number"
-        android:layout_width="20dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView"
-        android:textSize="14dp"
-        android:gravity="center" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView_manager_member"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:layout_marginTop="10dp"
+        card_view:cardElevation="20dp"
+        card_view:cardCornerRadius="30dp">
 
-    <TextView
-        android:id="@+id/manager_member_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView"
-        android:textSize="14dp"
-        android:gravity="center" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/cardview_shadow_end_color">
 
-    <TextView
-        android:id="@+id/manager_member_phone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView"
-        android:textSize="14dp"
-        android:gravity="center" />
+            <TextView
+                android:id="@+id/manager_member_number"
+                android:layout_marginTop="7dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="넘버"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="15sp" />
 
-    <TextView
-        android:id="@+id/manager_member_course"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView"
-        android:textSize="14dp"
-        android:gravity="center" />
+            <TextView
+                android:id="@+id/manager_member_name"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginTop="7dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="이름"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="15sp" />
 
-    <TextView
-        android:id="@+id/manager_member_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView"
-        android:textSize="14dp"
-        android:gravity="center" />
+            <TextView
+                android:id="@+id/manager_member_phone"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginTop="7dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="전화번호"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/manager_member_course"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginTop="7dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="과정"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/manager_member_group"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginTop="7dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="소속"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="8sp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

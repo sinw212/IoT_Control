@@ -40,7 +40,7 @@ public class IpFragment extends Fragment {
         mQueue.add(imageRequest);
         IPImage = (PhotoView) view.findViewById(R.id.pho_manager_ip);
 
-        Button gallery = getActivity().findViewById(R.id.btn_modify);
+        Button gallery = getActivity().findViewById(R.id.btn_picture);
         Button upload = getActivity().findViewById(R.id.btn_add);
 
         gallery.setOnClickListener(new View.OnClickListener() {

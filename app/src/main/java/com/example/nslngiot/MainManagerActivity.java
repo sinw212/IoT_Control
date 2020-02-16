@@ -3,11 +3,13 @@ package com.example.nslngiot;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -26,6 +28,7 @@ import com.google.android.material.navigation.NavigationView;
 public class MainManagerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private long backKeyClickTime = 0;
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private NavigationView navigationView;
@@ -52,39 +55,39 @@ public class MainManagerActivity extends AppCompatActivity
         switch(item.getItemId()) {
             case R.id.nav_add_user:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new AddUserFragment()).commit();
+                        new AddUserFragment()).addToBackStack(null).commit();
                 break;
             case R.id.nav_calendar:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new CalendarFragment()).commit();
+                        new CalendarFragment()).addToBackStack(null).commit();
                 break;
             case R.id.nav_meet_log:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new MeetLogFragment()).commit();
+                        new MeetLogFragment()).addToBackStack(null).commit();
                 break;
             case R.id.nav_member:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new MemberFragment()).commit();
+                        new MemberFragment()).addToBackStack(null).commit();
                 break;
             case R.id.nav_organization:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new OrganizationFragment()).commit();
+                        new OrganizationFragment()).addToBackStack(null).commit();
                 break;
             case R.id.nav_structure:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new StructureFragment()).commit();
+                        new StructureFragment()).addToBackStack(null).commit();
                 break;
             case R.id.nav_ip:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new IpFragment()).commit();
+                        new IpFragment()).addToBackStack(null).commit();
                 break;
             case R.id.nav_rule:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new RuleFragment()).commit();
+                        new RuleFragment()).addToBackStack(null).commit();
                 break;
             case R.id.nav_mypage:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new MypageFragment()).commit();
+                        new MypageFragment()).addToBackStack(null).commit();
                 break;
         }
 
@@ -94,12 +97,21 @@ public class MainManagerActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if(drawer.isDrawerOpen(GravityCompat.START)) {
+
+        if(getSupportFragmentManager().getBackStackEntryCount() > 0)
+            getSupportFragmentManager().popBackStack();
+        else{ // 더이상 스택에 프래그먼트가 없을 시 액티비티에서 앱 종료 여부 결정
+            if(System.currentTimeMillis() > backKeyClickTime + 2000){ // 1회 누를 시 Toast
+                backKeyClickTime = System.currentTimeMillis();
+                Toast.makeText(getApplicationContext(),"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if(System.currentTimeMillis() <= backKeyClickTime + 2000){ // 연속 2회 누를 시 activty shutdown
+                ActivityCompat.finishAffinity(this);
+            }
+        }
+        if(drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
-        }
-        else {
-            super.onBackPressed();
-        }
     }
 
     private void initView(){

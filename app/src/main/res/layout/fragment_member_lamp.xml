@@ -23,65 +23,86 @@
             android:textStyle="bold" />
 
         <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btn_refresh"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/refresh_button"
-            android:gravity="center" />
+            android:layout_gravity="right"
+            android:background="@drawable/refresh_button" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/lamp_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center"
+        android:textSize="30sp"
+        android:textColor="@android:color/black" >
+
+    </TextView>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="170dp"
+        android:layout_marginTop="50dp"
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/lamp_on_state"
             android:layout_width="150dp"
-            android:layout_height="200dp"
+            android:layout_height="210dp"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ON"
-                android:textSize="30sp" />
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="불 켜기"
+                android:layout_gravity="center"
+                android:textSize="25sp"
+                android:textColor="@android:color/black" />
 
             <Button
                 android:id="@+id/btn_lamp_on"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/lamp_on"
-                android:gravity="center" />
+                android:gravity="center"
+                android:enabled="false" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lamp_off_state"
             android:layout_width="150dp"
-            android:layout_height="200dp"
+            android:layout_height="210dp"
             android:layout_marginLeft="30dp"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="OFF"
-                android:textSize="30sp" />
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="불 끄기"
+                android:layout_gravity="center"
+                android:textSize="25sp"
+                android:textColor="@android:color/black" />
 
             <Button
                 android:id="@+id/btn_lamp_off"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/lamp_off"
-                android:gravity="center" />
+                android:gravity="center"
+                android:enabled="false"/>
         </LinearLayout>
-
     </LinearLayout>
-
 </LinearLayout>
