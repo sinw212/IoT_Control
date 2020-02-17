@@ -31,7 +31,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="No."
-            android:textSize="25dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="이름"
-            android:textSize="25dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
@@ -49,16 +49,16 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="ID(학번)"
-            android:textSize="25dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
-
     </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_manager_adduser"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="15dp"
+        android:layout_height="450dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -95,6 +95,5 @@
             android:layout_height="50dp"
             android:layout_marginLeft="5dp"
             android:text="등록" />
-
     </LinearLayout>
 </LinearLayout>

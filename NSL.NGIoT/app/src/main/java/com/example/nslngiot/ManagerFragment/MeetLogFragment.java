@@ -38,13 +38,12 @@ public class MeetLogFragment extends Fragment {
     long mNow;
     Date mDate;
     SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+
     TextView tv_date;
     ImageButton btn_calendar;
-
-    private String manager_meetlog_value="";
+    private String Date, Meetlog;
     private EditText manager_meetlog;
     private Button btn_manager_meetlog_add;
-    private String meetlog_date="";
 
     Calendar c;
     int nYear,nMon,nDay;
@@ -61,15 +60,15 @@ public class MeetLogFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        InitView();
+        Date = "";
+        Meetlog = "";
         tv_date = getView().findViewById(R.id.tv_date);
         btn_calendar = getView().findViewById(R.id.btn_calendar);
+        manager_meetlog = getView().findViewById(R.id.manager_meetlog);
+        btn_manager_meetlog_add = getView().findViewById(R.id.btn_manager_meetlog_add);
 
         // 오늘 날짜 표현
         tv_date.setText(getTime());
-
-        meetlog_date = tv_date.getText().toString().trim();
-
 
         // 등록된 회의록 조회
         manager_Meetlog_SelectRequest();
@@ -108,8 +107,6 @@ public class MeetLogFragment extends Fragment {
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
 
-                meetlog_date = tv_date.getText().toString().trim();
-
                 // 등록된 회의록 조회
                 manager_Meetlog_SelectRequest();
 
@@ -120,14 +117,11 @@ public class MeetLogFragment extends Fragment {
         btn_manager_meetlog_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                manager_meetlog_value = manager_meetlog.getText().toString().trim();
+                Meetlog = manager_meetlog.getText().toString().trim();
                 //////////////////////////////방어 코드////////////////////////////
                 //XSS 특수문자 공백처리 및 방어
-                manager_meetlog_value = XSSFilter.xssFilter(manager_meetlog_value);
+                Meetlog = XSSFilter.xssFilter(Meetlog);
                 //////////////////////////////////////////////////////////////////
-
-                Log.d("제발", meetlog_date);
-                Log.d("제발", manager_meetlog_value);
 
                 manager_Meetlog_SaveRequest();
                 manager_Meetlog_SelectRequest();
@@ -143,6 +137,7 @@ public class MeetLogFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
                         switch (response.trim()){
                             case "cfAdded":
                                 Toast.makeText(getActivity(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
@@ -167,8 +162,8 @@ public class MeetLogFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", meetlog_date);
-                params.put("text", manager_meetlog_value);
+                params.put("date", Date);
+                params.put("text", Meetlog);
                 params.put("type","cfAdd");
 
                 return params;
@@ -215,7 +210,7 @@ public class MeetLogFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", meetlog_date);
+                params.put("date", Date);
                 params.put("type","cfShow");
 
                 return params;
@@ -226,11 +221,6 @@ public class MeetLogFragment extends Fragment {
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
-    }
-
-    private void InitView() {
-        manager_meetlog = getView().findViewById(R.id.manager_meetlog);
-        btn_manager_meetlog_add = getView().findViewById(R.id.btn_manager_meetlog_add);
     }
 
     public String getTime() {

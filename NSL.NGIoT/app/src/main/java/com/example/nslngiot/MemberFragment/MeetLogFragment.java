@@ -36,10 +36,10 @@ public class MeetLogFragment extends Fragment {
     long mNow;
     Date mDate;
     SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
-    TextView tv_date;
-    TextView member_meetlog;
-    ImageButton btn_calendar;
-    private String meetlog_date="";
+    private TextView tv_date;
+    private TextView member_meetlog;
+    private ImageButton btn_calendar;
+    private String Date;
 
     Calendar c;
     int nYear,nMon,nDay;
@@ -56,14 +56,13 @@ public class MeetLogFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Date = "";
         tv_date = getView().findViewById(R.id.tv_date);
         btn_calendar = getView().findViewById(R.id.btn_calendar);
         member_meetlog = getView().findViewById(R.id.member_meetlog);
 
         // 오늘 날짜 표현
         tv_date.setText(getTime());
-
-        meetlog_date = tv_date.getText().toString();
 
         // 등록된 회의록 조회
         member_Meetlog_SelectRequest();
@@ -105,13 +104,9 @@ public class MeetLogFragment extends Fragment {
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
 
-
-                meetlog_date = tv_date.getText().toString();
-
                 // 등록된 회의록 조회
                 member_Meetlog_SelectRequest();
 
-                Log.d("얼른111",meetlog_date);
                 oDialog.show();
 
             }
@@ -128,8 +123,9 @@ public class MeetLogFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("얼른333",response);
-                        member_meetlog.setText("");
+
+                        Date = tv_date.getText().toString().trim();
+
                         if("error".equals(response.trim())){ //시스템 에러일때
                             member_meetlog.setText("시스템 오류입니다.");
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
@@ -155,7 +151,7 @@ public class MeetLogFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", meetlog_date);
+                params.put("date", Date);
                 params.put("type","cfShow");
                 return params;
             }

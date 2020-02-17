@@ -72,7 +72,7 @@ public class SplashActivity extends Activity {
 
         @Override
         protected void onPreExecute(){
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setMessage("완전한 암호화 설정중입니다");
             progressDialog.setCanceledOnTouchOutside(false); // 프로그래스 끄기 방지
             progressDialog.show();
@@ -110,17 +110,16 @@ public class SplashActivity extends Activity {
                     System.out.println("RSA private Key:" +RSA.privateKEY); // 비밀키는 'String'형태로 반환
                     System.out.println("암호테스트");
                     aesTest = AES.aesEncryption(aesTest,AES.secretKEY);
+                    System.out.println("암호테스트 AES: "+aesTest);
                     rsaTest = RSA.rsaEncryption(rsaTest,RSA.publicKEY);
                     // KeyTest = KEYSTORE.keyStore_Encryption(KeyTest);
-                    System.out.println("암호테스트 AES: "+aesTest);
                     System.out.println("암호테스트 RSA: "+rsaTest);
                     // System.out.println("암호테스트 Keystore:" + KeyTest); // 비밀키는 'String'형태로 반환
-
                     System.out.println("복호테스트");
-                    aesTest = AES.aesDecryption(aesTest,AES.secretKEY);
-                    rsaTest = RSA.rsaDecryption(rsaTest,RSA.privateKEY);
                     //  KeyTest = KEYSTORE.keyStore_Decryption(KeyTest);
+                    aesTest = AES.aesDecryption(aesTest,AES.secretKEY);
                     System.out.println("복호테스트 AES: "+aesTest);
+                    rsaTest = RSA.rsaDecryption(rsaTest,RSA.privateKEY);
                     System.out.println("복호테스트 RSA: "+rsaTest);
                     //   System.out.println("복호테스트 Keystore: " + KeyTest); // 비밀키는 'String'형태로 반환
                 } catch (NoSuchAlgorithmException e) {

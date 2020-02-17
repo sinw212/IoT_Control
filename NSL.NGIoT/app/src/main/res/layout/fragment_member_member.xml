@@ -75,11 +75,10 @@
         android:id="@+id/recyclerview_member_member"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="25dp"
         android:scrollbarFadeDuration="0"
         android:scrollbarSize="5dp"
         android:scrollbarThumbVertical="@android:color/darker_gray"
-        android:scrollbars="vertical"
-        android:background="@drawable/border"/>
+        android:scrollbars="vertical" />
 
 </LinearLayout>

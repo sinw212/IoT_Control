@@ -67,25 +67,35 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
             public void onClick(View v) {
                 new AlertDialog.Builder(context)
                         .setCancelable(false)
-                        .setTitle(item.getID()+" "+item.getName()+"님")
-                        .setMessage(item.getID()+" "+item.getName()+"님을 삭제/수정 하시겠습니까?\n")
-                        .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                        .setTitle("[공주대학교 네트워크 보안연구실]\n"+item.getID()+" "+item.getName()+"님")
+                        .setMessage("상세정보\n"+"학번: "+item.getID()+"\n"+"이름: "+item.getName()+"님\n")
+                        .setPositiveButton("정보 삭제", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // 삭제 진행
-                                addUser_delete_Request(item.getName(),item.getID());
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            addUser_delete_Request(item.getName(),item.getID());
+                                            Thread.sleep(100); // 0.1 초 슬립
+                                            if(VolleyQueueSingleTon.addUser_selectSharing != null){
+                                                // 인원 현황 정보 조회 진행
+                                                VolleyQueueSingleTon.addUser_selectSharing.setShouldCache(false);
+                                                VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.addUser_selectSharing);
+                                            }
+                                        } catch (InterruptedException e) {
+                                            System.err.println("ManagerAddUserAdapter InterruptedException error");
+                                        }
 
-                                if(VolleyQueueSingleTon.addUserselectSingleTon != null){
-                                    // 인원 현황 정보 조회 진행
-                                    VolleyQueueSingleTon.addUserselectSingleTon.setShouldCache(false);
-                                    VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.addUserselectSingleTon);
-                                }
+                                    }
+                                }).start();
                                 dialog.dismiss();
                             }
-                        }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, "취소"+" "+item.getID()+" "+item.getName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,  item.getID()+" "+item.getName(), Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                 }).show();
@@ -98,6 +108,7 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
         TextView numText;
         TextView nameText;
         TextView idText;
+
         public ViewHolder(View itemView) {
             super(itemView); // 입력 받은 값을 뷰홀더에 삽입
             numText = itemView.findViewById(R.id.manager_adduser_number);
@@ -159,5 +170,4 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(context).addToRequestQueue(stringRequest);
     }
-
 }

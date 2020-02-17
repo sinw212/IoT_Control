@@ -35,244 +35,185 @@ import java.util.Map;
 
 public class MemberFragment extends Fragment {
 
-    public RecyclerView m_mrv = null;
-    public ManagerMemberAdapter m_ma = null;
-    ArrayList<ManagerMemberData> m_memberlist = new ArrayList<ManagerMemberData>();
+    private RecyclerView recyclerView = null;
+    private LinearLayoutManager layoutManager = null;
+    private ManagerMemberAdapter managerMemberAdapter = null;
+    private ArrayList<ManagerMemberData> arrayList;
+    private ManagerMemberData managerMemberData;
+
     private String url = "http://210.125.212.191:8888/IoT/MemberState.jsp";
 
-    public String Name;
-    public String Phone;
-    public String Dept;
-    public String Team;
+    private String Name,
+            Phone,
+            course,
+            group;
 
-    public Button input;
-    public Button Delete;
+    private Button input;
 
-    public EditText EditName;
-    public EditText Editphone;
-    public EditText EditCourse;
-    public EditText EditGroup;
-
-
-    public int menu;// 1. 등록 2. 삭제 3. 데이터 갱신 4. 수정
+    private EditText EditName,
+            Editphone,
+            EditCourse,
+            EditGroup;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_manager_member, container, false);
-
-        EditName = view.findViewById(R.id.member_name);
-        Editphone = view.findViewById(R.id.member_phone);
-        EditCourse = view.findViewById(R.id.member_course);
-        EditGroup = view.findViewById(R.id.member_group);
-
-        input = view.findViewById((R.id.btn_add));
-        Delete = view.findViewById(R.id.btn_delete);
-
-
         return view;
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
-        member_manager_Request(3);
         super.onActivityCreated(savedInstanceState);
-        //등록 버튼
+
+        Name = "";
+        Phone = "";
+        course = "";
+        group = "";
+        EditName = getView().findViewById(R.id.member_name);
+        Editphone = getView().findViewById(R.id.member_phone);
+        EditCourse = getView().findViewById(R.id.member_course);
+        EditGroup = getView().findViewById(R.id.member_group);
+        input = getView().findViewById((R.id.btn_add));
+        recyclerView  = (RecyclerView)getView().findViewById(R.id.recyclerview_manager_member);
+
+        // 조회 시작
+        Manager_member_select_Request();
+
+        // 인원 등록
         input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Name = EditName.getText().toString();
-                Phone = Editphone.getText().toString();
-                Dept = EditCourse.getText().toString();
-                Team = EditGroup.getText().toString();
+                Name = EditName.getText().toString().trim();
+                Phone = Editphone.getText().toString().trim();
+                course = EditCourse.getText().toString().trim();
+                group = EditGroup.getText().toString().trim();
 
 
-                member_manager_Request(1);
-                EditName.setText("");
-                Editphone.setText("");
-                EditCourse.setText("");
-                EditGroup.setText("");
-
-//                m_ma.clear();
-                member_manager_Request(3);
-            }
-
-
-        });
-
-        Delete.setOnClickListener((new View.OnClickListener() { // 삭제 버튼
-            public void onClick(View view) {
-//                m_ma.clearSelectedItem();
-                member_manager_Request(2);
-
-            }
-        }));
-
-    }
-
-    public void additem(String Num, String Name, String phone, String course, String group) {
-        ManagerMemberData item = new ManagerMemberData();
-        item.setNumber(Num);
-        item.setName(Name);
-        item.setPhone(phone);
-        item.setCourse(course);
-        item.setGroup(group);
-
-        m_memberlist.add(item);
-    }
-
-
-    public void member_manager_Request(final int menu) {
-
-
-        final StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                System.out.println("리스폰스444 : " + response);
-
-                switch (menu) {
-                    case 1:
-                        addrespon(response);
-                        break;
-                    case 2:
-                        deleterespon(response);
-                        break;
-                    case 3:
-                        listrespon(response);
-                        break;
-                    case 4:
-                        modifyrespon(response);
-                        break;
+                if ("".equals(Name) || "".equals(Phone) || "".equals(course) || "".equals(group)) {
+                    Toast.makeText(getActivity(), "올바른 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                } else {
+                    EditName.setText("");
+                    Editphone.setText("");
+                    EditCourse.setText("");
+                    EditGroup.setText("");
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Manager_memeber_Added_Request(); // 인원 등록 진행
+                                Thread.sleep(100); // 0.1초 슬립
+                                Manager_member_select_Request(); // 변경된 인원 현황 조회
+                            } catch (InterruptedException e) {
+                                System.err.println("ManagerMemberFragment InterruptedException error");
+                            }
+                        }
+                    }).start();
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("에러333 : " + error);
-            }
-        }
+        });
+    }
+
+    // 연구실 인원 정보 조회
+    private void Manager_member_select_Request() {
+        VolleyQueueSingleTon.manager_member_selectSharing = new StringRequest(
+                Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            layoutManager = new LinearLayoutManager(getActivity());
+                            recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
+                            recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
+                            // 기존 데이터와 겹치지 않기 위해 생성자를 매번 새롭게 생성
+                            arrayList = new ArrayList<ManagerMemberData>();
+
+                            JSONArray jarray = new JSONArray(response);
+                            int size = jarray.length();
+                            for (int i = 0; i < size; i++) {
+                                JSONObject row = jarray.getJSONObject(i);
+                                managerMemberData= new ManagerMemberData();
+                                managerMemberData.setPhone(row.getString("phone"));
+                                managerMemberData.setName(row.getString("name"));
+                                managerMemberData.setNumber(String.valueOf(i+1));
+                                managerMemberData.setCourse(row.getString("dept"));
+                                managerMemberData.setGroup(row.getString("team"));
+                                arrayList.add(managerMemberData);
+                            }
+                            // 어댑터에 add한 다량의 데이터 할당
+                            managerMemberAdapter = new ManagerMemberAdapter(getActivity(),arrayList);
+                            // 리사이클러뷰에 어답타 연결
+                            recyclerView .setAdapter(managerMemberAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
         ) {
+            @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                switch (menu) {
-                    case 1://등록
-                        params.put("name", Name);
-                        params.put("phone", Phone);
-                        params.put("dept", Dept);
-                        params.put("team", Team);
-                        params.put("type", "memAdd");
-                        break;
-
-                    case 2://삭제
-//                        params.put("name", m_ma.Name);
-//                        params.put("phoe", m_ma.Phone);
-//                        params.put("detp", m_ma.Detp);
-//                        params.put("team", m_ma.Team);
-                        params.put("type", "memDelete");
-                        break;
-
-                    case 3://갱신
-                        params.put("type", "memShow");
-                        break;
-                    case 4://데이터 수정
-//                        params.put("b_name", m_ma.b_name);
-//                        params.put("b_phone", m_ma.b_phone);
-//                        params.put("name", m_ma.a_name);
-//                        params.put("phone", m_ma.a_phone);
-//                        params.put("detp", m_ma.a_detp);
-//                        params.put("team", m_ma.a_team);
-                        params.put("type", "memModify");
-                }
-
+                params.put("type", "memShow");
                 return params;
             }
         };
 
+        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
+        // 항상 새로운 데이터를 위해 false
+        VolleyQueueSingleTon.manager_member_selectSharing.setShouldCache(false);
+        VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(VolleyQueueSingleTon.manager_member_selectSharing);
+    }
 
+    // 연구실 인원 등록
+    private void Manager_memeber_Added_Request() {
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        switch (response) {
+                            case "memAleadyExist": //해당 ID가 이미 존재 시
+                                Toast.makeText(getActivity(), "이미 존재하는 아이디입니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "memAddSuccess": // 정상적으로 입력되었을시
+                                Toast.makeText(getActivity(), "입력되었습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "error": // 오류
+                                Toast.makeText(getActivity(), "시스템 오류", Toast.LENGTH_SHORT).show();
+                                break;
+                            default:
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("name", Name);
+                params.put("phone", Phone);
+                params.put("dept", course);
+                params.put("team", group);
+                params.put("type", "memAdd");
+                return params;
+            }
+        };
+
+        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
+        // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
-    }
-
-
-    public void addrespon(String response) {//등록 리스폰
-        switch (response) {
-            case "memAleadyExist"://해당 ID가 이미 존재 시
-                Toast.makeText(getActivity(), "이미 존재하는 아이디입니다.", Toast.LENGTH_SHORT).show();
-                break;
-            case "memAddSuccess"://정상적으로 입력되었을시
-                Toast.makeText(getActivity(), "입력되었습니다.", Toast.LENGTH_SHORT).show();
-                break;
-            case "error"://오류
-                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_SHORT).show();
-                break;
-        }
-    }
-
-    public void deleterespon(String response) {//삭제 리스폰
-        switch (response) {
-            case "memDeleted"://삭제 성공 시
-                Toast.makeText(getActivity(), "삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                break;
-            case "memNotExist"://삭제할 내용이 없을 시
-                Toast.makeText(getActivity(), "삭제 할 내용이 없습니다.", Toast.LENGTH_SHORT).show();
-                break;
-            case "error"://오류
-                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_SHORT).show();
-                break;
-        }
-    }
-
-    public void listrespon(String response) {//조회 리스폰
-        try {
-            JSONArray jarray = new JSONArray(response);
-            int size = jarray.length();
-            for (int i = 0; i < size; i++) {
-                JSONObject row = jarray.getJSONObject(i);
-                String jname = row.getString("name");
-                String jphone = row.getString("phone");
-                String jdetp = row.getString("detp");
-                String jteam = row.getString("team");
-                System.out.println(jname);
-                System.out.println(jphone);
-                System.out.println(jdetp);
-                System.out.println(jteam);
-
-                System.out.println(jname + jphone + jdetp + jteam);
-                additem(Integer.toString(i + 1), jname, jphone, jdetp, jteam);
-            }
-            m_mrv = getActivity().findViewById(R.id.recyclerview_manager_member);
-//            m_ma = new ManagerMemberAdapter(m_memberlist);
-            m_mrv.setAdapter(m_ma);
-            m_mrv.setLayoutManager(new LinearLayoutManager(getActivity()));
-            m_ma.notifyDataSetChanged();
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void modifyrespon(String response) {//정보 확인 리스폰
-        switch (response) {
-            case "memModifySuccess"://수정 성공 시
-                Toast.makeText(getActivity(), "삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                break;
-            case "memNotExist"://수정할 내용이 없을 시
-                Toast.makeText(getActivity(), "삭제 할 내용이 없습니다.", Toast.LENGTH_SHORT).show();
-                break;
-            case "error"://오류
-                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                Toast.makeText(getActivity(), "default Error", Toast.LENGTH_SHORT).show();
-                break;
-        }
     }
 }
