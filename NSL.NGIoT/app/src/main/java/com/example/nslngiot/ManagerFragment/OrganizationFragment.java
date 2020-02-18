@@ -129,7 +129,8 @@ public class OrganizationFragment extends Fragment {
                                 Respon(response);
                                 break;
                             case 2:
-                                OrganizationImage.setImageBitmap(StringToBitmap(response));
+                                setImage = StringToBitmap(response);
+                                OrganizationImage.setImageBitmap(setImage);
                                 break;
                         }
                     }
@@ -162,7 +163,7 @@ public class OrganizationFragment extends Fragment {
             }
         };
 
-        stringRequest.setShouldCache(false);
+        stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 

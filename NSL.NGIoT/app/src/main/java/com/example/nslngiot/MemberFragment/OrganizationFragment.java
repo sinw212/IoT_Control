@@ -79,7 +79,7 @@ public class OrganizationFragment extends Fragment {
             }
         };
 
-        stringRequest.setShouldCache(false);
+        stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 

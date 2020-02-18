@@ -128,7 +128,8 @@ public class StructureFragment extends Fragment {
                                 Respon(response);
                                 break;
                             case 2:
-                                StructureImage.setImageBitmap(StringToBitmap(response));
+                                setImage = StringToBitmap(response);
+                                StructureImage.setImageBitmap(setImage);
                                 break;
                         }
                     }
@@ -161,7 +162,7 @@ public class StructureFragment extends Fragment {
             }
         };
 
-        stringRequest.setShouldCache(false);
+        stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
