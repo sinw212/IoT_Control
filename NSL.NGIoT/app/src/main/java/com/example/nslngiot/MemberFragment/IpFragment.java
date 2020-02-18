@@ -63,7 +63,6 @@ public class IpFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("리스폰 : " + response);
 
                         IPImage.setImageBitmap(StringToBitmap(response));
 
@@ -82,7 +81,7 @@ public class IpFragment extends Fragment {
 
                 Map<String, String> params = new HashMap<String, String>();
                 //이미지 조회
-                params.put("type", "orgShow");
+                params.put("type", "ipShow");
                 return params;
             }
         };

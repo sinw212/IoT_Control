@@ -75,12 +75,12 @@ public class StructureFragment extends Fragment {
 
                 Map<String, String> params = new HashMap<String, String>();
                 //이미지 조회
-                params.put("type", "orgShow");
+                params.put("type", "strShow");
                 return params;
             }
         };
 
-        stringRequest.setShouldCache(false);
+        stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
