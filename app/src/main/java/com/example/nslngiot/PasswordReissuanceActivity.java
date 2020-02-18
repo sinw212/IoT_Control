@@ -14,10 +14,22 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.SQLFilter;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -93,22 +105,43 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        switch (response.trim()) {
-                            case "emailSendSuccess":
-                                Toast.makeText(getApplicationContext(), member_mail + " 의 이메일\n"+"임시 비밀번호 재발급 완료", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getApplicationContext(),PasswordReissuanceActivity.class);
-                                startActivity(intent);
-                                finish();
-                                break;
-                            case "userNotExist":
-                                Toast.makeText(getApplicationContext(), "학번/이름/메일을 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "error":
-                                Toast.makeText(getApplicationContext(), "서버 오류입니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
-                            default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        try {
+                            response = AES.aesDecryption(response,decryptAESkey);
+                            switch (response.trim()) {
+                                case "emailSendSuccess":
+                                    Toast.makeText(getApplicationContext(), member_mail + " 의 이메일\n"+"임시 비밀번호 재발급 완료", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getApplicationContext(),PasswordReissuanceActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    break;
+                                case "userNotExist":
+                                    Toast.makeText(getApplicationContext(), "학번/이름/메일을 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "error":
+                                    Toast.makeText(getApplicationContext(), "서버 오류입니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                default: // 접속 지연 시 확인 사항
+                                    Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -122,11 +155,33 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // 회원가입 정보 push 진행
-                params.put("id", member_id);
-                params.put("name", member_name);
-                params.put("mail", member_mail);
-                params.put("type", "find");
+
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    // 회원가입 정보 push 진행
+                    params.put("id", AES.aesEncryption(member_id,decryptAESkey));
+                    params.put("name", AES.aesEncryption(member_name,decryptAESkey));
+                    params.put("mail", AES.aesEncryption(member_mail,decryptAESkey));
+                    params.put("type", AES.aesEncryption("find",decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };
