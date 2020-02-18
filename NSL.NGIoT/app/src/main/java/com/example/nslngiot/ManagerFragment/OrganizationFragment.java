@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +45,7 @@ public class OrganizationFragment extends Fragment {
     public String encodeImage;//서버로 전송 할 이미지 String
     private static final int REQUEST_CODE = 0;
     private String url = "http://210.125.212.191:8888/IoT/ImageUpload.jsp";
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -82,6 +84,15 @@ public class OrganizationFragment extends Fragment {
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {//갤러리에서 이미지 선택 및 포토뷰로 설정
+
+        if(setImage !=null){
+            //사용하지않는 Bitmap을 recucle 가용메모리 늘림.
+            setImage.recycle();
+            setImage = null;
+            ((BitmapDrawable) OrganizationImage.getDrawable()).getBitmap().recycle();
+
+        }
+
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 try {
@@ -115,10 +126,9 @@ public class OrganizationFragment extends Fragment {
                         System.out.println("리스폰 : " + response);
                         switch (menu) {
                             case 1:
-                                System.out.println("전송 리스폰 : " + response);
+                                Respon(response);
                                 break;
                             case 2:
-                                System.out.println("이미지 받기" + response);
                                 OrganizationImage.setImageBitmap(StringToBitmap(response));
                                 break;
                         }
@@ -141,7 +151,6 @@ public class OrganizationFragment extends Fragment {
                 switch (menu) {
                     case 1://이미지 전송
                         params.put("type", "orgUpload");
-                        params.put("imgName", "IP,출입키 현황");
                         params.put("imgFile", encodeImage);
                         break;
                     case 2://이미지 조회
@@ -164,10 +173,7 @@ public class OrganizationFragment extends Fragment {
         byte[] bytes = baos.toByteArray();
         String temp = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-        //사용하지않는 Bitmap을 recucle 가용메모리 늘림.
-        setImage.recycle();
-        setImage = null;
-        ((BitmapDrawable) OrganizationImage.getDrawable()).getBitmap().recycle();
+
         return temp;
     }
 
@@ -182,6 +188,19 @@ public class OrganizationFragment extends Fragment {
             return null;
         }
     }
+
+    public void Respon(String respon) {
+
+        switch (respon) {
+            case "orgUploaded":
+                Toast.makeText(getActivity(), "업로드 성공", Toast.LENGTH_SHORT).show();
+                break;
+            case "error":
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                break;
+            case "fileNotExist":
+                Toast.makeText(getActivity(), "파일이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+
+        }
+    }
 }
-
-

@@ -2,6 +2,7 @@ package com.example.nslngiot.MemberFragment;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,8 @@ public class MeetLogFragment extends Fragment {
     SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
     TextView tv_date;
     TextView member_meetlog;
+    ImageButton btn_calendar;
+    private String meetlog_date="";
 
     Calendar c;
     int nYear,nMon,nDay;
@@ -53,11 +56,17 @@ public class MeetLogFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // 오늘 날짜 표현
         tv_date = getView().findViewById(R.id.tv_date);
+        btn_calendar = getView().findViewById(R.id.btn_calendar);
+        member_meetlog = getView().findViewById(R.id.member_meetlog);
+
+        // 오늘 날짜 표현
         tv_date.setText(getTime());
 
-        ImageButton btn_calendar = getView().findViewById(R.id.btn_calendar);
+        meetlog_date = tv_date.getText().toString();
+
+        // 등록된 회의록 조회
+        member_Meetlog_SelectRequest();
 
         // Calendar
         //DatePicker Listener
@@ -96,13 +105,18 @@ public class MeetLogFragment extends Fragment {
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
 
+
+                meetlog_date = tv_date.getText().toString();
+
+                // 등록된 회의록 조회
+                member_Meetlog_SelectRequest();
+
+                Log.d("얼른111",meetlog_date);
                 oDialog.show();
+
             }
         });
 
-        member_meetlog = getView().findViewById(R.id.member_meetlog);
-        // 등록된 회의록 조회
-        member_Meetlog_SelectRequest();
     }
 
     // 현재 등록된 회의록 조회 통신
@@ -114,13 +128,15 @@ public class MeetLogFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Log.d("얼른333",response);
+                        member_meetlog.setText("");
                         if("error".equals(response.trim())){ //시스템 에러일때
                             member_meetlog.setText("시스템 오류입니다.");
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
                             member_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
                         }else{
-                            String[] resPonse_split = response.split(" ");
+                            String[] resPonse_split = response.split("-");
                             if("cfExist".equals(resPonse_split[1])){
                                 member_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
                             }else
@@ -139,7 +155,7 @@ public class MeetLogFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", String.valueOf(tv_date));
+                params.put("date", meetlog_date);
                 params.put("type","cfShow");
                 return params;
             }

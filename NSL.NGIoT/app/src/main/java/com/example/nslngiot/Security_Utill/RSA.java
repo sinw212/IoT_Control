@@ -40,7 +40,7 @@ public class RSA {
         //publicKEY = Base64.encodeBase64String(publicKey.getEncoded());
 
         // PrivateKey객체를 'String'으로 변환
-         privateKEY= new String(Base64.encodeBase64(privateKey.getEncoded()));
+        privateKEY= new String(Base64.encodeBase64(privateKey.getEncoded()));
         //privateKEY = Base64.encodeBase64String(privateKey.getEncoded());
     }
 
@@ -63,7 +63,7 @@ public class RSA {
         byte[] byteEncryptedData = cipher.doFinal(plainData.getBytes());
         // 암호화 데이터, 인코딩 후 'String'으로 반환
         //return Base64.encodeBase64String(byteEncryptedData);
-       return new String(Base64.encodeBase64(byteEncryptedData));
+        return new String(Base64.encodeBase64(byteEncryptedData));
     }
 
     /*복호화*/

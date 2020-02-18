@@ -1,9 +1,9 @@
 package com.example.nslngiot.Data;
 
 public class ManagerCalendarData {
-    public String Number;
-    public String Title;
-    public String Detail;
+    private String Number;
+    private String Title;
+    private String Detail;
 
     public void setNumber(String number){
         this.Number = number;

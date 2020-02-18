@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:gravity="bottom"
     android:orientation="vertical"
+    android:layout_gravity="center"
+    android:paddingTop="80dp"
     android:paddingLeft="20dp"
-    android:paddingTop="0dp"
     android:paddingRight="20dp">
 
     <TextView
@@ -21,7 +21,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/border"
         android:orientation="horizontal">
 
@@ -76,16 +76,16 @@
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/border"
         android:scrollbarFadeDuration="0"
         android:scrollbarSize="5dp"
         android:scrollbarThumbVertical="@android:color/darker_gray"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:background="@drawable/border"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <EditText
@@ -116,8 +116,8 @@
             android:background="@drawable/roundborder"
             android:gravity="center"
             android:hint="(과정)"
-            android:inputType="text"
-            android:textSize="14dp" />
+            android:textSize="14dp"
+            android:inputType="text" />
 
         <EditText
             android:id="@+id/member_group"
@@ -133,23 +133,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="10dp"
         android:gravity="right"
-        android:orientation="horizontal">
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/btn_add"
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_marginLeft="5dp"
-            android:text="등록" />
+            android:text="등록"/>
 
         <Button
             android:id="@+id/btn_delete"
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_marginLeft="5dp"
-            android:text="삭제" />
+            android:text="삭제"/>
 
     </LinearLayout>
 

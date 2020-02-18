@@ -2,6 +2,7 @@ package com.example.nslngiot.ManagerFragment;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,11 +39,12 @@ public class MeetLogFragment extends Fragment {
     Date mDate;
     SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
     TextView tv_date;
+    ImageButton btn_calendar;
 
     private String manager_meetlog_value="";
     private EditText manager_meetlog;
-    private Button btn_manager_meetlog_add = getView().findViewById(R.id.btn_manager_meetlog_add);
-
+    private Button btn_manager_meetlog_add;
+    private String meetlog_date="";
 
     Calendar c;
     int nYear,nMon,nDay;
@@ -59,11 +61,18 @@ public class MeetLogFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // 오늘 날짜 표현
+        InitView();
         tv_date = getView().findViewById(R.id.tv_date);
+        btn_calendar = getView().findViewById(R.id.btn_calendar);
+
+        // 오늘 날짜 표현
         tv_date.setText(getTime());
 
-        ImageButton btn_calendar = getView().findViewById(R.id.btn_calendar);
+        meetlog_date = tv_date.getText().toString().trim();
+
+
+        // 등록된 회의록 조회
+        manager_Meetlog_SelectRequest();
 
         // Calendar
         //DatePicker Listener
@@ -99,12 +108,14 @@ public class MeetLogFragment extends Fragment {
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
 
+                meetlog_date = tv_date.getText().toString().trim();
+
+                // 등록된 회의록 조회
+                manager_Meetlog_SelectRequest();
+
                 oDialog.show();
             }
         });
-
-        // 등록된 회의록 확인 진행
-        manager_Meetlog_SelectRequest();
 
         btn_manager_meetlog_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,9 +126,11 @@ public class MeetLogFragment extends Fragment {
                 manager_meetlog_value = XSSFilter.xssFilter(manager_meetlog_value);
                 //////////////////////////////////////////////////////////////////
 
+                Log.d("제발", meetlog_date);
+                Log.d("제발", manager_meetlog_value);
+
                 manager_Meetlog_SaveRequest();
                 manager_Meetlog_SelectRequest();
-
             }
         });
     }
@@ -132,13 +145,13 @@ public class MeetLogFragment extends Fragment {
                     public void onResponse(String response) {
                         switch (response.trim()){
                             case "cfAdded":
-                                Toast.makeText(getActivity(), "회의록을 등록하였습니다.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
                                 break;
                             case "error":
-                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_SHORT).show();
                                 break;
                             default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }
@@ -154,7 +167,7 @@ public class MeetLogFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", String.valueOf(tv_date));
+                params.put("date", meetlog_date);
                 params.put("text", manager_meetlog_value);
                 params.put("type","cfAdd");
 
@@ -170,7 +183,6 @@ public class MeetLogFragment extends Fragment {
 
     // 현재 등록된 회의록 조회 통신
     private void manager_Meetlog_SelectRequest(){
-        // 다시 확인
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Conference.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -180,15 +192,15 @@ public class MeetLogFragment extends Fragment {
                     public void onResponse(String response) {
                         if("error".equals(response.trim())){ //시스템 에러일때
                             manager_meetlog.setText("시스템 오류입니다.");
-                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
                             manager_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
                         }else{
-                            String[] resPonse_split = response.split(" ");
+                            String[] resPonse_split = response.split("-");
                             if("cfExist".equals(resPonse_split[1])){
                                 manager_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
                             }else
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -203,7 +215,7 @@ public class MeetLogFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", String.valueOf(tv_date));
+                params.put("date", meetlog_date);
                 params.put("type","cfShow");
 
                 return params;
@@ -216,11 +228,14 @@ public class MeetLogFragment extends Fragment {
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
 
+    private void InitView() {
+        manager_meetlog = getView().findViewById(R.id.manager_meetlog);
+        btn_manager_meetlog_add = getView().findViewById(R.id.btn_manager_meetlog_add);
+    }
 
     public String getTime() {
         mNow = System.currentTimeMillis();
         mDate = new Date(mNow);
         return mFormat.format(mDate);
     }
-
 }

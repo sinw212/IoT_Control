@@ -27,6 +27,7 @@ public class CalendarFragment extends Fragment {
     SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
     ImageButton btn_calendar;
     TextView tv_date;
+    private String calendar_date="";
 
     Calendar c;
     int nYear,nMon,nDay;

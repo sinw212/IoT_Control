@@ -10,7 +10,6 @@
         android:id="@+id/et_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="제목을 입력해주세요. "
         android:layout_gravity="center"
         android:inputType="text" />
 
@@ -18,7 +17,6 @@
         android:id="@+id/et_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="내용을 입력해주세요. "
         android:layout_gravity="center"
         android:inputType="textMultiLine"
         android:lines="8" />

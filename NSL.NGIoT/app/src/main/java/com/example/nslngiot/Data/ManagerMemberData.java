@@ -1,11 +1,11 @@
 package com.example.nslngiot.Data;
 
 public class ManagerMemberData {
-    public String Number;
-    public String Name;
-    public String Phone;
-    public String Group;
-    public String Course;
+    private String Number;
+    private String Name;
+    private String Phone;
+    private String Group;
+    private String Course;
 
     public void setNumber(String number){
         this.Number = number;
