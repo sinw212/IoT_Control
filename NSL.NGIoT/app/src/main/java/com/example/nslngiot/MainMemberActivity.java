@@ -13,7 +13,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.nslngiot.ManagerFragment.MainFragment;
 import com.example.nslngiot.MemberFragment.CalendarFragment;
 import com.example.nslngiot.MemberFragment.IpFragment;
 import com.example.nslngiot.MemberFragment.MeetLogFragment;
@@ -47,17 +46,14 @@ public class MainMemberActivity extends AppCompatActivity
 
         if(savedInstanceState==null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                    new MainFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_drawer_main);
+                    new CalendarFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_calendar);
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.nav_drawer_main:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new MainFragment()).addToBackStack(null).commit();
             case R.id.nav_calendar:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
                         new CalendarFragment()).addToBackStack(null).commit();
@@ -111,32 +107,15 @@ public class MainMemberActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
 
-//        int fragmentStackCount = getSupportFragmentManager().getBackStackEntryCount();
-//
-//        if(fragmentStackCount > 0) {
-//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-//                    new MainFragment()).addToBackStack(null).commit();
-//            fragmentStackCount = 0;
-//        } else {
-//            if(System.currentTimeMillis() > backKeyClickTime + 2000){ // 1회 누를 시 Toast
-//                backKeyClickTime = System.currentTimeMillis();
-//                Toast.makeText(getApplicationContext(),"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//            if(System.currentTimeMillis() <= backKeyClickTime + 2000){ // 연속 2회 누를 시 activty shutdown
-//                ActivityCompat.finishAffinity(this);
-//            }
-//        }
-
         if(getSupportFragmentManager().getBackStackEntryCount() > 0)
             getSupportFragmentManager().popBackStack();
-        else{ // 더이상 스택에 프래그먼트가 없을 시 액티비티에서 앱 종료 여부 결정
-            if(System.currentTimeMillis() > backKeyClickTime + 2000){ // 1회 누를 시 Toast
+        else { // 더이상 스택에 프래그먼트가 없을 시 액티비티에서 앱 종료 여부 결정
+            if (System.currentTimeMillis() > backKeyClickTime + 2000) { // 1회 누를 시 Toast
                 backKeyClickTime = System.currentTimeMillis();
-                Toast.makeText(getApplicationContext(),"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(System.currentTimeMillis() <= backKeyClickTime + 2000){ // 연속 2회 누를 시 activty shutdown
+            if (System.currentTimeMillis() <= backKeyClickTime + 2000) { // 연속 2회 누를 시 activty shutdown
                 ActivityCompat.finishAffinity(this);
             }
         }

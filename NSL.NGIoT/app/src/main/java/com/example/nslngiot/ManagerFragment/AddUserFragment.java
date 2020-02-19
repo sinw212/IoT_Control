@@ -45,6 +45,7 @@ public class AddUserFragment extends Fragment {
     private String url = "http://210.125.212.191:8888/IoT/User.jsp";
     private String ID,Name;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class AddUserFragment extends Fragment {
         etName = getView().findViewById(R.id.edit_manager_name);
         input = getView().findViewById((R.id.btn_add));
         recyclerView  = (RecyclerView)getView().findViewById(R.id.recyclerview_manager_adduser);
+
 
         // 조회 시작
         addUser_select_Request();
@@ -91,9 +93,12 @@ public class AddUserFragment extends Fragment {
                             }
                         }
                     }).start();
+
                 }
             }
         });
+
+
     }
 
     // 회원정보 조회
@@ -149,6 +154,7 @@ public class AddUserFragment extends Fragment {
         VolleyQueueSingleTon.addUser_selectSharing.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(VolleyQueueSingleTon.addUser_selectSharing);
     }
+
 
     // 회원 정보 삽입
     private void addUser_Added_Request() {

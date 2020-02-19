@@ -3,6 +3,7 @@ package com.example.nslngiot.ManagerFragment;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import com.example.nslngiot.Data.ManagerCalendarData;
 import com.example.nslngiot.ManagerCalendarAddActivity;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.XSSFilter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,11 +58,11 @@ public class CalendarFragment extends Fragment {
     private ArrayList<ManagerCalendarData> arrayList;
     private ManagerCalendarData managerCalendarData;
 
-    private TextView tv_date;
+    public static TextView tv_date;
     private ImageButton btn_calendar;
     private Button btn_add;
     private String url = "http://210.125.212.191:8888/IoT/Schedule.jsp";
-    private String Date;
+    public static String Date;
 
     @Nullable
     @Override
@@ -104,6 +106,9 @@ public class CalendarFragment extends Fragment {
                             strDate += String.valueOf(dayOfMonth) + "일";
 
                         tv_date.setText(strDate);
+
+                        // 등록된 일정 '제목조회' 조회
+                        manager_Calendar_Title_SelectRequest();
                     }
                 };
 
@@ -119,9 +124,6 @@ public class CalendarFragment extends Fragment {
 
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
-
-                // 등록된 일정 '제목조회' 조회
-                manager_Calendar_Title_SelectRequest();
 
                 oDialog.show();
             }
@@ -148,33 +150,35 @@ public class CalendarFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
 
-                        Date = tv_date.getText().toString().trim();
+                        if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
+                            Toast.makeText(getActivity(), "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
+                        else if("error".equals(response.trim())){ // 시스템 오류
+                            Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                        }else{
+                            //json
+                            try {
+                                layoutManager = new LinearLayoutManager(getActivity());
+                                recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
+                                recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
+                                // 기존 데이터와 겹치지 않기 위해 생성자를 매번 새롭게 생성
+                                arrayList = new ArrayList<ManagerCalendarData>();
 
-                        //json
-                        try {
-                            layoutManager = new LinearLayoutManager(getActivity());
-                            recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
-                            recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
-                            // 기존 데이터와 겹치지 않기 위해 생성자를 매번 새롭게 생성
-                            arrayList = new ArrayList<ManagerCalendarData>();
-
-                            JSONArray jarray = new JSONArray(response);
-                            int size = jarray.length();
-                            for (int i = 0; i < size; i++) {
-                                JSONObject row = jarray.getJSONObject(i);
-                                managerCalendarData = new ManagerCalendarData();
-                                managerCalendarData.setDate(row.getString("date"));
-                                managerCalendarData.setTitle(row.getString("title"));
-                                managerCalendarData.setDetail(row.getString("detail"));
-                                managerCalendarData.setNumber(String.valueOf(i+1));
-                                arrayList.add(managerCalendarData);
+                                JSONArray jarray = new JSONArray(response);
+                                int size = jarray.length();
+                                for (int i = 0; i < size; i++) {
+                                    JSONObject row = jarray.getJSONObject(i);
+                                    managerCalendarData = new ManagerCalendarData();
+                                    managerCalendarData.setTitle(row.getString("save_text"));
+                                    managerCalendarData.setNumber(String.valueOf(i+1));
+                                    arrayList.add(managerCalendarData);
+                                }
+                                // 어댑터에 add한 다량의 데이터 할당
+                                managerCalendarAdapter = new ManagerCalendarAdapter(getActivity(),arrayList);
+                                // 리사이클러뷰에 어답타 연결
+                                recyclerView .setAdapter(managerCalendarAdapter);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            // 어댑터에 add한 다량의 데이터 할당
-                            managerCalendarAdapter = new ManagerCalendarAdapter(getActivity(),arrayList);
-                            // 리사이클러뷰에 어답타 연결
-                            recyclerView .setAdapter(managerCalendarAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
                     }
                 },
@@ -189,7 +193,7 @@ public class CalendarFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '일정등록'이라는 신호 정보 push 진행
-                params.put("date", Date);
+                params.put("date", Date = tv_date.getText().toString().trim());
                 params.put("type","scheduleList");
 
                 return params;

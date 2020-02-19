@@ -2,13 +2,11 @@ package com.example.nslngiot.MemberFragment;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +24,6 @@ import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -87,8 +84,8 @@ public class MeetLogFragment extends Fragment {
 
                         tv_date.setText(strDate);
 
-                        String date_for_data = "";
-                        date_for_data += String.valueOf(year);
+                        // 등록된 회의록 조회
+                        member_Meetlog_SelectRequest();
                     }
                 };
 
@@ -103,9 +100,6 @@ public class MeetLogFragment extends Fragment {
 
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
-
-                // 등록된 회의록 조회
-                member_Meetlog_SelectRequest();
 
                 oDialog.show();
 
@@ -123,9 +117,6 @@ public class MeetLogFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
-                        Date = tv_date.getText().toString().trim();
-
                         if("error".equals(response.trim())){ //시스템 에러일때
                             member_meetlog.setText("시스템 오류입니다.");
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
@@ -151,7 +142,7 @@ public class MeetLogFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", Date);
+                params.put("date",  Date = tv_date.getText().toString().trim());
                 params.put("type","cfShow");
                 return params;
             }

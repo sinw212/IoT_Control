@@ -37,14 +37,15 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
     long mNow;
     Date mDate;
     SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
-    TextView tv_date;
 
     Calendar c;
     int nYear,nMon,nDay;
     DatePickerDialog.OnDateSetListener mDateSetListener;
 
-    public String Date, Title, Detail;
-    private EditText EditTitle, EditDetail;
+    private TextView tv_date;
+    private String Date, Title, Detail;
+    private EditText EditTitle;
+    private EditText EditDetail;
     private ImageButton btn_calendar;
     private Button btn_add;
 
@@ -99,17 +100,7 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                DatePickerDialog oDialog = new DatePickerDialog(getApplicationContext(),
-                        mDateSetListener, nYear, nMon, nDay);
-
-                oDialog.show();
-            }
-        });
-        btn_calendar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                DatePickerDialog oDialog = new DatePickerDialog(getApplicationContext(),
+                DatePickerDialog oDialog = new DatePickerDialog(ManagerCalendarAddActivity.this,
                         mDateSetListener, nYear, nMon, nDay);
 
                 oDialog.show();
@@ -122,10 +113,6 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                 Date = tv_date.getText().toString().trim();
                 Title = EditTitle.getText().toString().trim();
                 Detail = EditDetail.getText().toString().trim();
-
-                Log.d("진입1", Date);
-                Log.d("진입2", Title);
-                Log.d("진입3", Detail);
 
                 if ("".equals(Title) || "".equals(Detail)) {
                     Toast.makeText(getApplicationContext(), "올바른 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -158,8 +145,6 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
-                        Log.d("진입4", response);
 
                         switch (response.trim()){
                             case "scheduleAddSuccess": // 일정 등록 성공했을 때

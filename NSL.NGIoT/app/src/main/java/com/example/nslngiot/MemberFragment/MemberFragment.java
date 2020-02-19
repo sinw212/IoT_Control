@@ -61,7 +61,7 @@ public class MemberFragment extends Fragment {
         Editphone = getView().findViewById(R.id.member_phone);
         EditCourse = getView().findViewById(R.id.member_course);
         EditGroup = getView().findViewById(R.id.member_group);
-        recyclerView  = getView().findViewById(R.id.recyclerview_member_member);
+        recyclerView  = (RecyclerView)getView().findViewById(R.id.recyclerview_member_member);
 
         member_select_Request();
 

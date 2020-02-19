@@ -14,12 +14,9 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.github.chrisbanes.photoview.PhotoView;
@@ -29,8 +26,7 @@ import java.util.Map;
 
 public class OrganizationFragment extends Fragment {
 
-    public PhotoView OrganizationImage;
-    private String url = "http://210.125.212.191:8888/IoT/ImageUpload.jsp";
+    private PhotoView OrganizationImage;
 
     @Nullable
     @Override
@@ -48,17 +44,17 @@ public class OrganizationFragment extends Fragment {
     }
 
 
-    //이미지 조회
+    // 랩실 조직도 조회
     public void FileUploadUtils() {
+
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
+
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("리스폰 : " + response);
-
                         OrganizationImage.setImageBitmap(StringToBitmap(response));
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -70,21 +66,20 @@ public class OrganizationFragment extends Fragment {
         ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
-
                 Map<String, String> params = new HashMap<String, String>();
-                //이미지 조회
+
+                // 조직도 조회
                 params.put("type", "orgShow");
                 return params;
             }
         };
 
-        stringRequest.setShouldCache(false);
+        stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
-
-    public static Bitmap StringToBitmap(String encodedString) {//String을 Bitmap으로 변환
+    // 이미지 String을 Bitmap으로 변환
+    private static Bitmap StringToBitmap(String encodedString) {
         try {
             byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);

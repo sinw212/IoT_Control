@@ -19,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.nslngiot.Adapter.ManagerAddUserAdapter;
 import com.example.nslngiot.Adapter.ManagerMemberAdapter;
 
 import com.example.nslngiot.Data.ManagerMemberData;
@@ -124,7 +125,7 @@ public class MemberFragment extends Fragment {
                             layoutManager = new LinearLayoutManager(getActivity());
                             recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
                             recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
-                            // 기존 데이터와 겹치지 않기 위해 생성자를 매번 새롭게 생성
+                            // 기존 데이터와 겹치지 않기 위해생성자를 매번 새롭게 생성
                             arrayList = new ArrayList<ManagerMemberData>();
 
                             JSONArray jarray = new JSONArray(response);

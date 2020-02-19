@@ -91,12 +91,21 @@ public class IpFragment extends Fragment {
                 encodeImage = BitmapToString(setImage);
                 FileUploadUtils(1);
 
+
             }
         });
     }
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {//갤러리에서 이미지 선택 및 포토뷰로 설정
+
+        if(setImage !=null){
+            //사용하지않는 Bitmap을 recucle 가용메모리 늘림.
+            setImage.recycle();
+            setImage = null;
+            ((BitmapDrawable) IPImage.getDrawable()).getBitmap().recycle();
+
+        }
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 try {
@@ -108,7 +117,6 @@ public class IpFragment extends Fragment {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 8;
                     setImage = BitmapFactory.decodeStream(in, null, options);
-
                     in.close();
                     IPImage.setImageBitmap(setImage);
 
@@ -127,14 +135,14 @@ public class IpFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("리스폰 : " + response);
+
                         switch (menu) {
                             case 1:
-                                System.out.println("전송 리스폰 : " + response);
+                                Respon(response);
                                 break;
                             case 2:
-                                System.out.println("이미지 받기" + response);
-                                IPImage.setImageBitmap(StringToBitmap(response));
+                                setImage = StringToBitmap(response);
+                                IPImage.setImageBitmap(setImage);
                                 break;
                         }
                     }
@@ -155,12 +163,11 @@ public class IpFragment extends Fragment {
 
                 switch (menu) {
                     case 1://이미지 전송
-                        params.put("type", "orgUpload");
-                        params.put("imgName", "one.jpg");
+                        params.put("type", "ipUpload");
                         params.put("imgFile", encodeImage);
                         break;
                     case 2://이미지 조회
-                        params.put("type", "orgShow");
+                        params.put("type", "ipShow");
                         break;
                 }
 
@@ -168,7 +175,7 @@ public class IpFragment extends Fragment {
             }
         };
 
-        stringRequest.setShouldCache(false);
+        stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
@@ -179,10 +186,9 @@ public class IpFragment extends Fragment {
         byte[] bytes = baos.toByteArray();
         String temp = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-        //사용하지않는 Bitmap을 recucle 가용메모리 늘림.
-        setImage.recycle();
-        setImage = null;
-        ((BitmapDrawable) IPImage.getDrawable()).getBitmap().recycle();
+
+
+
         return temp;
     }
 
@@ -195,6 +201,21 @@ public class IpFragment extends Fragment {
         } catch (Exception e) {
             e.getMessage();
             return null;
+        }
+    }
+
+
+    public void Respon(String respon) {
+        switch (respon) {
+            case "ipUploaded":
+                Toast.makeText(getActivity(), "업로드 성공", Toast.LENGTH_SHORT).show();
+                break;
+            case "error":
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                break;
+            case "fileNotExist":
+                Toast.makeText(getActivity(), "파일이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+
         }
     }
 }

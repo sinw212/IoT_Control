@@ -94,7 +94,6 @@ public class StatusFragment extends Fragment {
                         // 재실여부 상태 확인
                         Log.d("진입", response);
                         if("open".equals(response.trim())) {
-
                             // 랩실에 사람 있을 때
                             person_state.setText("있지롱쀄");
                             imgview_person.setImageResource(R.drawable.people_exist);

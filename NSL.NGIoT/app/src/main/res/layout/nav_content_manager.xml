@@ -10,9 +10,4 @@
     tools:context=".MainManagerActivity"
     tools:showIn="@layout/nav_appbar_manager">
 
-    <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content" -->
-        <!--android:background="@drawable/main"/>-->
-
 </LinearLayout>

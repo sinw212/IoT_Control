@@ -5,9 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_drawer_main"
-            android:title="랩실 부원 모드" />
-        <item
             android:id="@+id/nav_calendar"
             android:title="일정 보기" />
         <item

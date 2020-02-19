@@ -54,12 +54,20 @@ public class RuleFragment extends Fragment {
                 //XSS 특수문자 공백처리 및 방어
                 manager_rule_value = XSSFilter.xssFilter(manager_rule_value);
                 //////////////////////////////////////////////////////////////////
-
-                // 랩실 규칙 등록
-                manager_Rule_SaveRequest();
-                // 등록된 랩실 규칙 확인
-                manager_Rule_SelectRequest();
-
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // 랩실 규칙 등록
+                            manager_Rule_SaveRequest();
+                            Thread.sleep(100);
+                            // 등록된 랩실 규칙 확인
+                            manager_Rule_SelectRequest();
+                        } catch (InterruptedException e) {
+                            System.err.println("RuleFragment InterruptedException error");
+                        }
+                    }
+                }).start();
             }
         });
     }

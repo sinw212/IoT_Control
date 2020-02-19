@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +45,7 @@ public class StructureFragment extends Fragment {
     public String encodeImage;//서버로 전송 할 이미지 String
     private static final int REQUEST_CODE = 0;
     private String url = "http://210.125.212.191:8888/IoT/ImageUpload.jsp";
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -82,6 +84,14 @@ public class StructureFragment extends Fragment {
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {//갤러리에서 이미지 선택 및 포토뷰로 설정
+
+        if(setImage !=null){
+            //사용하지않는 Bitmap을 recucle 가용메모리 늘림.
+            setImage.recycle();
+            setImage = null;
+            ((BitmapDrawable) StructureImage.getDrawable()).getBitmap().recycle();
+
+        }
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 try {
@@ -115,11 +125,11 @@ public class StructureFragment extends Fragment {
                         System.out.println("리스폰 : " + response);
                         switch (menu) {
                             case 1:
-                                System.out.println("전송 리스폰 : " + response);
+                                Respon(response);
                                 break;
                             case 2:
-                                System.out.println("이미지 받기" + response);
-                                StructureImage.setImageBitmap(StringToBitmap(response));
+                                setImage = StringToBitmap(response);
+                                StructureImage.setImageBitmap(setImage);
                                 break;
                         }
                     }
@@ -140,12 +150,11 @@ public class StructureFragment extends Fragment {
 
                 switch (menu) {
                     case 1://이미지 전송
-                        params.put("type", "orgUpload");
-                        params.put("imgName", "IP,출입키 현황");
+                        params.put("type", "strUpload");
                         params.put("imgFile", encodeImage);
                         break;
                     case 2://이미지 조회
-                        params.put("type", "orgShow");
+                        params.put("type", "strShow");
                         break;
                 }
 
@@ -153,26 +162,22 @@ public class StructureFragment extends Fragment {
             }
         };
 
-        stringRequest.setShouldCache(false);
+        stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
 
-    public String BitmapToString(Bitmap bitmap) { //Bitmap을 String로 변경
+    private String BitmapToString(Bitmap bitmap) { //Bitmap을 String로 변경
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 98, baos);
         byte[] bytes = baos.toByteArray();
         String temp = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-        //사용하지않는 Bitmap을 recucle 가용메모리 늘림.
-        setImage.recycle();
-        setImage = null;
-        ((BitmapDrawable) StructureImage.getDrawable()).getBitmap().recycle();
         return temp;
     }
 
-
-    public static Bitmap StringToBitmap(String encodedString) {//String을 Bitmap으로 변환
+    // 이미지 String을 Bitmap으로 변환
+    private static Bitmap StringToBitmap(String encodedString) {
         try {
             byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
@@ -180,6 +185,19 @@ public class StructureFragment extends Fragment {
         } catch (Exception e) {
             e.getMessage();
             return null;
+        }
+    }
+
+    private void Respon(String respon) {
+        switch (respon) {
+            case "strUploaded":
+                Toast.makeText(getActivity(), "업로드 성공", Toast.LENGTH_SHORT).show();
+                break;
+            case "error":
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                break;
+            case "fileNotExist":
+                Toast.makeText(getActivity(), "파일이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
         }
     }
 }

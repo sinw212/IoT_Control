@@ -25,15 +25,26 @@ import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.MainActivity;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class MypageFragment extends Fragment {
     /*===================Manager MY Page=================*/
@@ -140,7 +151,7 @@ public class MypageFragment extends Fragment {
         btn_manager_logout.setOnClickListener(new View.OnClickListener() { // 로그아웃
             @Override
             public void onClick(View view) {
-                login_Preferences = getActivity().getSharedPreferences("AUTOLOGIN", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
+                login_Preferences = getActivity().getSharedPreferences("ManagerLogin", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
                 SharedPreferences.Editor editor = login_Preferences.edit();
                 editor.clear(); // 자동 로그인 정보 삭제
                 editor.apply();
@@ -160,31 +171,51 @@ public class MypageFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                        switch (response.trim()) {
-                            case "pwdChangeSuccess":
-                                Toast.makeText(getActivity(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show();
-                                // 비밀번호 변경 후, 재 로그인을 위해 자동 로그인&현재 로그인상태 해제
-//                                login_Preferences = getActivity().getSharedPreferences("AUTOLOGIN", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
-//                                SharedPreferences.Editor editor = login_Preferences.edit();
-//                                editor.clear(); // 자동 로그인 정보 삭제
-//                                editor.apply();
-                                Intent intent = new Intent(getActivity(), MainActivity.class);
-                                getActivity().startActivity(intent);
-                                getActivity().finish();
-                                break;
-                            case "pwdChangeFailed":
-                                Toast.makeText(getActivity(), "현재 비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "idNotExist":
-                                Toast.makeText(getActivity(), "ID가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "error":
-                                Toast.makeText(getActivity(), "시스템 오류입니다. 다시시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
-                            default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        try {
+                            response = AES.aesDecryption(response,decryptAESkey);
+                            switch (response.trim()) {
+                                case "pwdChangeSuccess":
+                                    Toast.makeText(getActivity(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show();
+                                    // 비밀번호 변경 후, 재 로그인을 위해 자동 로그인&현재 로그인상태 해제
+                                    login_Preferences = getActivity().getSharedPreferences("ManagerLogin", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
+                                    SharedPreferences.Editor editor = login_Preferences.edit();
+                                    editor.clear(); // 자동 로그인 정보 삭제
+                                    editor.apply();
+                                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                                    getActivity().startActivity(intent);
+                                    getActivity().finish();
+                                    break;
+                                case "pwdChangeFailed":
+                                    Toast.makeText(getActivity(), "현재 비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "idNotExist":
+                                    Toast.makeText(getActivity(), "ID가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "error":
+                                    Toast.makeText(getActivity(), "시스템 오류입니다. 다시시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                default: // 접속 지연 시 확인 사항
+                                    Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -200,11 +231,33 @@ public class MypageFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 관리자 정보 push
-                params.put("id", manager_id);
-                params.put("pwd", manager_new_pw);
-                params.put("b_pwd", manager_corrently_pw);
-                params.put("type", "change");
 
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("id", AES.aesEncryption( manager_id,decryptAESkey));
+                    params.put("pwd", AES.aesEncryption(manager_new_pw,decryptAESkey));
+                    params.put("b_pwd", AES.aesEncryption(manager_corrently_pw,decryptAESkey));
+                    params.put("type", AES.aesEncryption("change",decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };

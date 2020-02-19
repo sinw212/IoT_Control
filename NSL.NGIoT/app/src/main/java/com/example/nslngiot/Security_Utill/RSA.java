@@ -1,5 +1,7 @@
 package com.example.nslngiot.Security_Utill;
 
+import android.os.Build;
+
 import org.apache.commons.codec.binary.Base64;
 
 import java.security.InvalidKeyException;
@@ -21,7 +23,14 @@ import javax.crypto.NoSuchPaddingException;
 
 public class RSA {
 
-    public static String serverPublicKey=""; // 서버로부터 전달받을 서버공개키
+    public final static String serverPublicKey="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMII" +
+            "BCgKCAQEAxAOjnqBqDg2Zd97aqtztzA+JSwOex9e6R0d8LsNMnjxMC" +
+            "LAxF9dPKE/uDOO7YdE2O9ApwUVPci5pXO0KFm/dtGR0iLXV6ZKl09" +
+            "A2Rf4Tk94gLZwcyfV+eWInUEa3TaHWcvjh3M/QeaHpnBn4QzW0pfZJM" +
+            "8WSuoYptkHXDp4R7HSpqLjXk6LRyhF6Fpk4KzZHP4CAtxJAPOw1hMi6M9v+V" +
+            "jCzTTFSMJADucTD7X0pLzrWCnrwxuCVQKpl3mpgQEgXVC/OE76IvYSHzKJ31UuzF" +
+            "1m+9Qux4POgNpakCTRNz3jhvqbPeeHOBQjK3MRil+qqm+H1KrJjhSYJRc3bhFraAwIDAQAB";
+
     public static String publicKEY="";
     public static String privateKEY=""; // android KeyStore의 '대칭키'에 의해 암호화 저장/유출방지
 
@@ -35,11 +44,14 @@ public class RSA {
         PublicKey publicKey = keyPair.getPublic();
         PrivateKey privateKey = keyPair.getPrivate();
 
-        // publicKey객체를 'String'으로 변환
-        publicKEY = Base64.encodeBase64String(publicKey.getEncoded());
-
-        // PrivateKey객체를 'String'으로 변환
-        privateKEY = Base64.encodeBase64String(privateKey.getEncoded());
+        // 누가버전까지는 Base64.encodeBase64String NotMethod 이슈발생
+        if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.N)){
+            publicKEY = new String(Base64.encodeBase64(publicKey.getEncoded()));
+            privateKEY = new String(Base64.encodeBase64(privateKey.getEncoded()));
+        }else{
+            publicKEY = Base64.encodeBase64String(publicKey.getEncoded()); // 공개키 객체를 'String'으로 변환
+            privateKEY = Base64.encodeBase64String(privateKey.getEncoded()); // 개인키 객체를 'String'으로 변환
+        }
     }
 
     /*암호화*/
@@ -54,13 +66,17 @@ public class RSA {
         PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
         // 만들어진 공개키객체를 기반으로 암호화모드로 설정하는 과정
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, publicKey); // 암호화 준비
 
         // 암호화 진행
         byte[] byteEncryptedData = cipher.doFinal(plainData.getBytes());
+
         // 암호화 데이터, 인코딩 후 'String'으로 반환
-        return Base64.encodeBase64String(byteEncryptedData);
+        if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.N))
+            return new String(Base64.encodeBase64(byteEncryptedData));
+        else
+            return Base64.encodeBase64String(byteEncryptedData);
     }
 
     /*복호화*/
@@ -75,7 +91,7 @@ public class RSA {
         PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
 
         // 만들어진 개인키객체를 기반으로 복호화모드로 설정하는 과정
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey); // 복호화 준비
 
         // 암호화된 인코딩 데이터를 디코딩 진행
@@ -87,5 +103,4 @@ public class RSA {
         // 복호화 후 'String'으로 반환
         return new String(byteDecryptedData);
     }
-
 }
