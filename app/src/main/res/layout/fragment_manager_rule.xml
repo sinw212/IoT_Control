@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:paddingTop="80dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="랩실 규칙"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/manager_rule"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@android:drawable/edit_text"
+        android:gravity="top"
+        android:selectAllOnFocus="true"
+        android:hint="(랩실 규칙을 작성해주세요.)"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/btn_manager_rule_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="등록" />
+
+</LinearLayout>
