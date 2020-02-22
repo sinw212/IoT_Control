@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class IpFragment extends Fragment {
@@ -99,7 +100,7 @@ public class IpFragment extends Fragment {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {//갤러리에서 이미지 선택 및 포토뷰로 설정
 
-        if(setImage !=null){
+        if(setImage !=null&&setImage.isRecycled()){
             //사용하지않는 Bitmap을 recucle 가용메모리 늘림.
             setImage.recycle();
             setImage = null;
@@ -115,7 +116,7 @@ public class IpFragment extends Fragment {
 
                     //이미지 크기 1/8 로 축소, 리사이즈
                     BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 8;
+                    options.inSampleSize = 2;
                     setImage = BitmapFactory.decodeStream(in, null, options);
                     in.close();
                     IPImage.setImageBitmap(setImage);
@@ -123,6 +124,8 @@ public class IpFragment extends Fragment {
                 } catch (Exception e) {
 
                 }
+            }else if(requestCode ==RESULT_CANCELED){
+
             }
         }
     }

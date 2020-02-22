@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="294dp"
     android:layout_height="146dp"
     android:background="#FFFFFF"
@@ -49,7 +47,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/img_water_exist"
+            android:id="@+id/img_water"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -63,14 +61,14 @@
             android:elevation="10dp" />
 
         <ImageView
-            android:id="@+id/img_coffee_exist"
+            android:id="@+id/img_coffee"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:elevation="10dp" />
 
         <ImageView
-            android:id="@+id/a4_exist"
+            android:id="@+id/img_a4"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"

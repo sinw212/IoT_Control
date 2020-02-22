@@ -67,17 +67,16 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
 
         holder.numText.setText(item.getNumber()); // ManagerCalendarData의 getNumber값을 numtext에 삽입
         holder.titleText.setText(item.getTitle()); // -
-        holder.dateText.setText(item.getDate()); // -
+//        holder.dateText.setText(item.getDate()); // -
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("진입111", Date);
-//                Log.d("진입222", item.getDate());
-//                Log.d("진입333", item.getTitle());
+                Log.d("진입222", item.getTitle());
 
                 // 일정 '상세조회' 조회
-                calendar_select_Request(item.getDate(), item.getTitle());
+                calendar_select_Request(item.getTitle(), Date);
             }
         });
     }
@@ -85,13 +84,13 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView numText;
         TextView titleText;
-        TextView dateText;
+//        TextView dateText;
 
         public ViewHolder(View itemView) {
             super(itemView); // 입력 받은 값을 뷰홀더에 삽입
             numText = itemView.findViewById(R.id.manager_calendar_number);
             titleText = itemView.findViewById(R.id.manager_calendar_title);
-            dateText = CalendarFragment.tv_date;
+//            dateText = CalendarFragment.tv_date;
         }
     }
 
@@ -147,7 +146,7 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
     }
 
     // 회원정보 상세 조회
-    private void calendar_select_Request(final String Date , final String Title){
+    private void calendar_select_Request(final String Title , final String Date){
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -157,8 +156,11 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
                         Log.d("진입", response);
                         Log.d("진입2", Date);
                         Log.d("진입3", Title);
+                        // 20.02.22 현재 상태 : 일정이 등록되어 있지 않다고 나옴
+                        // ManagerFragment > CalendarFragment에서 save_title 말고 save_text를 던지고 있어서 발생했던 문제!
 
-                        if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
+                        if("scheduleNotEixst".equals(response.trim())) // 등록된 일정이 없을 시정
+                            // 김규 scheduleNotExist로 철자 수정하기
                             Toast.makeText(context, "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
                         else if("error".equals(response.trim())){ // 시스템 오류
                             Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
@@ -167,56 +169,58 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
                             switch (resPonse_split[3]) {
                                 case "scheduleExist":// 조회 성공 시
                                     new AlertDialog.Builder(context).setCancelable(false)
-                                    .setCancelable(false)
-                                    .setTitle("[공주대학교 네트워크 보안연구실]\n")
-                                    .setMessage("상세정보\n"+"날짜: "+resPonse_split[0]+"\n"+"제목: "+resPonse_split[1]+"\n"+
-                                            "일정: "+resPonse_split[2]+"\n")
-                                    .setPositiveButton("정보 삭제", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            // 삭제 진행
-                                            new Thread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    try {
-                                                        Manager_calendar_delete_Request(resPonse_split[0],resPonse_split[1]);
-                                                        Thread.sleep(100); // 0.1 초 슬립
-                                                        if(VolleyQueueSingleTon.manager_calendar_selectSharing != null){
-                                                            // 일정 조회
-                                                            VolleyQueueSingleTon.manager_calendar_selectSharing.setShouldCache(false);
-                                                            VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.manager_calendar_selectSharing);
+                                        .setTitle("[공주대학교 네트워크 보안연구실]\n")
+                                        .setMessage("상세정보\n"+"날짜: "+resPonse_split[0]+"\n"+"제목: "+resPonse_split[1]+"\n"+
+                                                "일정: "+resPonse_split[2]+"\n")
+                                        .setPositiveButton("정보 삭제", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // 삭제 진행
+                                                new Thread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        try {
+                                                            Manager_calendar_delete_Request(resPonse_split[1],resPonse_split[0]);
+                                                            Thread.sleep(100); // 0.1 초 슬립
+                                                            if(VolleyQueueSingleTon.manager_calendar_selectSharing != null){
+                                                                // 일정 조회
+                                                                VolleyQueueSingleTon.manager_calendar_selectSharing.setShouldCache(false);
+                                                                VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.manager_calendar_selectSharing);
+                                                            }
+                                                        } catch (InterruptedException e) {
+                                                            System.err.println("ManagerCalendarAdapter InterruptedException error");
                                                         }
-                                                    } catch (InterruptedException e) {
-                                                        System.err.println("ManagerCalendarAdapter InterruptedException error");
                                                     }
-                                                }
-                                            }).start();
-                                            dialog.dismiss();
-                                        }
-                                    }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                                                }).start();
+                                                dialog.dismiss();
+                                            }
+                                        }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            Toast.makeText(context, resPonse_split[0]+"의 일정 "+resPonse_split[1]+" 닫기", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, resPonse_split[0] + " " + resPonse_split[1], Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
-
                                         }
-                            }).show();
+                                    }).show();
+                                    break;
+                                default:
+                                    Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
                         }
                     }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
                 }
-            },
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }
-            }
         ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("date", Date);
                 params.put("title", Title);
+                params.put("date", Date);
                 params.put("type", "scheduleShow");
                 return params;
             }
