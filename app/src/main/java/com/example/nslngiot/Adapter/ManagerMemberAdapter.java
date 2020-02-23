@@ -69,6 +69,7 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
             public void onClick(View v) {
                 new AlertDialog.Builder(context)
                         .setCancelable(false)
+                        .setIcon(R.drawable.icon)
                         .setTitle("[공주대학교 네트워크 보안연구실]\n"+item.getName()+"님")
                         .setMessage("상세정보\n\n"+"이름: "+item.getName()+"\n"+"전화번호: "+item.getPhone()+"\n"+
                                 "교육과정: "+item.getCourse()+"\n"+"현 소속: "+item.getGroup()+"\n\n"
@@ -83,10 +84,10 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                                         try {
                                             Manager_member_delete_Request(item.getName(),item.getPhone(),item.getCourse(),item.getGroup());
                                             Thread.sleep(100); // 0.1 초 슬립
-                                            if(VolleyQueueSingleTon.manager_mamber_selectSharing != null){
+                                            if(VolleyQueueSingleTon.manager_member_selectSharing != null){
                                                 // 연구실 인원 정보 조회
-                                                VolleyQueueSingleTon.manager_mamber_selectSharing.setShouldCache(false);
-                                                VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.manager_mamber_selectSharing);
+                                                VolleyQueueSingleTon.manager_member_selectSharing.setShouldCache(false);
+                                                VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.manager_member_selectSharing);
                                             }
                                         } catch (InterruptedException e) {
                                             System.err.println("ManagerMemberAdapter InterruptedException error");
@@ -95,13 +96,7 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                                 }).start();
                                 dialog.dismiss();
                             }
-                        }).setNeutralButton("정보 수정", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, "수정아직구현안함"+" "+item.getCourse()+"과정의 "+item.getName(), Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                    }
-                }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(context, item.getCourse()+"과정의 "+item.getName()+"님 닫기", Toast.LENGTH_SHORT).show();
@@ -186,65 +181,4 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(context).addToRequestQueue(stringRequest);
     }
-
-//    // 회원정보 수정
-//    private void Manager_member_update_Request(final String name, final String phone, final String course, final  String group) {
-//
-//        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/User.jsp");
-//
-//        StringRequest stringRequest = new StringRequest(
-//                Request.Method.POST, String.valueOf(url),
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        switch (response) {
-//        case "memModifySuccess": // 수정 성공 시
-//            Toast.makeText(getActivity(), "삭제되었습니다.", Toast.LENGTH_LONG).show();
-//            break;
-//        case "memNotExist": // 수정할 내용이 없을 시
-//            Toast.makeText(getActivity(), "삭제 할 내용이 없습니다.", Toast.LENGTH_LONG).show();
-//            break;
-//        case "error"://오류
-//            Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
-//            break;
-//        default:
-//            Toast.makeText(getActivity(), "default Error", Toast.LENGTH_LONG).show();
-//            break;
-//    }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        error.printStackTrace();
-//                    }
-//                }
-//        ) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<String, String>();
-//
-//                params.put("name", name);
-//                params.put("phone", phone);
-//                params.put("dept", course);
-//                params.put("team", group);
-//                params.put("type", "memDelete");
-//
-
-//      params.put("b_name", m_ma.b_name);
-//                        params.put("b_phone", m_ma.b_phone);
-//                        params.put("name", m_ma.a_name);
-//                        params.put("phone", m_ma.a_phone);
-//                        params.put("detp", m_ma.a_detp);
-//                        params.put("team", m_ma.a_team);
-//                        params.put("type", "memModify");
-//                return params;
-//            }
-//        };
-//
-//        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
-//        // 항상 새로운 데이터를 위해 false
-//        stringRequest.setShouldCache(false);
-//        VolleyQueueSingleTon.getInstance(context).addToRequestQueue(stringRequest);
-//    }
 }

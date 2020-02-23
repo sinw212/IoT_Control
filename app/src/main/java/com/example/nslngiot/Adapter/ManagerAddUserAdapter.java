@@ -147,6 +147,7 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                     public void onResponse(String response) {
                         if("user_NotEixst".equals(response.trim())){
                             new AlertDialog.Builder(context).setCancelable(false)
+                                    .setIcon(R.drawable.icon)
                                     .setTitle("[공주대학교 네트워크 보안연구실]\n\n")
                                     .setMessage("가입되지 않은 회원 입니다.")
                                     .setPositiveButton("정보 삭제", new DialogInterface.OnClickListener() {
@@ -185,7 +186,9 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                             final String[] resPonse_split = response.split("-");
                             switch (resPonse_split[3]) {
                                 case "userListExist":// 조회 성공 시
-                                    new AlertDialog.Builder(context).setCancelable(false)
+                                    new AlertDialog.Builder(context)
+                                            .setIcon(R.drawable.icon)
+                                            .setCancelable(false)
                                             .setTitle("[공주대학교 네트워크 보안연구실]\n" + resPonse_split[0] + " " + resPonse_split[1] + "님")
                                             .setMessage("상세정보\n\n" + "학번: " + resPonse_split[0] + "\n" + "이름: " + resPonse_split[1] + "님\n"
                                                     + "이메일: " + resPonse_split[2])

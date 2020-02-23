@@ -33,22 +33,22 @@ public class IpFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_member_ip, container, false);
-        IPImage = (PhotoView) view.findViewById(R.id.pho_member_ip);
         return view;
     }
 
-
     public void onActivityCreated(Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
+
+        IPImage = (PhotoView)getView().findViewById(R.id.pho_member_ip);
+
         FileUploadUtils();//서버로 이미지 조회
     }
 
 
-    //이미지 조회
-    public void FileUploadUtils() {
+    // 이미지 조회
+    private void FileUploadUtils() {
 
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -75,6 +75,7 @@ public class IpFragment extends Fragment {
             }
         };
 
+        // 캐시 기능을 사용하여 이미지 업로드 속도 향상
         stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }

@@ -12,8 +12,11 @@ public class VolleyQueueSingleTon {
     // (관리자 전용) ManagerAddUserAdapter& AdduesrFragment에서 신규인원 등록 조회 공유를 위한 변수
     public static StringRequest addUser_selectSharing;
 
+    // (관리자 & 일반 사용자) ManagerCalendarAdapter & CalendarFragment (manager&member)에서 일정 조회 공유를 위한 변수
+    public static StringRequest manager_calendar_selectSharing;
+
     // (관리자 & 일반 사용자) ManagerMemberAdapter & MemberFragment (manager&member)에서 연구실 인원 조회 공유를 위한 변수
-    public static StringRequest manager_mamber_selectSharing;
+    public static StringRequest manager_member_selectSharing;
 
     private static VolleyQueueSingleTon volleyQueueSingleTonInstance;
     private RequestQueue requestQueue;

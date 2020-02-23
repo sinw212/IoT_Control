@@ -2,7 +2,6 @@ package com.example.nslngiot;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -125,6 +124,7 @@ public class SignupActivity extends AppCompatActivity {
 
     // 회원가입 DB로 전송
     private void joinRequest() {
+
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -132,12 +132,13 @@ public class SignupActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
                         try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
+
                             switch (response.trim()) {
                                 case "accountAleadyExist":
                                     Toast.makeText(getApplicationContext(), "이미 해당 아이디는 사용하고 있습니다.", Toast.LENGTH_SHORT).show();
@@ -146,7 +147,7 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "가입 대상자가 아닙니다.", Toast.LENGTH_SHORT).show();
                                     break;
                                 case "error":
-                                    Toast.makeText(getApplicationContext(), "서버 오류입니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                                     break;
                                 case "accountCreated":
                                     Toast.makeText(getApplicationContext(), "회원가입이 완료 되었습니다.", Toast.LENGTH_SHORT).show();
@@ -190,7 +191,6 @@ public class SignupActivity extends AppCompatActivity {
 
                 try {
                     params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    // 복호화된 대칭키로 데이터 암호화
                     params.put("id", AES.aesEncryption(id,decryptAESkey));
                     params.put("pwd",AES.aesEncryption(encryption_pw,decryptAESkey));
                     params.put("name",AES.aesEncryption(name,decryptAESkey));

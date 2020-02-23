@@ -32,13 +32,12 @@ public class StructureFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_member_structure, container, false);
-        StructureImage = (PhotoView) view.findViewById(R.id.pho_member_structure);
         return view;
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
+        StructureImage = (PhotoView)getView().findViewById(R.id.pho_member_structure);
         FileUploadUtils(); // 서버로 이미지 조회
     }
 
@@ -64,15 +63,14 @@ public class StructureFragment extends Fragment {
         ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
                 Map<String, String> params = new HashMap<String, String>();
-
                 // 이미지 조회
                 params.put("type", "strShow");
                 return params;
             }
         };
 
+        // 캐시 기능을 사용하여 이미지 업로드 속도 향상
         stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }

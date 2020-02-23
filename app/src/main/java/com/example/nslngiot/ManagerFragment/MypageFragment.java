@@ -1,6 +1,7 @@
 package com.example.nslngiot.ManagerFragment;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
@@ -72,7 +74,7 @@ public class MypageFragment extends Fragment {
             new_pw,
             modify_pw;
 
-    private Button btn_manager_Back,
+    private Button
             btn_manager_Modifiy,
             btn_manager_logout;
 
@@ -151,31 +153,47 @@ public class MypageFragment extends Fragment {
         btn_manager_logout.setOnClickListener(new View.OnClickListener() { // 로그아웃
             @Override
             public void onClick(View view) {
-                login_Preferences = getActivity().getSharedPreferences("ManagerLogin", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
-                SharedPreferences.Editor editor = login_Preferences.edit();
-                editor.clear(); // 자동 로그인 정보 삭제
-                editor.apply();
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                getActivity().startActivity(intent);
-                getActivity().finish();
+                new AlertDialog.Builder(getActivity())
+                        .setCancelable(false)
+                        .setIcon(R.drawable.icon)
+                        .setTitle("[공주대학교 네트워크 보안연구실]")
+                        .setMessage("정말 로그아웃 하시겠습니까?")
+                        .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                login_Preferences = getActivity().getSharedPreferences("ManagerLogin", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
+                                SharedPreferences.Editor editor = login_Preferences.edit();
+                                editor.clear(); // 자동 로그인 정보 삭제
+                                editor.apply();
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                getActivity().startActivity(intent);
+                                getActivity().finish();
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
             }
         });
     }
 
-    //데이터베이스로 넘김
+    // 사용자 비밀번호 변경
     private void manager_ModifyRequest() {
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
+
+      final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-
-                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
                             switch (response.trim()) {
                                 case "pwdChangeSuccess":
@@ -196,7 +214,7 @@ public class MypageFragment extends Fragment {
                                     Toast.makeText(getActivity(), "ID가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
                                     break;
                                 case "error":
-                                    Toast.makeText(getActivity(), "시스템 오류입니다. 다시시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                                     break;
                                 default: // 접속 지연 시 확인 사항
                                     Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
@@ -229,9 +247,6 @@ public class MypageFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-
-                // 관리자 정보 push
-
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
@@ -269,7 +284,6 @@ public class MypageFragment extends Fragment {
     }
 
     private void initView(){
-        btn_manager_Back = getView().findViewById(R.id.btn_manager_mypage_back);
         btn_manager_Modifiy = getView().findViewById(R.id.btn_manager_mypage_modify);
         btn_manager_logout = getView().findViewById(R.id.btn_manager_mypage_logout);
         name = getView().findViewById(R.id.manager_name);
