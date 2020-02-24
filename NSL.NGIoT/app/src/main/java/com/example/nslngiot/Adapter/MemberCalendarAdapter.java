@@ -19,7 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Data.ManagerCalendarData;
-import com.example.nslngiot.Data.ManagerMemberData;
 import com.example.nslngiot.MemberFragment.CalendarFragment;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
@@ -60,13 +59,12 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
 
         holder.numText.setText(item.getNumber());// ManagerCalendarData의 getNumber값을 numtext에 삽입
         holder.titleText.setText(item.getTitle());
-//        holder.dateText.setText(item.getDate());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 일정 '상세조회' 조회
-                calendar_select_Request(item.getDate(), item.getTitle());
+                calendar_select_Request(Date, item.getTitle());
             }
         });
     }
@@ -74,13 +72,11 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView numText;
         TextView titleText;
-        //        TextView dateText;
 
         public ViewHolder(View itemView) {
             super(itemView); // 입력 받은 값을 뷰홀더에 삽입
             numText = itemView.findViewById(R.id.manager_calendar_number);
             titleText = itemView.findViewById(R.id.manager_calendar_title);
-//            dateText = itemView.findViewById(R.id.manager_calendar_date);
         }
     }
 
@@ -90,7 +86,7 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
     }
 
     // 회원정보 상세 조회
-    private void calendar_select_Request(final String date , final String title){
+    private void calendar_select_Request(final String Date , final String Title){
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -113,7 +109,7 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
                                             .setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            Toast.makeText(context, resPonse_split[0]+"의 일정 "+resPonse_split[1]+" 닫기", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, resPonse_split[0]+"의 일정", Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
                                         }
                                     }).show();
@@ -132,7 +128,7 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("date", Date);
-                params.put("title", title);
+                params.put("title", Title);
                 params.put("type", "scheduleShow");
                 return params;
             }

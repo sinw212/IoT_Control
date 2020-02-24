@@ -58,7 +58,7 @@ public class CalendarFragment extends Fragment {
     private ArrayList<ManagerCalendarData> arrayList;
     private ManagerCalendarData managerCalendarData;
 
-    public static TextView tv_date;
+    private TextView tv_date;
     private ImageButton btn_calendar;
     private Button btn_add;
     private String url = "http://210.125.212.191:8888/IoT/Schedule.jsp";
@@ -149,8 +149,6 @@ public class CalendarFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("진입44", Date);
-                        Log.d("진입55", response);
                         if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
                             Toast.makeText(getActivity(), "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
                         else if("error".equals(response.trim())){ // 시스템 오류
@@ -169,8 +167,7 @@ public class CalendarFragment extends Fragment {
                                 for (int i = 0; i < size; i++) {
                                     JSONObject row = jarray.getJSONObject(i);
                                     managerCalendarData = new ManagerCalendarData();
-                                    managerCalendarData.setTitle(row.getString("save_text"));
-                                    //save_text는 상세내용에 해당되는 부분임. save_title로 바꿔야 하는 부분 -> 백단이랑 상의 후 수정
+                                    managerCalendarData.setTitle(row.getString("save_title"));
                                     managerCalendarData.setNumber(String.valueOf(i+1));
                                     arrayList.add(managerCalendarData);
                                 }
@@ -195,7 +192,7 @@ public class CalendarFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // '일정등록'이라는 신호 정보 push 진행
-                params.put("date", Date = tv_date.getText().toString());
+                params.put("date", Date = tv_date.getText().toString().trim());
                 params.put("type","scheduleList");
 
                 return params;

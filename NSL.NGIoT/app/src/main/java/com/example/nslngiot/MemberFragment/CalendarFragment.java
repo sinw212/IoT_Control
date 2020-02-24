@@ -148,8 +148,7 @@ public class CalendarFragment extends Fragment {
                                 for (int i = 0; i < size; i++) {
                                     JSONObject row = jarray.getJSONObject(i);
                                     managerCalendarData = new ManagerCalendarData();
-                                    managerCalendarData.setTitle(row.getString("save_text"));
-                                    //save_text는 상세내용에 해당되는 부분임. save_title로 바꿔야 하는 부분 -> 백단이랑 상의 후 수정
+                                    managerCalendarData.setTitle(row.getString("save_title"));
                                     managerCalendarData.setNumber(String.valueOf(i + 1));
                                     arrayList.add(managerCalendarData);
                                 }
