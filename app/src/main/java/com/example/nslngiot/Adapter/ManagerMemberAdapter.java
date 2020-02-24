@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +22,22 @@ import com.example.nslngiot.Data.ManagerMemberData;
 
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdapter.ViewHolder> {
 
@@ -132,27 +143,47 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
 
     // 회원정보 삭제
     private void Manager_member_delete_Request(final String name, final String phone, final String course, final  String group) {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/User.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/MemberState.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("진입",response);
-                        switch (response.trim()) {
-                            case "deleteAllSuccess":// 삭제했을 시
-                                Toast.makeText(context, "회원 정보 삭제했습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "addUserDataNotExist":// 삭제 실패했을 시
-                                Toast.makeText(context, "회원 정보 삭제를 실패했습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "error": // 오류
-                                Toast.makeText(context, "시스템 에러", Toast.LENGTH_SHORT).show();
-                                break;
-                            default:
-                                Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            switch (response.trim()) {
+                                case "deleteAllSuccess":// 삭제했을 시
+                                    Toast.makeText(context, "회원 정보 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "addUserDataNotExist":// 삭제 실패했을 시
+                                    Toast.makeText(context, "회원 정보 삭제를 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "error": // 오류
+                                    Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                default:
+                                    Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -166,12 +197,34 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("name", name);
-                params.put("phone", phone);
-                params.put("dept", course);
-                params.put("team", group);
-                params.put("type", "memDelete"); // error/nonTypeRequest
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type",AES.aesEncryption("memDelete",decryptAESkey));
+                    params.put("name",AES.aesEncryption(name,decryptAESkey));
+                    params.put("phone",AES.aesEncryption(phone,decryptAESkey));
+                    params.put("dept",AES.aesEncryption(course,decryptAESkey));
+                    params.put("team",AES.aesEncryption(group,decryptAESkey));
+
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };

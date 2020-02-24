@@ -61,7 +61,6 @@ public class AddUserFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_manager_adduser, container, false);
-
         return view;
     }
 
@@ -83,7 +82,6 @@ public class AddUserFragment extends Fragment {
         input.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 ID = etId.getText().toString().trim();
                 Name = etName.getText().toString().trim();
 
@@ -104,7 +102,6 @@ public class AddUserFragment extends Fragment {
                             }
                         }
                     }).start();
-
                 }
             }
         });
@@ -114,7 +111,6 @@ public class AddUserFragment extends Fragment {
 
     // 회원정보 조회
     private void addUser_select_Request() {
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/User.jsp");
 
         VolleyQueueSingleTon.addUser_selectSharing = new StringRequest(
@@ -215,7 +211,6 @@ public class AddUserFragment extends Fragment {
 
     // 회원 정보 삽입
     private void addUser_Added_Request() {
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/User.jsp");
 
         StringRequest stringRequest = new StringRequest(

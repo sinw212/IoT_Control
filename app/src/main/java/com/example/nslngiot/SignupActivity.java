@@ -160,19 +160,19 @@ public class SignupActivity extends AppCompatActivity {
                                     break;
                             }
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -197,21 +197,21 @@ public class SignupActivity extends AppCompatActivity {
                     params.put("mail",AES.aesEncryption(email,decryptAESkey));
                     params.put("type",AES.aesEncryption("join",decryptAESkey));
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request UnsupportedEncodingException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request NoSuchAlgorithmException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request InvalidAlgorithmParameterException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request InvalidKeyException error");
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request InvalidKeySpecException error");
                 }
                 return params;
             }

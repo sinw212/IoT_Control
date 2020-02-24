@@ -179,7 +179,6 @@ public class MypageFragment extends Fragment {
 
     //데이터베이스로 넘김
     private void member_ModifyRequest() {
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(

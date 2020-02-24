@@ -36,7 +36,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class IpFragment extends Fragment {
 
-
     private PhotoView IPImage;
     private Button upload;
     private ImageButton gallery;

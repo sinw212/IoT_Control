@@ -1,12 +1,9 @@
 package com.example.nslngiot.MemberFragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,11 +13,9 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
@@ -55,13 +50,11 @@ public class RuleFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         member_rule = getView().findViewById(R.id.member_rule);
-
         member_Rule_SelectRequest();
     }
 
     // 현재 등록된 규칙 조회 통신
     private void member_Rule_SelectRequest(){
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
 
         StringRequest stringRequest = new StringRequest(

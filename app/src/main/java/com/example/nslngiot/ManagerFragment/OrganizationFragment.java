@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
@@ -116,7 +115,6 @@ public class OrganizationFragment extends Fragment {
 
     // 이미지 전송 및 조회
     private void FileUploadUtils(final int menu) {
-
       final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -195,7 +193,6 @@ public class OrganizationFragment extends Fragment {
                 break;
             case "fileNotExist":
                 Toast.makeText(getActivity(), "파일이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-
         }
     }
 }

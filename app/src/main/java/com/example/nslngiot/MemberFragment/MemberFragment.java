@@ -50,8 +50,6 @@ public class MemberFragment extends Fragment {
     private ArrayList<ManagerMemberData> arrayList;
     private ManagerMemberData managerMemberData;
 
-    private String url = "http://210.125.212.191:8888/IoT/MemberState.jsp";
-
     private EditText EditName,
             Editphone,
             EditCourse,
@@ -64,7 +62,6 @@ public class MemberFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_member_member, container, false);
         return view;
     }
-
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -81,12 +78,13 @@ public class MemberFragment extends Fragment {
 
     // 연구실 인원 정보 조회
     private void member_select_Request() {
+       final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/MemberState.jsp");
+
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, url,
+                Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);

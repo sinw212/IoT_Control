@@ -19,13 +19,25 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Data.ManagerCalendarData;
-import com.example.nslngiot.Data.ManagerMemberData;
 import com.example.nslngiot.MemberFragment.CalendarFragment;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
+
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAdapter.ViewHolder> {
 
@@ -60,13 +72,12 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
 
         holder.numText.setText(item.getNumber());// ManagerCalendarData의 getNumber값을 numtext에 삽입
         holder.titleText.setText(item.getTitle());
-//        holder.dateText.setText(item.getDate());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 일정 '상세조회' 조회
-                calendar_select_Request(item.getDate(), item.getTitle());
+                calendar_select_Request(Date, item.getTitle());
             }
         });
     }
@@ -74,13 +85,11 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView numText;
         TextView titleText;
-        //        TextView dateText;
 
         public ViewHolder(View itemView) {
             super(itemView); // 입력 받은 값을 뷰홀더에 삽입
             numText = itemView.findViewById(R.id.manager_calendar_number);
             titleText = itemView.findViewById(R.id.manager_calendar_title);
-//            dateText = itemView.findViewById(R.id.manager_calendar_date);
         }
     }
 
@@ -90,34 +99,58 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
     }
 
     // 회원정보 상세 조회
-    private void calendar_select_Request(final String date , final String title){
+    private void calendar_select_Request(final String Date , final String Title){
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
+
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
-                            Toast.makeText(context, "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
-                        else if("error".equals(response.trim())){ // 시스템 오류
-                            Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
-                        }else {
-                            final String[] resPonse_split = response.split("-");
-                            switch (resPonse_split[3]) {
-                                case "scheduleExist":// 조회 성공 시
+
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
+                                Toast.makeText(context, "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
+                            else if("error".equals(response.trim())){ // 시스템 오류
+                                Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                            }else {
+                                final String[] resPonse_split = response.split("-");
+                                if ("scheduleExist".equals(resPonse_split[3])) { // 조회 성공 시
                                     new AlertDialog.Builder(context).setCancelable(false)
                                             .setCancelable(false)
                                             .setTitle("[공주대학교 네트워크 보안연구실]\n")
-                                            .setMessage("상세정보\n"+"날짜: "+resPonse_split[0]+"\n"+"제목: "+resPonse_split[1]+"\n"+
-                                                    "일정: "+resPonse_split[2]+"\n")
+                                            .setMessage("상세정보\n" + "날짜: " + resPonse_split[0] + "\n" + "제목: " + resPonse_split[1] + "\n" +
+                                                    "일정: " + resPonse_split[2] + "\n")
                                             .setNegativeButton("닫기", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Toast.makeText(context, resPonse_split[0]+"의 일정 "+resPonse_split[1]+" 닫기", Toast.LENGTH_SHORT).show();
-                                            dialog.dismiss();
-                                        }
-                                    }).show();
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Toast.makeText(context, resPonse_split[0] + "의 일정", Toast.LENGTH_SHORT).show();
+                                                    dialog.dismiss();
+                                                }
+                                            }).show();
+                                }else{
+                                    Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                }
                             }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -131,9 +164,31 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("date", Date);
-                params.put("title", title);
-                params.put("type", "scheduleShow");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type",AES.aesEncryption( "scheduleShow",decryptAESkey));
+                    params.put("date",AES.aesEncryption(Date,decryptAESkey));
+                    params.put("title",AES.aesEncryption(Title,decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };

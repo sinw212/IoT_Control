@@ -131,19 +131,19 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                                     break;
                             }
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -167,21 +167,21 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                     params.put("mail", AES.aesEncryption(member_mail,decryptAESkey));
                     params.put("type", AES.aesEncryption("find",decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request BadPadding error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request UnsupportedEncodingException error");
                 }
                 return params;
             }

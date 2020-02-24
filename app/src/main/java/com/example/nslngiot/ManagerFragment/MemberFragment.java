@@ -126,7 +126,6 @@ public class MemberFragment extends Fragment {
 
     // 연구실 인원 정보 조회
     private void Manager_member_select_Request() {
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/MemberState.jsp");
 
        VolleyQueueSingleTon.manager_member_selectSharing = new StringRequest(
@@ -226,7 +225,6 @@ public class MemberFragment extends Fragment {
 
     // 연구실 인원 등록
     private void Manager_memeber_Added_Request() {
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/MemberState.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -234,7 +232,6 @@ public class MemberFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);

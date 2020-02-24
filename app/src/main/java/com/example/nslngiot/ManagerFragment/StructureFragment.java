@@ -113,7 +113,6 @@ public class StructureFragment extends Fragment {
 
     //이미지 전송 및 조회
     private void FileUploadUtils(final int menu) {
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
