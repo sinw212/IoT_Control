@@ -2,7 +2,6 @@ package com.example.nslngiot;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -13,39 +12,44 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.nslngiot.Adapter.ManagerCalendarAdapter;
-import com.example.nslngiot.Data.ManagerAddUserData;
-import com.example.nslngiot.Data.ManagerCalendarData;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ManagerCalendarAddActivity extends AppCompatActivity {
-    long mNow;
-    Date mDate;
-    SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
-    Calendar c;
-    int nYear,nMon,nDay;
-    DatePickerDialog.OnDateSetListener mDateSetListener;
+public class ManagerCalendarAddActivity extends AppCompatActivity {
+    private long mNow;
+    private Date mDate;
+    private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+
+    private Calendar c;
+    private int nYear,nMon,nDay;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
     private TextView tv_date;
     private String Date, Title, Detail;
-    private EditText EditTitle;
-    private EditText EditDetail;
+    private EditText EditTitle,EditDetail;
     private ImageButton btn_calendar;
     private Button btn_add;
 
@@ -99,10 +103,8 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 DatePickerDialog oDialog = new DatePickerDialog(ManagerCalendarAddActivity.this,
                         mDateSetListener, nYear, nMon, nDay);
-
                 oDialog.show();
             }
         });
@@ -124,21 +126,27 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                         public void run() {
                             try {
                                 manager_Calendar_SaveRequest(); // 인원 등록 진행
-                                Thread.sleep(100); // 0.1초 슬립
+                                Thread.sleep(100);
+                                if(VolleyQueueSingleTon.manager_calendar_selectSharing != null){
+                                    VolleyQueueSingleTon.getInstance(ManagerCalendarAddActivity.this).addToRequestQueue(VolleyQueueSingleTon.manager_calendar_selectSharing);
+                                }
+                                Thread.sleep(100);
+                                finish(); // 이전 fragment로 이동
                             } catch (InterruptedException e) {
-                                System.err.println("ManagerCalendarFragment InterruptedException error");
+                                e.printStackTrace();
                             }
                         }
                     }).start();
+
+
                 }
-                finish(); // 이전 fragment로 이동
             }
         });
     }
 
-    //일정 등록 통신
+    // 일정 등록 통신
     private void manager_Calendar_SaveRequest(){
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -146,18 +154,39 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
 
-                        switch (response.trim()){
-                            case "scheduleAddSuccess": // 일정 등록 성공했을 때
-                                Toast.makeText(getApplicationContext(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "scheduleAlreadyEist": // 제목이 겹칠 때
-                                Toast.makeText(getApplicationContext(), "이미 존재하는 일정입니다.", Toast.LENGTH_SHORT).show();
-                            case "error": // 오류
-                                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
-                                break;
-                            default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getApplicationContext(), "default Error", Toast.LENGTH_SHORT).show();
-                                break;
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            switch (response.trim()){
+                                case "scheduleAddSuccess": // 일정 등록 성공했을 때
+                                    Toast.makeText(getApplicationContext(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "scheduleAlreadyEist": // 제목이 겹칠 때
+                                    Toast.makeText(getApplicationContext(), "이미 존재하는 일정입니다.", Toast.LENGTH_SHORT).show();
+                                case "error": // 오류
+                                    Toast.makeText(getApplicationContext(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                default: // 접속 지연 시 확인 사항
+                                    Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -171,12 +200,32 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // '일정등록'이라는 신호 정보 push 진행
-                params.put("date", Date);
-                params.put("title", Title);
-                params.put("text", Detail);
-                params.put("type","scheduleAdd");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type",AES.aesEncryption("scheduleAdd",decryptAESkey));
+                    params.put("date",AES.aesEncryption(Date,decryptAESkey));
+                    params.put("title",AES.aesEncryption(Title,decryptAESkey));
+                    params.put("text", AES.aesEncryption (Detail,decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };
@@ -187,7 +236,7 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
         VolleyQueueSingleTon.getInstance(this.getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
-    public String getTime() {
+    private String getTime() {
         mNow = System.currentTimeMillis();
         mDate = new Date(mNow);
         return mFormat.format(mDate);

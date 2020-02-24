@@ -32,21 +32,19 @@ public class OrganizationFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_member_organization, container, false);
-        OrganizationImage = (PhotoView) view.findViewById(R.id.pho_member_organization);
         return view;
     }
 
 
     public void onActivityCreated(Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
-        FileUploadUtils();//서버로 이미지 조회
+        OrganizationImage = (PhotoView) getView().findViewById(R.id.pho_member_organization);
+        FileUploadUtils(); // 서버로 이미지 조회
     }
 
 
     // 랩실 조직도 조회
-    public void FileUploadUtils() {
-
+    private void FileUploadUtils() {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -67,13 +65,13 @@ public class OrganizationFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-
                 // 조직도 조회
                 params.put("type", "orgShow");
                 return params;
             }
         };
 
+        // 캐시 기능을 사용하여 이미지 업로드 속도 향상
         stringRequest.setShouldCache(true);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }

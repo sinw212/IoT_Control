@@ -19,11 +19,23 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class RuleFragment extends Fragment {
 
@@ -81,16 +93,37 @@ public class RuleFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        switch (response.trim()){
-                            case "ruleAdded":
-                                Toast.makeText(getActivity(), "규칙을 등록하였습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "error":
-                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            switch (response.trim()){
+                                case "ruleAdded":
+                                    Toast.makeText(getActivity(), "규칙을 등록하였습니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "error":
+                                    Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                default: // 접속 지연 시 확인 사항
+                                    Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -104,10 +137,30 @@ public class RuleFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // '규칙등록'이라는 신호 정보 push 진행
-                params.put("text",manager_rule_value);
-                params.put("type","ruleAdd");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type",AES.aesEncryption("ruleAdd",decryptAESkey));
+                    params.put("text",AES.aesEncryption(manager_rule_value,decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };
@@ -127,16 +180,38 @@ public class RuleFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if("ruleNotExist".equals(response.trim())) // 등록된 규칙이 없을 시
-                            manager_rule.setText("현재 규칙이 등록되어있지 않습니다.");
-                        else if("error".equals(response.trim())){ // 시스템 오류
-                            manager_rule.setText("시스템 오류입니다.");
-                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                        }else{
-                            String[] resPonse_split = response.split("-");
-                            if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
-                                manager_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
+
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            if("ruleNotExist".equals(response.trim())) // 등록된 규칙이 없을 시
+                                manager_rule.setText("현재 규칙이 등록되어있지 않습니다.");
+                            else if("error".equals(response.trim())){ // 시스템 오류
+                                manager_rule.setText("시스템 오류입니다.");
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                            }else{
+                                String[] resPonse_split = response.split("-");
+                                if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
+                                    manager_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                                }
                             }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -150,9 +225,29 @@ public class RuleFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // '규칙등록'이라는 신호 정보 push 진행
-                params.put("type","ruleShow");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type",AES.aesEncryption("ruleShow",decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };

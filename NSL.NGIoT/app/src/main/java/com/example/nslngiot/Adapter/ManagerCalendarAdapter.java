@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -21,18 +19,25 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Data.ManagerCalendarData;
-import com.example.nslngiot.ManagerCalendarAddActivity;
 import com.example.nslngiot.ManagerFragment.CalendarFragment;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendarAdapter.ViewHolder> {
 
@@ -102,16 +107,37 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        switch (response.trim()) {
-                            case "scheduleDelete":// 삭제했을 시
-                                Toast.makeText(context, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "error": // 오류
-                                Toast.makeText(context, "시스템 에러", Toast.LENGTH_SHORT).show();
-                                break;
-                            default:
-                                Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            switch (response.trim()) {
+                                case "scheduleDelete": // 삭제했을 시
+                                    Toast.makeText(context, "일정을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "error":
+                                    Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                default:
+                                    Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -125,10 +151,31 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("date", Date);
-                params.put("title", Title);
-                params.put("type", "scheduleDelete"); // error/nonTypeRequest
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type",AES.aesEncryption( "scheduleDelete",decryptAESkey));
+                    params.put("date",AES.aesEncryption(Date,decryptAESkey));
+                    params.put("title",AES.aesEncryption(Title,decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };
@@ -142,57 +189,77 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
     // 회원정보 상세 조회
     private void calendar_select_Request(final String Title , final String Date){
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
+
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시정
-                            Toast.makeText(context, "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
-                        else if("error".equals(response.trim())){ // 시스템 오류
-                            Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
-                        }else {
-                            final String[] resPonse_split = response.split("-");
-                            switch (resPonse_split[3]) {
-                                case "scheduleExist":// 조회 성공 시
-                                    new AlertDialog.Builder(context).setCancelable(false)
-                                        .setTitle("[공주대학교 네트워크 보안연구실]\n")
-                                        .setMessage("상세정보\n"+"날짜: "+resPonse_split[0]+"\n"+"제목: "+resPonse_split[1]+"\n"+
-                                                "일정: "+resPonse_split[2]+"\n")
-                                        .setPositiveButton("정보 삭제", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                // 삭제 진행
-                                                new Thread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        try {
-                                                            Manager_calendar_delete_Request(resPonse_split[0],resPonse_split[1]);
-                                                            Thread.sleep(100); // 0.1 초 슬립
-                                                            if(VolleyQueueSingleTon.manager_calendar_selectSharing != null){
-                                                                // 일정 조회
-                                                                VolleyQueueSingleTon.manager_calendar_selectSharing.setShouldCache(false);
-                                                                VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.manager_calendar_selectSharing);
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시정
+                                Toast.makeText(context, "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
+                            else if("error".equals(response.trim())){ // 시스템 오류
+                                Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                            }else {
+                                final String[] resPonse_split = response.split("-");
+                                if ("scheduleExist".equals(resPonse_split[3].trim())) { // 조회 성공 시
+                                    new AlertDialog.Builder(context)
+                                            .setCancelable(false)
+                                            .setTitle("[공주대학교 네트워크 보안연구실]\n")
+                                            .setMessage("상세정보\n" + "날짜: " + resPonse_split[0] + "\n" + "제목: " + resPonse_split[1] + "\n" +
+                                                    "일정: " + resPonse_split[2] + "\n")
+                                            .setPositiveButton("정보 삭제", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // 삭제 진행
+                                                    new Thread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            try {
+                                                                Manager_calendar_delete_Request(resPonse_split[0], resPonse_split[1]);
+                                                                Thread.sleep(100); // 0.1 초 슬립
+                                                                if (VolleyQueueSingleTon.manager_calendar_selectSharing != null) {
+                                                                    // 일정 조회
+                                                                    VolleyQueueSingleTon.manager_calendar_selectSharing.setShouldCache(false);
+                                                                    VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.manager_calendar_selectSharing);
+                                                                }
+                                                            } catch (InterruptedException e) {
+                                                                System.err.println("ManagerCalendarAdapter InterruptedException error");
                                                             }
-                                                        } catch (InterruptedException e) {
-                                                            System.err.println("ManagerCalendarAdapter InterruptedException error");
                                                         }
-                                                    }
-                                                }).start();
-                                                dialog.dismiss();
-                                            }
-                                        }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                                                    }).start();
+                                                    dialog.dismiss();
+                                                }
+                                            }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             Toast.makeText(context, resPonse_split[0] + "의 일정", Toast.LENGTH_SHORT).show();
                                             dialog.dismiss();
                                         }
                                     }).show();
-                                    break;
-                                default:
+                                } else {
                                     Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                    break;
+                                }
                             }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -206,9 +273,31 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("title", Title);
-                params.put("date", Date);
-                params.put("type", "scheduleShow");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type",AES.aesEncryption( "scheduleShow",decryptAESkey));
+                    params.put("title",AES.aesEncryption(Title,decryptAESkey));
+                    params.put("date", AES.aesEncryption(Date,decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };

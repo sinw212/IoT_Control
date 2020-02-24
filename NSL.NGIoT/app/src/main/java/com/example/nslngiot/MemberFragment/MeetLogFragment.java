@@ -21,26 +21,38 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 public class MeetLogFragment extends Fragment {
-    long mNow;
-    Date mDate;
-    SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+    private long mNow;
+    private Date mDate;
+    private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
     private TextView tv_date;
     private TextView member_meetlog;
     private ImageButton btn_calendar;
     private String Date;
 
-    Calendar c;
-    int nYear,nMon,nDay;
-    DatePickerDialog.OnDateSetListener mDateSetListener;
+    private Calendar c;
+    private int nYear,nMon,nDay;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
     @Nullable
     @Override
@@ -97,12 +109,9 @@ public class MeetLogFragment extends Fragment {
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
-
                 oDialog.show();
-
             }
         });
 
@@ -110,24 +119,45 @@ public class MeetLogFragment extends Fragment {
 
     // 현재 등록된 회의록 조회 통신
     private void member_Meetlog_SelectRequest(){
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Conference.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Conference.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if("error".equals(response.trim())){ //시스템 에러일때
-                            member_meetlog.setText("시스템 오류입니다.");
-                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                        }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
-                            member_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
-                        }else{
-                            String[] resPonse_split = response.split("-");
-                            if("cfExist".equals(resPonse_split[1])){
-                                member_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
-                            }else
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            if("error".equals(response.trim())){ // 시스템 에러
+                                member_meetlog.setText("시스템 오류입니다.");
                                 Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                            }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
+                                member_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
+                            }else{
+                                String[] resPonse_split = response.split("-");
+                                if("cfExist".equals(resPonse_split[1])){
+                                    member_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                                }else
+                                    Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchPaddingException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        } catch (InvalidAlgorithmParameterException e) {
+                            e.printStackTrace();
+                        } catch (InvalidKeyException e) {
+                            e.printStackTrace();
+                        } catch (BadPaddingException e) {
+                            e.printStackTrace();
+                        } catch (IllegalBlockSizeException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -141,9 +171,30 @@ public class MeetLogFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date",  Date = tv_date.getText().toString().trim());
-                params.put("type","cfShow");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type", AES.aesEncryption("cfShow",decryptAESkey));
+                    params.put("date", AES.aesEncryption(Date = tv_date.getText().toString().trim(),decryptAESkey));
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 return params;
             }
         };
@@ -154,7 +205,7 @@ public class MeetLogFragment extends Fragment {
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
 
-    public String getTime() {
+    private String getTime() {
         mNow = System.currentTimeMillis();
         mDate = new Date(mNow);
         return mFormat.format(mDate);

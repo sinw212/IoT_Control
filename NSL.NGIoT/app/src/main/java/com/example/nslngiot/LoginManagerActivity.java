@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -38,7 +37,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 
 public class LoginManagerActivity extends AppCompatActivity {
 
@@ -139,7 +137,6 @@ public class LoginManagerActivity extends AppCompatActivity {
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
 
-                            // 전송부터 respones까지가 하이브리드 암호 구성완료
                             if("adminFailed".equals(response.trim())){
                                 Toast.makeText(getApplicationContext(),"관리자 ID가 틀립니다.",Toast.LENGTH_SHORT).show();
                             }else if("error".equals(response.trim())){
@@ -189,7 +186,6 @@ public class LoginManagerActivity extends AppCompatActivity {
 
                 try {
                     params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    // 복호화된 대칭키로 데이터 암호화
                     params.put("id", AES.aesEncryption(id,decryptAESkey));
                     params.put("type",AES.aesEncryption("adminLogin",decryptAESkey));
                 } catch (UnsupportedEncodingException e) {

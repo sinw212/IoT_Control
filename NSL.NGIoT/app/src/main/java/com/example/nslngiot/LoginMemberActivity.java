@@ -156,7 +156,6 @@ public class LoginMemberActivity extends AppCompatActivity {
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
 
-                            // 전송부터 respones까지가 하이브리드 암호 구성완료
                             if("loginFailed".equals(response.trim())){
                                 Toast.makeText(getApplicationContext(),"아이디를 잘못 입력하였습니다.",Toast.LENGTH_SHORT).show();
                             }
@@ -208,7 +207,6 @@ public class LoginMemberActivity extends AppCompatActivity {
 
                 try {
                     params.put("securitykey",RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    // 복호화된 대칭키로 데이터 암호화
                     params.put("id", AES.aesEncryption(id,decryptAESkey));
                     params.put("name",AES.aesEncryption(name,decryptAESkey));
                     params.put("type",AES.aesEncryption("login",decryptAESkey));

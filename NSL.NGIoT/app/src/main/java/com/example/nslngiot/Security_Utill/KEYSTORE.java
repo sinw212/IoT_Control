@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
 
-
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
