@@ -1,5 +1,6 @@
 package com.example.nslngiot.MemberFragment;
 
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -40,13 +41,12 @@ public class IpFragment extends Fragment {
 
         IPImage = (PhotoView)getView().findViewById(R.id.pho_member_ip);
 
-        FileUploadUtils();//서버로 이미지 조회
+        ipFile_Upload_Request(); // 이미지 조회
     }
 
 
     // 이미지 조회
-    private void FileUploadUtils() {
-
+    private void ipFile_Upload_Request() {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -66,7 +66,6 @@ public class IpFragment extends Fragment {
         ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
                 Map<String, String> params = new HashMap<String, String>();
                 // IP 주소 이미지 조회
                 params.put("type", "ipShow");
@@ -74,21 +73,15 @@ public class IpFragment extends Fragment {
             }
         };
 
-        // 캐시 기능을 사용하여 이미지 업로드 속도 향상
-        stringRequest.setShouldCache(true);
+        stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
 
     // 이미지 String을 Bitmap으로 변환
-    private static Bitmap StringToBitmap(String encodedString) {
-        try {
-            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
+    private Bitmap StringToBitmap(String encodedString) {
+        byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+        return bitmap;
     }
 }

@@ -24,7 +24,7 @@ public class SQLFilter {
                 result = false; //SQL로부터 안전
 
         } catch (UnsupportedEncodingException e) {
-            System.err.println("SQLFilter error");
+            System.err.println("SQLFilter UnsupportedEncodingException error");
         }
         return result;
     }

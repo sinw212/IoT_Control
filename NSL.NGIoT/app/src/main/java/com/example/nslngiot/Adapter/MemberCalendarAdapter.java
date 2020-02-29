@@ -107,50 +107,48 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
 
-                            if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
-                                Toast.makeText(context, "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
-                            else if("error".equals(response.trim())){ // 시스템 오류
+                            if("error".equals(response.trim())) // 시스템 오류
                                 Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
-                            }else {
+                            else {
                                 final String[] resPonse_split = response.split("-");
                                 if ("scheduleExist".equals(resPonse_split[3])) { // 조회 성공 시
-                                    new AlertDialog.Builder(context).setCancelable(false)
+                                    new AlertDialog.Builder(context)
                                             .setCancelable(false)
                                             .setTitle("[공주대학교 네트워크 보안연구실]\n")
-                                            .setMessage("상세정보\n" + "날짜: " + resPonse_split[0] + "\n" + "제목: " + resPonse_split[1] + "\n" +
+                                            .setMessage("상세정보\n\n" + "날짜: " + resPonse_split[0] + "\n" + "제목: " + resPonse_split[1] + "\n" +
                                                     "일정: " + resPonse_split[2] + "\n")
                                             .setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    Toast.makeText(context, resPonse_split[0] + "의 일정", Toast.LENGTH_SHORT).show();
                                                     dialog.dismiss();
                                                 }
                                             }).show();
-                                }else{
-                                    Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                 }
+                                else
+                                    Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("MemberCalendarAdapter SelectRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("MemberCalendarAdapter SelectRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("MemberCalendarAdapter SelectRequest Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("MemberCalendarAdapter SelectRequest Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("MemberCalendarAdapter SelectRequest Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("MemberCalendarAdapter SelectRequest Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("MemberCalendarAdapter SelectRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -173,22 +171,23 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
                     params.put("date",AES.aesEncryption(Date,decryptAESkey));
                     params.put("title",AES.aesEncryption(Title,decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("MemberCalendarAdapter SelectRequest Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("MemberCalendarAdapter SelectRequest Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("MemberCalendarAdapter SelectRequest Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("MemberCalendarAdapter SelectRequest Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("MemberCalendarAdapter SelectRequest Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("MemberCalendarAdapter SelectRequest Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("MemberCalendarAdapter SelectRequest Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("MemberCalendarAdapter SelectRequest Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

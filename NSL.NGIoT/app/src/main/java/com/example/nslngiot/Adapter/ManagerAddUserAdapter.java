@@ -25,6 +25,7 @@ import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 
+
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -129,20 +130,22 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                                     Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter DeleteRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter DeleteRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter DeleteRequest Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter DeleteRequest Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter DeleteRequest Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter DeleteRequest Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter DeleteRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -165,22 +168,23 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                     params.put("name",AES.aesEncryption(name,decryptAESkey));
                     params.put("id", AES.aesEncryption(id,decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter DeleteRequest Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter DeleteRequest Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter DeleteRequest Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter DeleteRequest Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter DeleteRequest Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter DeleteRequest Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter DeleteRequest Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter DeleteRequest Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -206,8 +210,8 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                             response = AES.aesDecryption(response,decryptAESkey);
 
                             if("user_NotExist".equals(response.trim())){
-                                new AlertDialog.Builder(context).setCancelable(false)
-                                        .setIcon(R.drawable.icon)
+                                new AlertDialog.Builder(context)
+                                        .setCancelable(false)
                                         .setTitle("[공주대학교 네트워크 보안연구실]\n\n")
                                         .setMessage("가입되지 않은 회원 입니다.")
                                         .setPositiveButton("정보 삭제", new DialogInterface.OnClickListener() {
@@ -226,7 +230,7 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                                                                 VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.addUser_selectSharing);
                                                             }
                                                         } catch (InterruptedException e) {
-                                                            System.err.println("ManagerAddUserAdapter InterruptedException error");
+                                                            System.err.println("ManagerAddUserAdapter SelectRequest notUser InterruptedException error");
                                                         }
                                                     }
                                                 }).start();
@@ -235,7 +239,6 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                                         }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        Toast.makeText(context, name + " " + id, Toast.LENGTH_SHORT).show();
                                         dialog.dismiss();
                                     }
                                 }).show();
@@ -246,7 +249,6 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                                 if("userListExist".equals(resPonse_split[3])) { // 조회 성공 시
                                     if("admin915".equals(resPonse_split[0].trim())){ // 관리자일 시  관리자 정보는 삭제 불가능
                                         new AlertDialog.Builder(context)
-                                                .setIcon(R.drawable.icon)
                                                 .setCancelable(false)
                                                 .setTitle("[공주대학교 네트워크 보안연구실]\n" + resPonse_split[0] + " " + resPonse_split[1] + "님")
                                                 .setMessage("관리자 상세정보\n\n" + "학번: " + resPonse_split[0] + "\n" + "이름: " + resPonse_split[1] + "님\n"
@@ -259,7 +261,6 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                                                 }).show();
                                     }else{ // 관리자가 아닐 시 정보 삭제 가능
                                         new AlertDialog.Builder(context)
-                                                .setIcon(R.drawable.icon)
                                                 .setCancelable(false)
                                                 .setTitle("[공주대학교 네트워크 보안연구실]\n" + resPonse_split[0] + " " + resPonse_split[1] + "님")
                                                 .setMessage("상세정보\n\n" + "학번: " + resPonse_split[0] + "\n" + "이름: " + resPonse_split[1] + "님\n"
@@ -280,7 +281,7 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                                                                         VolleyQueueSingleTon.getInstance(context).addToRequestQueue(VolleyQueueSingleTon.addUser_selectSharing);
                                                                     }
                                                                 } catch (InterruptedException e) {
-                                                                    System.err.println("ManagerAddUserAdapter InterruptedException error");
+                                                                    System.err.println("ManagerAddUserAdapter SelectRequest User InterruptedException error");
                                                                 }
 
                                                             }
@@ -297,20 +298,22 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                                 } else
                                     Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter SelectRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter SelectRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter SelectRequest Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter SelectRequest Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter SelectRequest Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter SelectRequest Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerAddUserAdapter SelectRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -333,22 +336,23 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                     params.put("name",AES.aesEncryption(name,decryptAESkey));
                     params.put("id", AES.aesEncryption(id,decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter SelectRequest Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter SelectRequest Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter SelectRequest Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter SelectRequest Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter SelectRequest Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter SelectRequest Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter SelectRequest Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerAddUserAdapter SelectRequest Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

@@ -18,7 +18,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled false // 난독화 미적용
+            minifyEnabled true // 난독화 미적용
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -39,7 +39,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0' // CardView 라이브러리
     implementation 'com.android.volley:volley:1.1.1' // Volley 네트워크 통신 라이브러리
     implementation group: 'de.svenkubiak', name: 'jBCrypt', version: '0.4.1' //Bcrypt해시 라이브러리
-//    implementation group: 'org.apache.tika', name: 'tika-parsers', version: '1.14' //이미지의 mime type을 얻기위한 라이브러리
     implementation group: 'commons-codec', name: 'commons-codec', version: '1.10' //RSA 암호화 인코딩 라이브러리
     implementation 'com.github.chrisbanes:PhotoView:2.3.0' //PhotoView 라이브러리
 }

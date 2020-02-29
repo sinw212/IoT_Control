@@ -22,6 +22,7 @@ import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
+import com.example.nslngiot.Security_Utill.XSSFilter;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
@@ -39,6 +40,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 public class ManagerCalendarAddActivity extends AppCompatActivity {
+
     private long mNow;
     private Date mDate;
     private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
@@ -113,8 +115,11 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Date = tv_date.getText().toString().trim();
-                Title = EditTitle.getText().toString().trim();
-                Detail = EditDetail.getText().toString().trim();
+                //////////////////////////////방어 코드////////////////////////////
+                //XSS 특수문자 공백처리 및 방어
+                Title = XSSFilter.xssFilter(EditTitle.getText().toString().trim());
+                Detail = XSSFilter.xssFilter(EditDetail.getText().toString().trim());
+                //////////////////////////////////////////////////////////////////
 
                 if ("".equals(Title) || "".equals(Detail)) {
                     Toast.makeText(getApplicationContext(), "올바른 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -128,12 +133,13 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                                 manager_Calendar_SaveRequest(); // 인원 등록 진행
                                 Thread.sleep(100);
                                 if(VolleyQueueSingleTon.manager_calendar_selectSharing != null){
+                                    VolleyQueueSingleTon.manager_calendar_selectSharing.setShouldCache(false);
                                     VolleyQueueSingleTon.getInstance(ManagerCalendarAddActivity.this).addToRequestQueue(VolleyQueueSingleTon.manager_calendar_selectSharing);
                                 }
                                 Thread.sleep(100);
                                 finish(); // 이전 fragment로 이동
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                System.err.println("ManagerCalendarAddActivity InterruptedException error");
                             }
                         }
                     }).start();
@@ -153,7 +159,6 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
@@ -173,20 +178,22 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerCalendarAddActivity Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerCalendarAddActivity Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerCalendarAddActivity Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerCalendarAddActivity Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerCalendarAddActivity Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerCalendarAddActivity Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerCalendarAddActivity Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -210,22 +217,23 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                     params.put("title",AES.aesEncryption(Title,decryptAESkey));
                     params.put("text", AES.aesEncryption (Detail,decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerCalendarAddActivity Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerCalendarAddActivity Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerCalendarAddActivity Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerCalendarAddActivity Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerCalendarAddActivity Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerCalendarAddActivity Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerCalendarAddActivity Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerCalendarAddActivity Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

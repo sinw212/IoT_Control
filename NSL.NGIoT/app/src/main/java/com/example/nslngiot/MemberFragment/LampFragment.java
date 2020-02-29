@@ -26,14 +26,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LampFragment extends Fragment {
-    Button btn_refresh, btn_lamp_on, btn_lamp_off;
-    TextView lamp_state;
-    LinearLayout lamp_on_state, lamp_off_state;
+
+    private Button btn_refresh, btn_lamp_on, btn_lamp_off;
+    private TextView lamp_state;
+    private LinearLayout lamp_on_state, lamp_off_state;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View v = inflater.inflate(R.layout.fragment_member_lamp, container, false);
         return v;
     }
@@ -50,6 +50,7 @@ public class LampFragment extends Fragment {
         lamp_off_state = getView().findViewById(R.id.lamp_off_state);
 
         member_Lamp_SelectRequest();
+
 
         // 새로고침 리스너
         btn_refresh.setOnClickListener(new View.OnClickListener() {
@@ -69,10 +70,10 @@ public class LampFragment extends Fragment {
                     public void run() {
                         try {
                             member_Lamp_OnRequest();
-                            Thread.sleep(100);
+                            Thread.sleep(1000);
                             member_Lamp_SelectRequest();
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            System.err.println("Member Lampfragment InterruptedException1 error ");
                         }
                     }
                 }).start();
@@ -81,16 +82,17 @@ public class LampFragment extends Fragment {
 
         // 불 끄는 버튼 리스너
         btn_lamp_off.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View view) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             member_Lamp_OffRequest();
-                            Thread.sleep(100);
+                            Thread.sleep(1000);
                             member_Lamp_SelectRequest();
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            System.err.println("Member Lampfragment InterruptedException2 error ");
                         }
                     }
                 }).start();
@@ -100,7 +102,7 @@ public class LampFragment extends Fragment {
 
     // 현재 랩실 전등 상태 조회 통신
     private void member_Lamp_SelectRequest() {
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/LightStatusCheck.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/LightStatusCheck.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),

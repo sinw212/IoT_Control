@@ -20,7 +20,7 @@ public class XSSFilter {
             value = value.replace("img"," ");
 
         } catch (UnsupportedEncodingException e) {
-            System.err.println("XSSFilter error");
+            System.err.println("XSSFilter UnsupportedEncodingException error");
         }
         return value;
     }

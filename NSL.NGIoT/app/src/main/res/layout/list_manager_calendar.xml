@@ -28,23 +28,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="10dp"
                 android:text="number"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:gravity="center" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/manager_calendar_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="10dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="title"
                 android:textSize="14sp"
-                android:textStyle="bold"
                 android:maxLength="10" />
 
         </LinearLayout>

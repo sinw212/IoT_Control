@@ -148,7 +148,6 @@ public class MypageFragment extends Fragment {
             public void onClick(View view) {
                 new AlertDialog.Builder(getActivity())
                         .setCancelable(false)
-                        .setIcon(R.drawable.icon)
                         .setTitle("[공주대학교 네트워크 보안연구실]")
                         .setMessage("정말 로그아웃 하시겠습니까?")
                         .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
@@ -212,20 +211,22 @@ public class MypageFragment extends Fragment {
                                     Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("Member MypageFragment Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Member MypageFragment Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("Member MypageFragment Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("Member MypageFragment Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("Member MypageFragment Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Member MypageFragment Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("Member MypageFragment Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -241,6 +242,7 @@ public class MypageFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                 try {
                     params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
                     params.put("id", AES.aesEncryption(member_id,decryptAESkey));
@@ -249,22 +251,23 @@ public class MypageFragment extends Fragment {
                     params.put("type", AES.aesEncryption("change",decryptAESkey));
 
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Member MypageFragment Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("Member MypageFragment Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("Member MypageFragment Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Member MypageFragment Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("Member MypageFragment Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("Member MypageFragment Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("Member MypageFragment Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("Member MypageFragment Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

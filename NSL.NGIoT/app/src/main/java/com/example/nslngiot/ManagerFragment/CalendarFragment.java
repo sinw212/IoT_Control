@@ -53,6 +53,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 public class CalendarFragment extends Fragment {
+
     private long mNow;
     private Date mDate;
     private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
@@ -156,49 +157,50 @@ public class CalendarFragment extends Fragment {
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
 
+                            //******* 일정이 없으면,response값으로 scheduleNotExist 던져야 하나, []값이 넘어와 if실행안됨  *******//
                             if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
                                 Toast.makeText(getActivity(), "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
                             else if("error".equals(response.trim())){ // 시스템 오류
                                 Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                             }else{
-                                try {
-                                    layoutManager = new LinearLayoutManager(getActivity());
-                                    recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
-                                    recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
-                                    // 기존 데이터와 겹치지 않기 위해 생성자를 매번 새롭게 생성
-                                    arrayList = new ArrayList<ManagerCalendarData>();
+                                layoutManager = new LinearLayoutManager(getActivity());
+                                recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
+                                recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
+                                // 기존 데이터와 겹치지 않기 위해 생성자를 매번 새롭게 생성
+                                arrayList = new ArrayList<ManagerCalendarData>();
 
-                                    JSONArray jarray = new JSONArray(response);
-                                    int size = jarray.length();
-                                    for (int i = 0; i < size; i++) {
-                                        JSONObject row = jarray.getJSONObject(i);
-                                        managerCalendarData = new ManagerCalendarData();
-                                        managerCalendarData.setTitle(row.getString("save_title"));
-                                        managerCalendarData.setNumber(String.valueOf(i+1));
-                                        arrayList.add(managerCalendarData);
-                                    }
-                                    // 어댑터에 add한 다량의 데이터 할당
-                                    managerCalendarAdapter = new ManagerCalendarAdapter(getActivity(),arrayList);
-                                    // 리사이클러뷰에 어답타 연결
-                                    recyclerView .setAdapter(managerCalendarAdapter);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                JSONArray jarray = new JSONArray(response);
+                                int size = jarray.length();
+                                for (int i = 0; i < size; i++) {
+                                    JSONObject row = jarray.getJSONObject(i);
+                                    managerCalendarData = new ManagerCalendarData();
+                                    managerCalendarData.setTitle(row.getString("save_title"));
+                                    managerCalendarData.setNumber(String.valueOf(i+1));
+                                    arrayList.add(managerCalendarData);
                                 }
+                                // 어댑터에 add한 다량의 데이터 할당
+                                managerCalendarAdapter = new ManagerCalendarAdapter(getActivity(),arrayList);
+                                // 리사이클러뷰에 어답타 연결
+                                recyclerView .setAdapter(managerCalendarAdapter);
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager CalendarFragment Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager CalendarFragment Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager CalendarFragment Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager CalendarFragment Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager CalendarFragment Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager CalendarFragment Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager CalendarFragment Response IllegalBlockSizeException error");
+                        } catch (JSONException e) {
+                            System.err.println("Manager CalendarFragment Response JSONException error");
                         }
                     }
                 },
@@ -220,22 +222,23 @@ public class CalendarFragment extends Fragment {
                     params.put("type",AES.aesEncryption("scheduleList",decryptAESkey));
                     params.put("date",AES.aesEncryption(Date = tv_date.getText().toString().trim(),decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager CalendarFragment Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager CalendarFragment Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager CalendarFragment Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager CalendarFragment Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager CalendarFragment Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager CalendarFragment Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager CalendarFragment Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager CalendarFragment Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

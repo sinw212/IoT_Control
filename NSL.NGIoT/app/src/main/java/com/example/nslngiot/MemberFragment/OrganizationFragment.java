@@ -35,16 +35,15 @@ public class OrganizationFragment extends Fragment {
         return view;
     }
 
-
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        OrganizationImage = (PhotoView) getView().findViewById(R.id.pho_member_organization);
-        FileUploadUtils(); // 서버로 이미지 조회
+        OrganizationImage = (PhotoView)getView().findViewById(R.id.pho_member_organization);
+        organizationFile_Upload_Request(); // 이미지 조회
     }
 
 
     // 랩실 조직도 조회
-    private void FileUploadUtils() {
+    private void organizationFile_Upload_Request() {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -71,20 +70,15 @@ public class OrganizationFragment extends Fragment {
             }
         };
 
-        // 캐시 기능을 사용하여 이미지 업로드 속도 향상
-        stringRequest.setShouldCache(true);
+        stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
     // 이미지 String을 Bitmap으로 변환
-    private static Bitmap StringToBitmap(String encodedString) {
-        try {
-            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
+    private Bitmap StringToBitmap(String encodedString) {
+        byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+        return bitmap;
+
     }
 }
