@@ -98,7 +98,6 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
     }
 
     private void reissuanceRequest() {
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -106,7 +105,6 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
@@ -130,6 +128,8 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
                             System.err.println("PasswordReissuanceActivity Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
@@ -183,6 +183,7 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 } catch (UnsupportedEncodingException e) {
                     System.err.println("PasswordReissuanceActivity Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

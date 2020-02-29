@@ -1,12 +1,10 @@
 package com.example.nslngiot.MemberFragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,8 +21,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +68,7 @@ public class StatusFragment extends Fragment {
             public void onClick(View view) {
                 // 재실여부/물/커피/A4 잔여 상태 조회
                 member_Person_SelectRequest();
+				// 네트워크를 동시 처리하기에 경쟁(레이스컨디셔닝) 발생할 수 있기에 동기화 처리 필요
 //              member_Water_SelectRequest();
 //              member_Coffee_SelectRequest();
 //              member_A4_SelectRequest();

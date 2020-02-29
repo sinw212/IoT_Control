@@ -1,6 +1,5 @@
 package com.example.nslngiot.Security_Utill;
 
-
 import android.content.Context;
 import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
@@ -34,7 +33,7 @@ import javax.security.auth.x500.X500Principal;
 
 public class KEYSTORE {
 
-    public final static String alias = "com.example.nslngiot"; // KeyStore alias
+    private final static String alias = "com.example.nslngiot"; // KeyStore alias
 
     public void keyStore_init(Context context){
         try {
@@ -75,7 +74,6 @@ public class KEYSTORE {
 
     // KeyStore의 RSA로 암호화
     public static String keyStore_Encryption(String str){
-
         String keyStore_Encryption_DATA="";
 
         try {
@@ -134,30 +132,29 @@ public class KEYSTORE {
 
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-
             // 암호화된 인코딩 데이터 -> 디코딩
             byte[] byteStr = Base64.decodeBase64(str.getBytes(StandardCharsets.UTF_8));
             // 디코딩된 암호문 -> 복호화 후 'String'으로 반환
             keyStore_Decryption_DATA = new String(cipher.doFinal(byteStr));
 
         } catch (KeyStoreException e) {
-            System.err.println("keyStore_Encryption KeyStoreException error");
+            System.err.println("keyStore_Decryption KeyStoreException error");
         } catch (CertificateException e) {
-            System.err.println("keyStore_Encryption CertificateException error");
+            System.err.println("keyStore_Decryption CertificateException error");
         } catch (NoSuchAlgorithmException e) {
-            System.err.println("keyStore_Encryption NoSuchAlgorithmException error");
+            System.err.println("keyStore_Decryption NoSuchAlgorithmException error");
         } catch (IOException e) {
-            System.err.println("keyStore_Encryption IOException error");
+            System.err.println("keyStore_Decryption IOException error");
         } catch (UnrecoverableEntryException e) {
-            System.err.println("keyStore_Encryption UnrecoverableEntryException error");
+            System.err.println("keyStore_Decryption UnrecoverableEntryException error");
         } catch (InvalidKeyException e) {
-            System.err.println("keyStore_Encryption InvalidKeyException error");
+            System.err.println("keyStore_Decryption InvalidKeyException error");
         } catch (NoSuchPaddingException e) {
-            System.err.println("keyStore_Encryption NoSuchPaddingException error");
+            System.err.println("keyStore_Decryption NoSuchPaddingException error");
         } catch (BadPaddingException e) {
-            System.err.println("keyStore_Encryption BadPaddingException error");
+            System.err.println("keyStore_Decryption BadPaddingException error");
         } catch (IllegalBlockSizeException e) {
-            System.err.println("keyStore_Encryption IllegalBlockSizeException error");
+            System.err.println("keyStore_Decryption IllegalBlockSizeException error");
         }
         return keyStore_Decryption_DATA;
     }

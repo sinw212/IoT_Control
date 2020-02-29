@@ -80,7 +80,6 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
             public void onClick(View v) {
                 new AlertDialog.Builder(context)
                         .setCancelable(false)
-                        .setIcon(R.drawable.icon)
                         .setTitle("[공주대학교 네트워크 보안연구실]\n"+item.getName()+"님")
                         .setMessage("상세정보\n\n"+"이름: "+item.getName()+"\n"+"전화번호: "+item.getPhone()+"\n"+
                                 "교육과정: "+item.getCourse()+"\n"+"현 소속: "+item.getGroup()+"\n\n"
@@ -110,7 +109,6 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                         }).setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(context, item.getCourse()+"과정의 "+item.getName()+"님 닫기", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                 }).show();
@@ -157,8 +155,9 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                             response = AES.aesDecryption(response,decryptAESkey);
 
                             switch (response.trim()) {
-                                case "deleteAllSuccess":// 삭제했을 시
-                                    Toast.makeText(context, "회원 정보 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                // deleteAllSucces->memDeleted로 변경됐음 확인필요
+                                case "memDeleted":// 삭제했을 시
+                                    Toast.makeText(context, "회원 정보를 삭제했습니다.", Toast.LENGTH_SHORT).show();
                                     break;
                                 case "addUserDataNotExist":// 삭제 실패했을 시
                                     Toast.makeText(context, "회원 정보 삭제를 실패했습니다.", Toast.LENGTH_SHORT).show();
@@ -170,20 +169,22 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                                     Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerMemberAdapter DeleteRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerMemberAdapter DeleteRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerMemberAdapter DeleteRequest Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerMemberAdapter DeleteRequest Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerMemberAdapter DeleteRequest Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerMemberAdapter DeleteRequest Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("ManagerMemberAdapter DeleteRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -209,22 +210,23 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                     params.put("team",AES.aesEncryption(group,decryptAESkey));
 
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerMemberAdapter DeleteRequest Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerMemberAdapter DeleteRequest Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerMemberAdapter DeleteRequest Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerMemberAdapter DeleteRequest Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerMemberAdapter DeleteRequest Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerMemberAdapter DeleteRequest Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerMemberAdapter DeleteRequest Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("ManagerMemberAdapter DeleteRequest Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

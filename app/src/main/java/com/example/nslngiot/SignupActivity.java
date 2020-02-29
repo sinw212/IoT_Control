@@ -124,7 +124,6 @@ public class SignupActivity extends AppCompatActivity {
 
     // 회원가입 DB로 전송
     private void joinRequest() {
-
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -132,7 +131,6 @@ public class SignupActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
@@ -159,6 +157,8 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
                             System.err.println("SignupActivity Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
@@ -213,6 +213,7 @@ public class SignupActivity extends AppCompatActivity {
                 } catch (InvalidKeySpecException e) {
                     System.err.println("SignupActivity Request InvalidKeySpecException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -226,9 +227,9 @@ public class SignupActivity extends AppCompatActivity {
     private void initView() {
         btn_signup = findViewById(R.id.btn_member_signup);
         btn_cancle = findViewById(R.id.btn_member_cancle);
-        sign_pw = (EditText)findViewById(R.id.sign_pw);
-        sign_id = (EditText)findViewById(R.id.sign_id);
-        sign_name= (EditText)findViewById(R.id.sign_name);
-        sign_mail= (EditText)findViewById(R.id.sign_email);
+        sign_pw = findViewById(R.id.sign_pw);
+        sign_id = findViewById(R.id.sign_id);
+        sign_name= findViewById(R.id.sign_name);
+        sign_mail= findViewById(R.id.sign_email);
     }
 }

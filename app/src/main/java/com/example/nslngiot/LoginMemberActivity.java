@@ -98,7 +98,7 @@ public class LoginMemberActivity extends AppCompatActivity {
                 id = login_id.getText().toString().trim();
                 pw = login_pw.getText().toString().trim();
                 //////////////////////////////방어 코드////////////////////////////
-                //SQL 인젝션 특수문자 공백처리 및 방어
+                //SQL 인젝션 방어
                 name_filter= SQLFilter.sqlFilter(name);
                 id_filter = SQLFilter.sqlFilter(id);
                 pw_filter = SQLFilter.sqlFilter(pw);
@@ -113,7 +113,7 @@ public class LoginMemberActivity extends AppCompatActivity {
                 }else{
                     // 로그인 진행 시 SQL 인젝션 검증 절차 진행
                     //////////////////////////////////////////방어 코드////////////////////////////
-                    if (name_filter || id_filter || pw_filter) {// SQL패턴 발견 시
+                    if (name_filter || id_filter || pw_filter) { // SQL패턴 발견 시
                         Toast.makeText(getApplicationContext(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
                         finish();
                     }else if(name.length()>=20 || id.length()>=20 || pw.length()>=255 ){ // DB 값 오류 방지
@@ -140,7 +140,7 @@ public class LoginMemberActivity extends AppCompatActivity {
             }
         });
     }
-    //데이터베이스로 넘김
+    // 로그인 정보 전송
     private void login_member_Request() {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
@@ -149,19 +149,16 @@ public class LoginMemberActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
 
-                            if("loginFailed".equals(response.trim())){
+                            if("loginFailed".equals(response.trim()))
                                 Toast.makeText(getApplicationContext(),"아이디를 잘못 입력하였습니다.",Toast.LENGTH_SHORT).show();
-                            }
-                            else if("error".equals(response.trim())){
+                            else if("error".equals(response.trim()))
                                 Toast.makeText(getApplicationContext(),"시스템 오류입니다.",Toast.LENGTH_SHORT).show();
-                            }
                             else {
                                 String[] resPonse_split = response.split(" ");
                                 if ("loginSuccess".equals(resPonse_split[1])) {
@@ -175,20 +172,22 @@ public class LoginMemberActivity extends AppCompatActivity {
                                         Toast.makeText(getApplicationContext(), "비밀번호를 잘못 입력하였습니다.", Toast.LENGTH_SHORT).show();
                                 }
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                           System.err.println("LoginMemberActivity Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginMemberActivity Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginMemberActivity Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginMemberActivity Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginMemberActivity Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginMemberActivity Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginMemberActivity Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -211,22 +210,23 @@ public class LoginMemberActivity extends AppCompatActivity {
                     params.put("name",AES.aesEncryption(name,decryptAESkey));
                     params.put("type",AES.aesEncryption("login",decryptAESkey));
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginMemberActivity Request UnsupportedEncodingException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginMemberActivity Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginMemberActivity Request NoSuchAlgorithmException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginMemberActivity Request InvalidAlgorithmParameterException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginMemberActivity Request InvalidKeyException error");
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginMemberActivity Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginMemberActivity Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginMemberActivity Request InvalidKeySpecException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -240,9 +240,9 @@ public class LoginMemberActivity extends AppCompatActivity {
     private void initView() {
         btn_re_pw = findViewById(R.id.btn_re_pw);
         btn_member_login = findViewById(R.id.btn_member_login);
-        login_pw = (EditText)findViewById(R.id.loginMember_pw);
-        login_id = (EditText)findViewById(R.id.loginMember_id);
-        login_name= (EditText)findViewById(R.id.loginMember_name);
-        auto_login = (CheckBox)findViewById(R.id.cb_login_Member_autologin);
+        login_pw = findViewById(R.id.loginMember_pw);
+        login_id = findViewById(R.id.loginMember_id);
+        login_name = findViewById(R.id.loginMember_name);
+        auto_login = findViewById(R.id.cb_login_Member_autologin);
     }
 }

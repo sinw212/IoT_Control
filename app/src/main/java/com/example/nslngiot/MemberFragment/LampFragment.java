@@ -70,10 +70,10 @@ public class LampFragment extends Fragment {
                     public void run() {
                         try {
                             member_Lamp_OnRequest();
-                            Thread.sleep(100);
+                            Thread.sleep(1000);
                             member_Lamp_SelectRequest();
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            System.err.println("Member Lampfragment InterruptedException1 error ");
                         }
                     }
                 }).start();
@@ -89,10 +89,10 @@ public class LampFragment extends Fragment {
                     public void run() {
                         try {
                             member_Lamp_OffRequest();
-                            Thread.sleep(100);
+                            Thread.sleep(1000);
                             member_Lamp_SelectRequest();
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            System.err.println("Member Lampfragment InterruptedException2 error ");
                         }
                     }
                 }).start();

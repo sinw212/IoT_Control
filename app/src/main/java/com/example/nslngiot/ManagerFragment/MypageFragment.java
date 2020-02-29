@@ -19,11 +19,9 @@ import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.nslngiot.MainActivity;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
@@ -41,8 +39,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -155,7 +151,6 @@ public class MypageFragment extends Fragment {
             public void onClick(View view) {
                 new AlertDialog.Builder(getActivity())
                         .setCancelable(false)
-                        .setIcon(R.drawable.icon)
                         .setTitle("[공주대학교 네트워크 보안연구실]")
                         .setMessage("정말 로그아웃 하시겠습니까?")
                         .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
@@ -219,20 +214,22 @@ public class MypageFragment extends Fragment {
                                     Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                           System.err.println("Manager MypageFrament Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MypageFrament Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MypageFrament Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MypageFrament Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MypageFrament Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MypageFrament Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MypageFrament Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -256,22 +253,23 @@ public class MypageFragment extends Fragment {
                     params.put("b_pwd", AES.aesEncryption(manager_corrently_pw,decryptAESkey));
                     params.put("type", AES.aesEncryption("change",decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MypageFrament Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MypageFrament Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MypageFrament Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MypageFrament Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MypageFrament Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MypageFrament Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MypageFrament Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MypageFrament Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

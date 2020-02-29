@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 public class NetworkCheck {
 
-
     public static boolean networkCheck(Context context){
         ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);

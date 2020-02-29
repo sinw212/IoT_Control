@@ -71,8 +71,10 @@ public class SplashActivity extends Activity {
                     progressDialog.setProgress(i * 10);
                     Thread.sleep(100);
                 }
-            } catch (InterruptedException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
+            } catch (InterruptedException e) {
+                System.err.println("SplashActivity InterruptedException error ");
+            } catch (NoSuchAlgorithmException e) {
+                System.err.println("SplashActivity NoSuchAlgorithmException error ");
             }
             return null;
         }

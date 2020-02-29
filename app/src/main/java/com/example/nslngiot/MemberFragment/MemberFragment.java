@@ -58,7 +58,6 @@ public class MemberFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_member_member, container, false);
         return view;
     }
@@ -70,7 +69,7 @@ public class MemberFragment extends Fragment {
         Editphone = getView().findViewById(R.id.member_phone);
         EditCourse = getView().findViewById(R.id.member_course);
         EditGroup = getView().findViewById(R.id.member_group);
-        recyclerView  = (RecyclerView)getView().findViewById(R.id.recyclerview_member_member);
+        recyclerView  = getView().findViewById(R.id.recyclerview_member_member);
 
         member_select_Request();
 
@@ -114,22 +113,24 @@ public class MemberFragment extends Fragment {
                             // 리사이클러뷰에 어답타 연결
                             recyclerView .setAdapter(memberMemberAdapter);
 
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                           System.err.println("Member memberFragment Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Member memberFragment Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("Member memberFragment Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("Member memberFragment Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("Member memberFragment Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Member memberFragment Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("Member memberFragment Response IllegalBlockSizeException error");
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            System.err.println("Member memberFragment Response JSONException error");
                         }
                     }
                 },
@@ -150,22 +151,23 @@ public class MemberFragment extends Fragment {
                     params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
                     params.put("type",AES.aesEncryption("memShow",decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Member memberFragment Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("Member memberFragment Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("Member memberFragment Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Member memberFragment Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("Member memberFragment Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("Member memberFragment Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("Member memberFragment Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("Member memberFragment Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

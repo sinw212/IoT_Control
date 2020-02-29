@@ -56,7 +56,6 @@ public class MemberMemberAdapter extends RecyclerView.Adapter<MemberMemberAdapte
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(context)
-                        .setIcon(R.drawable.icon)
                         .setCancelable(false)
                         .setTitle("[공주대학교 네트워크 보안연구실]\n" + item.getName()+ "님")
                         .setMessage("상세정보\n\n" + "이름: " + item.getName() + "\n" + "전화번호: " + item.getPhone()+ "\n" +

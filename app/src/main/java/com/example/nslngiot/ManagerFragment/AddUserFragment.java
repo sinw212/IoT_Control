@@ -26,6 +26,7 @@ import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
+import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +57,9 @@ public class AddUserFragment extends Fragment {
     private EditText etName,etId;
     private String ID,Name;
 
+    //sql 검증 결과 & default false
+    private boolean name_filter = false,
+            id_filter = false;
 
     @Nullable
     @Override
@@ -84,10 +88,17 @@ public class AddUserFragment extends Fragment {
             public void onClick(View view) {
                 ID = etId.getText().toString().trim();
                 Name = etName.getText().toString().trim();
-
+                //////////////////////////////방어 코드////////////////////////////
+                //SQL 인젝션 방어
+                name_filter = SQLFilter.sqlFilter(Name);
+                id_filter = SQLFilter.sqlFilter(ID);
+                ////////////////////////////////////////////////////////////////
                 if("".equals(Name) || "".equals(ID)){
                     Toast.makeText(getActivity(), "올바른 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
-                }else{
+                }else if(id_filter || name_filter){
+                    Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
+                }
+                else{
                     etId.setText("");
                     etName.setText("");
                     new Thread(new Runnable() {
@@ -98,15 +109,13 @@ public class AddUserFragment extends Fragment {
                                 Thread.sleep(100); // 0.1 초 슬립
                                 addUser_select_Request(); // 변경된 회원 정보 조회
                             } catch (InterruptedException e) {
-                                System.err.println("AddUserFragment InterruptedException error");
+                                System.err.println("Manager AddUserFragment InterruptedException error");
                             }
                         }
                     }).start();
                 }
             }
         });
-
-
     }
 
     // 회원정보 조회
@@ -146,22 +155,24 @@ public class AddUserFragment extends Fragment {
                             // 리사이클러뷰에 어답타 연결
                             recyclerView .setAdapter(managerAddUserAdapter);
 
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment SelectRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment SelectRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment SelectRequest Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment SelectRequest Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment SelectRequest Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment SelectRequest Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment SelectRequest Response IllegalBlockSizeException error");
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment SelectRequest Response JSONException error");
                         }
                     }
                 },
@@ -182,22 +193,23 @@ public class AddUserFragment extends Fragment {
                     params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
                     params.put("type",AES.aesEncryption("addUser_List",decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment SelectRequest Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment SelectRequest Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment SelectRequest Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment SelectRequest Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment SelectRequest Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment SelectRequest Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment SelectRequest Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment SelectRequest Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -238,20 +250,22 @@ public class AddUserFragment extends Fragment {
                                     Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment AddedRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment AddedRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment AddedRequest Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment AddedRequest Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment AddedRequest Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment AddedRequest Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager AddUserFragment AddedRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -274,22 +288,23 @@ public class AddUserFragment extends Fragment {
                     params.put("name", AES.aesEncryption(Name,decryptAESkey));
                     params.put("id", AES.aesEncryption(ID,decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment AddedRequest Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment AddedRequest Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment AddedRequest Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment AddedRequest Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment AddedRequest Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment AddedRequest Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment AddedRequest Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager AddUserFragment AddedRequest Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

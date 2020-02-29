@@ -44,6 +44,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 public class MeetLogFragment extends Fragment {
+
     private long mNow;
     private Date mDate;
     private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
@@ -137,7 +138,7 @@ public class MeetLogFragment extends Fragment {
                             Thread.sleep(100);
                             manager_Meetlog_SelectRequest();
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                           System.err.println("Manager MeetLogFrament InterruptedException error");
                         }
                     }
                 }).start();
@@ -170,20 +171,22 @@ public class MeetLogFragment extends Fragment {
                                     Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                           System.err.println("Manager MeetLogFrament SaveRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SaveRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SaveRequest Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SaveRequest Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SaveRequest Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SaveRequest Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SaveRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -206,22 +209,23 @@ public class MeetLogFragment extends Fragment {
                     params.put("date", AES.aesEncryption(Date = tv_date.getText().toString().trim(),decryptAESkey));
                     params.put("text", AES.aesEncryption(Meetlog,decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SaveRequest Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SaveRequest Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SaveRequest Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SaveRequest Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SaveRequest Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SaveRequest Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SaveRequest Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SaveRequest Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -259,20 +263,22 @@ public class MeetLogFragment extends Fragment {
                                 }else
                                     Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SelectRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SelectRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SelectRequest Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SelectRequest Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SelectRequest Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SelectRequest Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("Manager MeetLogFrament SelectRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -294,22 +300,23 @@ public class MeetLogFragment extends Fragment {
                     params.put("type", AES.aesEncryption("cfShow",decryptAESkey));
                     params.put("date", AES.aesEncryption(Date = tv_date.getText().toString().trim(),decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SelectRequest Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SelectRequest Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SelectRequest Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SelectRequest Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SelectRequest Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SelectRequest Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SelectRequest Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("Manager MeetLogFrament SelectRequest Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };
