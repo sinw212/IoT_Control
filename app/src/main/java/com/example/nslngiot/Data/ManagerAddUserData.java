@@ -1,8 +1,6 @@
 package com.example.nslngiot.Data;
 
-
 public class ManagerAddUserData {
-
     private String Number;
     private String Name;
     private String ID;

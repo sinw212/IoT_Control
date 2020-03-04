@@ -105,12 +105,12 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-
-                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
+
                             switch (response.trim()) {
                                 case "emailSendSuccess":
                                     Toast.makeText(getApplicationContext(), member_mail + " 의 이메일\n"+"임시 비밀번호 재발급 완료", Toast.LENGTH_SHORT).show();
@@ -122,26 +122,28 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "학번/이름/메일을 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                                 case "error":
-                                    Toast.makeText(getApplicationContext(), "서버 오류입니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                                     break;
                                 default: // 접속 지연 시 확인 사항
                                     Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("PasswordReissuanceActivity Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -160,28 +162,28 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                 try {
                     params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    // 회원가입 정보 push 진행
                     params.put("id", AES.aesEncryption(member_id,decryptAESkey));
                     params.put("name", AES.aesEncryption(member_name,decryptAESkey));
                     params.put("mail", AES.aesEncryption(member_mail,decryptAESkey));
                     params.put("type", AES.aesEncryption("find",decryptAESkey));
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request BadPadding error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request InvalidKeySpecException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request NoSuchAlgorithmException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request InvalidKeyException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request InvalidAlgorithmParameterException error");
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("PasswordReissuanceActivity Request UnsupportedEncodingException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };

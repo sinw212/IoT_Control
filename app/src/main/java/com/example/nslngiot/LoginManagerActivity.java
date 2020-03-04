@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -85,7 +84,7 @@ public class LoginManagerActivity extends AppCompatActivity {
                 id = login_id.getText().toString().trim();
                 pw = login_pw.getText().toString().trim();
                 //////////////////////////////방어 코드////////////////////////////
-                //SQL 인젝션 특수문자 공백처리 및 방어
+                //SQL 인젝션 방어
                 id_filter = SQLFilter.sqlFilter(id);
                 pw_filter = SQLFilter.sqlFilter(pw);
                 //////////////////////////////////////////////////////////////////
@@ -124,7 +123,7 @@ public class LoginManagerActivity extends AppCompatActivity {
             }
         });
     }
-    //데이터베이스로 넘김
+    // 로그인 정보 전송
     private void login_manager_Request() {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
@@ -139,7 +138,6 @@ public class LoginManagerActivity extends AppCompatActivity {
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
 
-                            // 전송부터 respones까지가 하이브리드 암호 구성완료
                             if("adminFailed".equals(response.trim())){
                                 Toast.makeText(getApplicationContext(),"관리자 ID가 틀립니다.",Toast.LENGTH_SHORT).show();
                             }else if("error".equals(response.trim())){
@@ -157,20 +155,22 @@ public class LoginManagerActivity extends AppCompatActivity {
                                         Toast.makeText(getApplicationContext(),"비밀번호를 잘못 입력하였습니다.",Toast.LENGTH_SHORT).show();
                                 }
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginManagerActivity Response UnsupportedEncodingExceptio error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginManagerActivity Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginManagerActivity Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginManagerActivity Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginManagerActivity Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginManagerActivity Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("LoginManagerActivity Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -189,26 +189,26 @@ public class LoginManagerActivity extends AppCompatActivity {
 
                 try {
                     params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    // 복호화된 대칭키로 데이터 암호화
                     params.put("id", AES.aesEncryption(id,decryptAESkey));
                     params.put("type",AES.aesEncryption("adminLogin",decryptAESkey));
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginManagerActivity Request UnsupportedEncodingException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginManagerActivity Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginManagerActivity Request NoSuchAlgorithmException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginManagerActivity Request InvalidAlgorithmParameterException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginManagerActivity Request InvalidKeyException error");
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginManagerActivity Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginManagerActivity Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("LoginManagerActivity Request InvalidKeySpecException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -221,8 +221,8 @@ public class LoginManagerActivity extends AppCompatActivity {
 
     private void initView() {
         btn_manager_login = findViewById(R.id.btn_manager_login);
-        login_pw = (EditText)findViewById(R.id.login_Manager_pw);
-        login_id = (EditText)findViewById(R.id.login_Manager_id);
-        auto_login = (CheckBox)findViewById(R.id.cb_login_Manager_autologin);
+        login_pw = findViewById(R.id.login_Manager_pw);
+        login_id = findViewById(R.id.login_Manager_id);
+        auto_login = findViewById(R.id.cb_login_Manager_autologin);
     }
 }

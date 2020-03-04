@@ -32,19 +32,17 @@ public class StructureFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_member_structure, container, false);
-        StructureImage = (PhotoView) view.findViewById(R.id.pho_member_structure);
         return view;
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
-        FileUploadUtils(); // 서버로 이미지 조회
+        StructureImage = (PhotoView)getView().findViewById(R.id.pho_member_structure);
+        structuerFile_Upload_Request(); // 이미지 조회
     }
 
     // 랩실 구성도 조회
-    private void FileUploadUtils() {
-
+    private void structuerFile_Upload_Request() {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
@@ -64,29 +62,22 @@ public class StructureFragment extends Fragment {
         ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
                 Map<String, String> params = new HashMap<String, String>();
-
                 // 이미지 조회
                 params.put("type", "strShow");
                 return params;
             }
         };
 
-        stringRequest.setShouldCache(true);
+        stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
 
     // String 이미지를 Bitmap으로 변환
-    private static Bitmap StringToBitmap(String encodedString) {
-        try {
-            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
+    private Bitmap StringToBitmap(String encodedString) {
+        byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+        return bitmap;
     }
 }

@@ -29,7 +29,7 @@
         android:selectAllOnFocus="true"
         android:hint="(랩실 규칙을 작성해주세요.)"
         android:inputType="textMultiLine"
-        android:lines="8"
+        android:lines="20"
         android:scrollbars="vertical"
         android:scrollHorizontally="false"
         android:textColor="@android:color/black" />

@@ -5,25 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.NetworkCheck;
-import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
-import com.example.nslngiot.Security_Utill.RSA;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-
-
 
 public class SplashActivity extends Activity {
 
@@ -35,13 +23,7 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        try {
-//            RSA.rsaKeyGen();
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
-//        Log.d("진입1",RSA.publicKEY);
-//        Log.d("진입2",RSA.privateKEY);
+
         // 네트워크 연결 되어 있으면 진행
         if (NetworkCheck.networkCheck(SplashActivity.this)) {
             PrograssTask task = new PrograssTask();
@@ -81,17 +63,16 @@ public class SplashActivity extends Activity {
                             // 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 적재
                             checkSecurity += 1;
                             break;
-                        case 40:
-                            // server_RSAPublicKey_Request(); // 서버에 서버 공개키 요청
-                            break;
                         default:
                             break;
                     }
                     progressDialog.setProgress(i * 10);
                     Thread.sleep(100);
                 }
-            } catch (InterruptedException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
+            } catch (InterruptedException e) {
+                System.err.println("SplashActivity InterruptedException error ");
+            } catch (NoSuchAlgorithmException e) {
+                System.err.println("SplashActivity NoSuchAlgorithmException error ");
             }
             return null;
         }
@@ -100,11 +81,11 @@ public class SplashActivity extends Activity {
         protected void onPostExecute(Void result) {
             progressDialog.dismiss();
             super.onPostExecute(result);
-            if (checkSecurity == 2) { //수정필요 추후
+            if (checkSecurity == 2) { // 수정필요 추후
+                Toast.makeText(SplashActivity.this, "완전 암호화 설정완료", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
-                Toast.makeText(SplashActivity.this, "완전 암호화 설정완료", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(SplashActivity.this, "암호화 설정에 실패했습니다. 다시 앱을 설치해주세요.", Toast.LENGTH_SHORT).show();
                 finish();

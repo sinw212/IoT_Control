@@ -75,7 +75,6 @@
         android:scrollbarFadeDuration="0"
         android:scrollbarSize="5dp"
         android:scrollbarThumbVertical="@android:color/darker_gray"
-        android:scrollbars="vertical"
-        android:background="@drawable/border"/>
+        android:scrollbars="vertical" />
 
 </LinearLayout>

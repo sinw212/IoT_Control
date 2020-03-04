@@ -2,7 +2,6 @@ package com.example.nslngiot.ManagerFragment;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,30 +23,41 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MeetLogFragment extends Fragment {
-    long mNow;
-    Date mDate;
-    SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
-    TextView tv_date;
-    ImageButton btn_calendar;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
-    private String manager_meetlog_value="";
+public class MeetLogFragment extends Fragment {
+
+    private long mNow;
+    private Date mDate;
+    private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+
+    private TextView tv_date;
+    private ImageButton btn_calendar;
+    private String Date, Meetlog;
     private EditText manager_meetlog;
     private Button btn_manager_meetlog_add;
-    private String meetlog_date="";
 
-    Calendar c;
-    int nYear,nMon,nDay;
-    DatePickerDialog.OnDateSetListener mDateSetListener;
+    private Calendar c;
+    private int nYear,nMon,nDay;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
     @Nullable
     @Override
@@ -61,15 +70,15 @@ public class MeetLogFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        InitView();
+        Date = "";
+        Meetlog = "";
         tv_date = getView().findViewById(R.id.tv_date);
         btn_calendar = getView().findViewById(R.id.btn_calendar);
+        manager_meetlog = getView().findViewById(R.id.manager_meetlog);
+        btn_manager_meetlog_add = getView().findViewById(R.id.btn_manager_meetlog_add);
 
         // 오늘 날짜 표현
         tv_date.setText(getTime());
-
-        meetlog_date = tv_date.getText().toString().trim();
-
 
         // 등록된 회의록 조회
         manager_Meetlog_SelectRequest();
@@ -93,6 +102,9 @@ public class MeetLogFragment extends Fragment {
                             strDate += String.valueOf(dayOfMonth) + "일";
 
                         tv_date.setText(strDate);
+
+                        // 등록된 회의록 조회
+                        manager_Meetlog_SelectRequest();
                     }
                 };
 
@@ -104,15 +116,8 @@ public class MeetLogFragment extends Fragment {
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
-
-                meetlog_date = tv_date.getText().toString().trim();
-
-                // 등록된 회의록 조회
-                manager_Meetlog_SelectRequest();
-
                 oDialog.show();
             }
         });
@@ -120,39 +125,68 @@ public class MeetLogFragment extends Fragment {
         btn_manager_meetlog_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                manager_meetlog_value = manager_meetlog.getText().toString().trim();
+                Meetlog = manager_meetlog.getText().toString().trim();
                 //////////////////////////////방어 코드////////////////////////////
                 //XSS 특수문자 공백처리 및 방어
-                manager_meetlog_value = XSSFilter.xssFilter(manager_meetlog_value);
+                Meetlog = XSSFilter.xssFilter(Meetlog);
                 //////////////////////////////////////////////////////////////////
-
-                Log.d("제발", meetlog_date);
-                Log.d("제발", manager_meetlog_value);
-
-                manager_Meetlog_SaveRequest();
-                manager_Meetlog_SelectRequest();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            manager_Meetlog_SaveRequest();
+                            Thread.sleep(100);
+                            manager_Meetlog_SelectRequest();
+                        } catch (InterruptedException e) {
+                           System.err.println("Manager MeetLogFrament InterruptedException error");
+                        }
+                    }
+                }).start();
             }
         });
     }
     //회의록 등록 통신
     private void manager_Meetlog_SaveRequest(){
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Conference.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Conference.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        switch (response.trim()){
-                            case "cfAdded":
-                                Toast.makeText(getActivity(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "error":
-                                Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_SHORT).show();
-                                break;
-                            default: // 접속 지연 시 확인 사항
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                break;
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            switch (response.trim()){
+                                case "cfAdded":
+                                    Toast.makeText(getActivity(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "error":
+                                    Toast.makeText(getActivity(), "서버오류입니다.", Toast.LENGTH_SHORT).show();
+                                    break;
+                                default: // 접속 지연 시 확인 사항
+                                    Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
+                        } catch (UnsupportedEncodingException e) {
+                           System.err.println("Manager MeetLogFrament SaveRequest Response UnsupportedEncodingException error");
+                        } catch (NoSuchPaddingException e) {
+                            System.err.println("Manager MeetLogFrament SaveRequest Response NoSuchPaddingException error");
+                        } catch (NoSuchAlgorithmException e) {
+                            System.err.println("Manager MeetLogFrament SaveRequest Response NoSuchAlgorithmException error");
+                        } catch (InvalidAlgorithmParameterException e) {
+                            System.err.println("Manager MeetLogFrament SaveRequest Response InvalidAlgorithmParameterException error");
+                        } catch (InvalidKeyException e) {
+                            System.err.println("Manager MeetLogFrament SaveRequest Response InvalidKeyException error");
+                        } catch (BadPaddingException e) {
+                            System.err.println("Manager MeetLogFrament SaveRequest Response BadPaddingException error");
+                        } catch (IllegalBlockSizeException e) {
+                            System.err.println("Manager MeetLogFrament SaveRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -166,11 +200,32 @@ public class MeetLogFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", meetlog_date);
-                params.put("text", manager_meetlog_value);
-                params.put("type","cfAdd");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type", AES.aesEncryption("cfAdd",decryptAESkey));
+                    params.put("date", AES.aesEncryption(Date = tv_date.getText().toString().trim(),decryptAESkey));
+                    params.put("text", AES.aesEncryption(Meetlog,decryptAESkey));
+                } catch (BadPaddingException e) {
+                    System.err.println("Manager MeetLogFrament SaveRequest Request BadPaddingException error");
+                } catch (IllegalBlockSizeException e) {
+                    System.err.println("Manager MeetLogFrament SaveRequest Request IllegalBlockSizeException error");
+                } catch (InvalidKeySpecException e) {
+                    System.err.println("Manager MeetLogFrament SaveRequest Request InvalidKeySpecException error");
+                } catch (NoSuchPaddingException e) {
+                    System.err.println("Manager MeetLogFrament SaveRequest Request NoSuchPaddingException error");
+                } catch (NoSuchAlgorithmException e) {
+                    System.err.println("Manager MeetLogFrament SaveRequest Request NoSuchAlgorithmException error");
+                } catch (InvalidKeyException e) {
+                    System.err.println("Manager MeetLogFrament SaveRequest Request InvalidKeyException error");
+                } catch (InvalidAlgorithmParameterException e) {
+                    System.err.println("Manager MeetLogFrament SaveRequest Request InvalidAlgorithmParameterException error");
+                } catch (UnsupportedEncodingException e) {
+                    System.err.println("Manager MeetLogFrament SaveRequest Request UnsupportedEncodingException error");
+                }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -183,24 +238,47 @@ public class MeetLogFragment extends Fragment {
 
     // 현재 등록된 회의록 조회 통신
     private void manager_Meetlog_SelectRequest(){
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Conference.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Conference.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if("error".equals(response.trim())){ //시스템 에러일때
-                            manager_meetlog.setText("시스템 오류입니다.");
-                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                        }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
-                            manager_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
-                        }else{
-                            String[] resPonse_split = response.split("-");
-                            if("cfExist".equals(resPonse_split[1])){
-                                manager_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
-                            }else
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                        try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                            response = AES.aesDecryption(response,decryptAESkey);
+
+                            if("error".equals(response.trim())){ //시스템 에러일때
+                                manager_meetlog.setText("시스템 오류입니다.");
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                            }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
+                                manager_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
+                            }else{
+                                String[] resPonse_split = response.split("-");
+                                if("cfExist".equals(resPonse_split[1])){
+                                    manager_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                                }else
+                                    Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                            }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
+                        } catch (UnsupportedEncodingException e) {
+                            System.err.println("Manager MeetLogFrament SelectRequest Response UnsupportedEncodingException error");
+                        } catch (NoSuchPaddingException e) {
+                            System.err.println("Manager MeetLogFrament SelectRequest Response NoSuchPaddingException error");
+                        } catch (NoSuchAlgorithmException e) {
+                            System.err.println("Manager MeetLogFrament SelectRequest Response NoSuchAlgorithmException error");
+                        } catch (InvalidAlgorithmParameterException e) {
+                            System.err.println("Manager MeetLogFrament SelectRequest Response InvalidAlgorithmParameterException error");
+                        } catch (InvalidKeyException e) {
+                            System.err.println("Manager MeetLogFrament SelectRequest Response InvalidKeyException error");
+                        } catch (BadPaddingException e) {
+                            System.err.println("Manager MeetLogFrament SelectRequest Response BadPaddingException error");
+                        } catch (IllegalBlockSizeException e) {
+                            System.err.println("Manager MeetLogFrament SelectRequest Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -214,10 +292,31 @@ public class MeetLogFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // '회의록등록'이라는 신호 정보 push 진행
-                params.put("date", meetlog_date);
-                params.put("type","cfShow");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                try {
+                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
+                    params.put("type", AES.aesEncryption("cfShow",decryptAESkey));
+                    params.put("date", AES.aesEncryption(Date = tv_date.getText().toString().trim(),decryptAESkey));
+                } catch (BadPaddingException e) {
+                    System.err.println("Manager MeetLogFrament SelectRequest Request BadPaddingException error");
+                } catch (IllegalBlockSizeException e) {
+                    System.err.println("Manager MeetLogFrament SelectRequest Request IllegalBlockSizeException error");
+                } catch (InvalidKeySpecException e) {
+                    System.err.println("Manager MeetLogFrament SelectRequest Request InvalidKeySpecException error");
+                } catch (NoSuchPaddingException e) {
+                    System.err.println("Manager MeetLogFrament SelectRequest Request NoSuchPaddingException error");
+                } catch (NoSuchAlgorithmException e) {
+                    System.err.println("Manager MeetLogFrament SelectRequest Request NoSuchAlgorithmException error");
+                } catch (InvalidKeyException e) {
+                    System.err.println("Manager MeetLogFrament SelectRequest Request InvalidKeyException error");
+                } catch (InvalidAlgorithmParameterException e) {
+                    System.err.println("Manager MeetLogFrament SelectRequest Request InvalidAlgorithmParameterException error");
+                } catch (UnsupportedEncodingException e) {
+                    System.err.println("Manager MeetLogFrament SelectRequest Request UnsupportedEncodingException error");
+                }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -228,12 +327,7 @@ public class MeetLogFragment extends Fragment {
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
 
-    private void InitView() {
-        manager_meetlog = getView().findViewById(R.id.manager_meetlog);
-        btn_manager_meetlog_add = getView().findViewById(R.id.btn_manager_meetlog_add);
-    }
-
-    public String getTime() {
+    private String getTime() {
         mNow = System.currentTimeMillis();
         mDate = new Date(mNow);
         return mFormat.format(mDate);

@@ -33,22 +33,21 @@ public class IpFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_member_ip, container, false);
-        IPImage = (PhotoView) view.findViewById(R.id.pho_member_ip);
         return view;
     }
 
-
     public void onActivityCreated(Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
-        FileUploadUtils();//서버로 이미지 조회
+
+        IPImage = (PhotoView)getView().findViewById(R.id.pho_member_ip);
+
+        ipFile_Upload_Request(); // 이미지 조회
     }
 
 
-    //이미지 조회
-    public void FileUploadUtils() {
-
-        StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
+    // 이미지 조회
+    private void ipFile_Upload_Request() {
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
@@ -67,7 +66,6 @@ public class IpFragment extends Fragment {
         ) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
                 Map<String, String> params = new HashMap<String, String>();
                 // IP 주소 이미지 조회
                 params.put("type", "ipShow");
@@ -75,20 +73,15 @@ public class IpFragment extends Fragment {
             }
         };
 
-        stringRequest.setShouldCache(true);
+        stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
 
     // 이미지 String을 Bitmap으로 변환
-    private static Bitmap StringToBitmap(String encodedString) {
-        try {
-            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
+    private Bitmap StringToBitmap(String encodedString) {
+        byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+        return bitmap;
     }
 }

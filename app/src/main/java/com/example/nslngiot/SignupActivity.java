@@ -2,7 +2,6 @@ package com.example.nslngiot;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -132,12 +131,12 @@ public class SignupActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-
                         try {
+                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response,decryptAESkey);
+
                             switch (response.trim()) {
                                 case "accountAleadyExist":
                                     Toast.makeText(getApplicationContext(), "이미 해당 아이디는 사용하고 있습니다.", Toast.LENGTH_SHORT).show();
@@ -146,7 +145,7 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "가입 대상자가 아닙니다.", Toast.LENGTH_SHORT).show();
                                     break;
                                 case "error":
-                                    Toast.makeText(getApplicationContext(), "서버 오류입니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                                     break;
                                 case "accountCreated":
                                     Toast.makeText(getApplicationContext(), "회원가입이 완료 되었습니다.", Toast.LENGTH_SHORT).show();
@@ -158,20 +157,22 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                     break;
                             }
+                            decryptAESkey = null; // 객체 재사용 취약 보호
+                            response = null;
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response NoSuchAlgorithmException error");
                         } catch (InvalidAlgorithmParameterException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response InvalidAlgorithmParameterException error");
                         } catch (InvalidKeyException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response InvalidKeyException error");
                         } catch (BadPaddingException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response BadPaddingException error");
                         } catch (IllegalBlockSizeException e) {
-                            e.printStackTrace();
+                            System.err.println("SignupActivity Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -190,29 +191,29 @@ public class SignupActivity extends AppCompatActivity {
 
                 try {
                     params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    // 복호화된 대칭키로 데이터 암호화
                     params.put("id", AES.aesEncryption(id,decryptAESkey));
                     params.put("pwd",AES.aesEncryption(encryption_pw,decryptAESkey));
                     params.put("name",AES.aesEncryption(name,decryptAESkey));
                     params.put("mail",AES.aesEncryption(email,decryptAESkey));
                     params.put("type",AES.aesEncryption("join",decryptAESkey));
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request UnsupportedEncodingException error");
                 } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request NoSuchPaddingException error");
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request NoSuchAlgorithmException error");
                 } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request InvalidAlgorithmParameterException error");
                 } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request InvalidKeyException error");
                 } catch (BadPaddingException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request BadPaddingException error");
                 } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request IllegalBlockSizeException error");
                 } catch (InvalidKeySpecException e) {
-                    e.printStackTrace();
+                    System.err.println("SignupActivity Request InvalidKeySpecException error");
                 }
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -226,9 +227,9 @@ public class SignupActivity extends AppCompatActivity {
     private void initView() {
         btn_signup = findViewById(R.id.btn_member_signup);
         btn_cancle = findViewById(R.id.btn_member_cancle);
-        sign_pw = (EditText)findViewById(R.id.sign_pw);
-        sign_id = (EditText)findViewById(R.id.sign_id);
-        sign_name= (EditText)findViewById(R.id.sign_name);
-        sign_mail= (EditText)findViewById(R.id.sign_email);
+        sign_pw = findViewById(R.id.sign_pw);
+        sign_id = findViewById(R.id.sign_id);
+        sign_name= findViewById(R.id.sign_name);
+        sign_mail= findViewById(R.id.sign_email);
     }
 }
