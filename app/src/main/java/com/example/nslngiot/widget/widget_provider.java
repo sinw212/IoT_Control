@@ -6,28 +6,22 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Scroller;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.nslngiot.Adapter.MemberCalendarAdapter;
-import com.example.nslngiot.Data.ManagerCalendarData;
-import com.example.nslngiot.MainActivity;
+import com.example.nslngiot.Network_Utill.NetworkCheck;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
+import com.example.nslngiot.SplashActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +33,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,28 +48,51 @@ public class widget_provider extends AppWidgetProvider {
     private final String tv_Calendar = "com.example.nslngiot.tv_widget_calendar";
     private Intent reflash = new Intent(StatusReflash);
     //private Intent Calendar = new Intent(tv_Calendar);
-    public boolean person;
-    public boolean water;
-    public boolean coffe;
-    public boolean a4;
-    long mNow;
-    public Date mDate;
+    public boolean person;//재실 여부
+    public boolean water;//물 잔여량
+    public boolean coffe;//커피 잔여량
+    public boolean a4;//a4 잔여량
+    long mNow;//getTime 에서 쓸 시간 변수
+    public Date mDate;//getTime 에서 쓸 시간 변수
     public SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
-    public String calTitle = "";
-    public String check = "";
+    public String calTitle = "";//리스폰에서 받아온 일정 이름
+    public String check = "";//리스폰 반복 방지를 위한 체크 (일정)
+    private int checkSecurity = 0;//securitycheck 에서 쓰는 변수..
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        //네트워크 연결 상태 확인 및 보안 점검?
+        if (NetworkCheck.networkCheck(context)) {
+            securitycheck(context);
+        } else {
+            Toast.makeText(context, "네트워크연결이 되지 않습니다.\n" + "네트워크 수신상태를 확인하세요.", Toast.LENGTH_SHORT).show();
+            // finish();
+        }
+
+        //리모트뷰 지정 및 버튼 연결/?
         super.onReceive(context, intent);
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);//리모트뷰 지정?
+
+        //위젯 버튼 등록?
+        PendingIntent pendingIntent_reflash = PendingIntent.getBroadcast(context, 0, reflash, PendingIntent.FLAG_CANCEL_CURRENT);
+        views.setOnClickPendingIntent(R.id.imgbtn_widget_refresh, pendingIntent_reflash);
+
+        //일정 텍스트 클릭 시 앱 실행
+        Intent intentCalendar = new Intent(Intent.ACTION_MAIN);
+        intentCalendar.addCategory(Intent.CATEGORY_LAUNCHER);
+        intentCalendar.setComponent(new ComponentName(context, SplashActivity.class));
+        PendingIntent pi = PendingIntent.getActivity(context, 0, intentCalendar, 0);
+        views.setOnClickPendingIntent(R.id.tv_widget_calendar, pi);
+
+        //앱에서 입력 받기(새로고침 버튼)
         final String action = intent.getAction();
 
         if (action.equals(StatusReflash)) {//새로고침 버튼 클릭시
 
             member_select_Request(context);//일정 volley 호츌
             Status_SelectRequest(context);//아두이노 volley 호출
-
+            // System.out.println("리시브에서 받은 일정" + calTitle);
             views.setTextViewText(R.id.tv_widget_calendar, " " + calTitle);
 
             //이미지 변경 if else문들
@@ -85,13 +101,11 @@ public class widget_provider extends AppWidgetProvider {
             } else if (person == false) {
                 views.setImageViewResource(R.id.img_person, R.drawable.people_nonexist);
             }
-
             if (water == true) {
                 views.setImageViewResource(R.id.img_water, R.drawable.water_exist);
             } else if (water == false) {
                 views.setImageViewResource(R.id.img_water, R.drawable.water_nonexist);
             }
-
             if (coffe == true) {
                 views.setImageViewResource(R.id.img_coffee, R.drawable.coffee_exist);
             } else if (coffe == false) {
@@ -111,24 +125,6 @@ public class widget_provider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
 
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);//리모트뷰 지정?
-        //위젯 버튼 등록?
-        PendingIntent pendingIntent_reflash = PendingIntent.getBroadcast(context, 0, reflash, PendingIntent.FLAG_CANCEL_CURRENT);
-        views.setOnClickPendingIntent(R.id.imgbtn_widget_refresh, pendingIntent_reflash);
-
-        //   PendingIntent pendingIntent_calendar = PendingIntent.getBroadcast(context, 0, Calendar,PendingIntent.FLAG_CANCEL_CURRENT);
-        // views.setOnClickPendingIntent(R.id.tv_widget_calendar, pendingIntent_calendar);
-
-        //일정 텍스트 클릭 시 앱 실행
-        Intent intentCalendar = new Intent(Intent.ACTION_MAIN);
-        intentCalendar.addCategory(Intent.CATEGORY_LAUNCHER);
-        intentCalendar.setComponent(new ComponentName(context, MainActivity.class));
-        PendingIntent pi = PendingIntent.getActivity(context, 0, intentCalendar, 0);
-        views.setOnClickPendingIntent(R.id.tv_widget_calendar, pi);
-
-        appWidgetManager.updateAppWidget(appWidgetIds, views);//위젯 업데이트
-
-
     }
 
     @Override
@@ -142,18 +138,12 @@ public class widget_provider extends AppWidgetProvider {
     }
 
     public synchronized void Status_SelectRequest(final Context context) {
-
-        //다시 확인
         StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/DoorStatusCheck.jsp");
-
 
         StringRequest stringRequest = new StringRequest(
 
-
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
-
-
                     boolean person = false;
                     boolean water = false;
                     boolean a4 = false;
@@ -206,7 +196,7 @@ public class widget_provider extends AppWidgetProvider {
 
     //이미지 상태 세팅(ex 재실 시 person =true..)
     public void setStatus(boolean person, boolean water, boolean coffe, boolean a4, Context context) {
-
+        System.out.println("위젯 이미지 설정");
         if (person != this.person || water != this.water || coffe != this.coffe || a4 != this.a4) {//하나라도 상태가 다를 시 실행.
             this.person = person;
             this.water = water;
@@ -220,7 +210,7 @@ public class widget_provider extends AppWidgetProvider {
     //일정 volley
     private void member_select_Request(final Context context) {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
-
+        //    System.out.println("진입");
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
@@ -238,14 +228,12 @@ public class widget_provider extends AppWidgetProvider {
                             else if ("error".equals(response.trim())) { // 시스템 오류
                                 Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                             } else {
-
                                 JSONArray jarray = new JSONArray(response);
-
+                                System.out.println("일정 진입");
                                 JSONObject row = jarray.getJSONObject(0);
                                 calTitle = row.getString("save_title");
                                 System.out.println("일정 : " + row.getString("save_title"));
                                 refreshCalendar(context);
-
                             }
                             decryptAESkey = null; // 객체 재사용 취약 보호
                             response = null;
@@ -313,6 +301,7 @@ public class widget_provider extends AppWidgetProvider {
         VolleyQueueSingleTon.getInstance(context.getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
+    //현재 시간 체크
     public String getTime() {
         mNow = System.currentTimeMillis();
         mDate = new Date(mNow);
@@ -321,9 +310,39 @@ public class widget_provider extends AppWidgetProvider {
 
     //App에서 일정 갱신
     public void refreshCalendar(Context context) {
+        System.out.println("리스폰에서 받은 일정" + calTitle);
         if (!calTitle.equals(check)) {
             check = calTitle;
             this.onReceive(context, reflash);
+        }
+    }
+
+
+    //보안 점검
+    public void securitycheck(Context context) {
+        try {
+            for (int i = 0; i < 10; i++) {
+                switch (i * 10) {
+                    case 10:
+                        KEYSTORE keystore = new KEYSTORE();
+                        keystore.keyStore_init(context); // 최초 1회 KeyStore에 저장할 AES 대칭키 생성
+                        checkSecurity += 1;
+                        break;
+                    case 20:
+                        AES.aesKeyGen();
+                        AES.secretKEY = KEYSTORE.keyStore_Encryption(AES.secretKEY);
+                        // 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 적재
+                        checkSecurity += 1;
+                        break;
+                    default:
+                        break;
+                }
+                Thread.sleep(100);
+            }
+        } catch (InterruptedException e) {
+            System.err.println("SplashActivity InterruptedException error ");
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("SplashActivity NoSuchAlgorithmException error ");
         }
     }
 }
