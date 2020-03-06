@@ -55,7 +55,9 @@ public class widget_provider extends AppWidgetProvider {
     long mNow;//getTime 에서 쓸 시간 변수
     public Date mDate;//getTime 에서 쓸 시간 변수
     public SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
-    public String calTitle = "";//리스폰에서 받아온 일정 이름
+    public String calTitle1 = "";//리스폰에서 받아온 일정 이름
+    public String calTitle2 = "";//리스폰에서 받아온 일정 이름
+
     public String check = "";//리스폰 반복 방지를 위한 체크 (일정)
     private int checkSecurity = 0;//securitycheck 에서 쓰는 변수..
 
@@ -93,7 +95,7 @@ public class widget_provider extends AppWidgetProvider {
             member_select_Request(context);//일정 volley 호츌
             Status_SelectRequest(context);//아두이노 volley 호출
             // System.out.println("리시브에서 받은 일정" + calTitle);
-            views.setTextViewText(R.id.tv_widget_calendar, " " + calTitle);
+            views.setTextViewText(R.id.tv_widget_calendar, " " + calTitle1 +"\n"+ " "+calTitle2);
 
             //이미지 변경 if else문들
             if (person == true) {
@@ -231,7 +233,9 @@ public class widget_provider extends AppWidgetProvider {
                                 JSONArray jarray = new JSONArray(response);
                                 System.out.println("일정 진입");
                                 JSONObject row = jarray.getJSONObject(0);
-                                calTitle = row.getString("save_title");
+                                calTitle1 = row.getString("save_title");
+                                row = jarray.getJSONObject(1);
+                                calTitle2 = row.getString("save_title");
                                 System.out.println("일정 : " + row.getString("save_title"));
                                 refreshCalendar(context);
                             }
@@ -310,9 +314,9 @@ public class widget_provider extends AppWidgetProvider {
 
     //App에서 일정 갱신
     public void refreshCalendar(Context context) {
-        System.out.println("리스폰에서 받은 일정" + calTitle);
-        if (!calTitle.equals(check)) {
-            check = calTitle;
+        System.out.println("리스폰에서 받은 일정" + calTitle1);
+        if (!calTitle1.equals(check)) {
+            check = calTitle1;
             this.onReceive(context, reflash);
         }
     }
