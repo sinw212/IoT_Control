@@ -58,7 +58,7 @@
         android:id="@+id/recyclerview_manager_adduser"
         android:layout_width="match_parent"
         android:layout_marginTop="15dp"
-        android:layout_height="450dp"/>
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:layout_width="match_parent"
