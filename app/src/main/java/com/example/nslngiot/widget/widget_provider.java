@@ -41,12 +41,14 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import static com.example.nslngiot.R.id.imgbtn_widget_refresh;
+
 
 public class widget_provider extends AppWidgetProvider {
 
     private final String StatusReflash = "com.example.nslngiot.imgbtn_widget_refresh";
     private final String tv_Calendar = "com.example.nslngiot.tv_widget_calendar";
-    private Intent reflash = new Intent(StatusReflash);
+    //private Intent reflash = new Intent(StatusReflash);
     //private Intent Calendar = new Intent(tv_Calendar);
     public boolean person;//재실 여부
     public boolean water;//물 잔여량
@@ -63,7 +65,7 @@ public class widget_provider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        // System.out.println("왜 안되누");
         //네트워크 연결 상태 확인 및 보안 점검?
         if (NetworkCheck.networkCheck(context)) {
             securitycheck(context);
@@ -71,13 +73,11 @@ public class widget_provider extends AppWidgetProvider {
             Toast.makeText(context, "네트워크연결이 되지 않습니다.\n" + "네트워크 수신상태를 확인하세요.", Toast.LENGTH_SHORT).show();
             // finish();
         }
-
-        //리모트뷰 지정 및 버튼 연결/?
-        super.onReceive(context, intent);
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);//리모트뷰 지정?
-
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_member_status);//리모트뷰 지정? 마스터브런치로 적용됨
+        Intent intent1 = new Intent(context, widget_provider.class);
+        intent.setAction(StatusReflash);
         //위젯 버튼 등록?
-        PendingIntent pendingIntent_reflash = PendingIntent.getBroadcast(context, 0, reflash, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent_reflash = PendingIntent.getBroadcast(context, 0, intent1, 0);
         views.setOnClickPendingIntent(R.id.imgbtn_widget_refresh, pendingIntent_reflash);
 
         //일정 텍스트 클릭 시 앱 실행
@@ -89,13 +89,16 @@ public class widget_provider extends AppWidgetProvider {
 
         //앱에서 입력 받기(새로고침 버튼)
         final String action = intent.getAction();
+        // System.out.println("왜 안되누22");
+        //  System.out.println("액션 1 : "+action);
+
 
         if (action.equals(StatusReflash)) {//새로고침 버튼 클릭시
-
+            //      System.out.println("왜 안되누11");
             member_select_Request(context);//일정 volley 호츌
             Status_SelectRequest(context);//아두이노 volley 호출
             // System.out.println("리시브에서 받은 일정" + calTitle);
-            views.setTextViewText(R.id.tv_widget_calendar, " " + calTitle1 +"\n"+ " "+calTitle2);
+            views.setTextViewText(R.id.tv_widget_calendar, " " + calTitle1 + "\n" + " " + calTitle2);
 
             //이미지 변경 if else문들
             if (person == true) {
@@ -120,6 +123,7 @@ public class widget_provider extends AppWidgetProvider {
             }
         }
         AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, widget_provider.class), views);//위젯 업데이트
+        super.onReceive(context, intent);
 
     }
 
@@ -132,6 +136,7 @@ public class widget_provider extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is create
+
     }
 
     @Override
@@ -204,7 +209,7 @@ public class widget_provider extends AppWidgetProvider {
             this.water = water;
             this.coffe = coffe;
             this.a4 = a4;
-            this.onReceive(context, reflash);//Receive를 다시 호출하여 위젯 이미지를 바꾸게 함.
+            this.onReceive(context, new Intent(StatusReflash));//Receive를 다시 호출하여 위젯 이미지를 바꾸게 함.
         }
     }
 
@@ -317,7 +322,7 @@ public class widget_provider extends AppWidgetProvider {
         System.out.println("리스폰에서 받은 일정" + calTitle1);
         if (!calTitle1.equals(check)) {
             check = calTitle1;
-            this.onReceive(context, reflash);
+            this.onReceive(context, new Intent(StatusReflash));
         }
     }
 
