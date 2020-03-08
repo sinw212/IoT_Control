@@ -79,21 +79,31 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="물 잔여량"
+                android:text="전등 제어"
                 android:textSize="25sp"/>
 
             <TextView
-                android:id="@+id/water_state"
+                android:id="@+id/lamp_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
                 android:textSize="20sp"/>
 
-            <ImageView
-                android:id="@+id/imgview_water"
+            <Button
+                android:id="@+id/btn_lamp_on"
                 android:layout_width="150dp"
-                android:layout_height="120dp" />
+                android:layout_height="120dp"
+                android:layout_gravity="right"
+                android:background="@drawable/lamp_on" />
+
+            <Button
+                android:id="@+id/btn_lamp_off"
+                android:layout_width="150dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="-120dp"
+                android:layout_gravity="right"
+                android:background="@drawable/lamp_off" />
 
         </LinearLayout>
 

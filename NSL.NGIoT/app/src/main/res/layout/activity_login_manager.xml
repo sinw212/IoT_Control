@@ -19,23 +19,24 @@
         android:textStyle="bold"
         android:textSize="40dp" />
 
-
     <EditText
         android:id="@+id/login_Manager_id"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   ID :"
+        android:hint="ID :"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/login_Manager_pw"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   PW : "
+        android:hint="PW : "
         android:inputType="textPassword" />
 
     <LinearLayout
@@ -59,5 +60,4 @@
             android:text="로그인"
             android:textSize="14dp" />
     </LinearLayout>
-
 </LinearLayout>

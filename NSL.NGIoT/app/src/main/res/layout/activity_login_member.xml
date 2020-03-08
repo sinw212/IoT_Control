@@ -21,29 +21,32 @@
 
     <EditText
         android:id="@+id/loginMember_name"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   이름 : "
+        android:hint="이름 : "
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/loginMember_id"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   ID : (학번을 입력하세요)"
+        android:hint="ID : (학번을 입력하세요)"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/loginMember_pw"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   PW : "
+        android:hint="PW : "
         android:inputType="textPassword" />
 
     <LinearLayout
@@ -71,5 +74,4 @@
             android:text="로그인"
             android:textSize="14dp" />
     </LinearLayout>
-
 </LinearLayout>
