@@ -27,16 +27,16 @@ import java.util.Map;
 
 public class StatusFragment extends Fragment {
 
-    private Button btn_refresh,
-            btn_lamp_on,
-            btn_lamp_off;
+    private Button btn_refresh;
 
-    private ImageView imgview_person,
-            imgview_coffee,
-            imgview_a4 ;
+    private ImageView imgview_personE,
+            imgview_personNE,
+            imgview_coffeeE,
+            imgview_coffeeNE,
+            imgview_a4E,
+            imgview_a4NE;
 
     private TextView person_state,
-            lamp_state,
             coffee_state,
             a4_state;
 
@@ -52,18 +52,24 @@ public class StatusFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         btn_refresh = getView().findViewById(R.id.btn_refresh);
-        btn_lamp_on = getView().findViewById(R.id.btn_lamp_on);
-        btn_lamp_off = getView().findViewById(R.id.btn_lamp_off);
-        imgview_person = getView().findViewById(R.id.imgview_person);
-        imgview_coffee = getView().findViewById(R.id.imgview_coffee);
-        imgview_a4 = getView().findViewById(R.id.imgview_a4);
+        imgview_personE = getView().findViewById(R.id.imgview_personE);
+        imgview_personNE = getView().findViewById(R.id.imgview_personNE);
+        imgview_coffeeE = getView().findViewById(R.id.imgview_coffeeE);
+        imgview_coffeeNE = getView().findViewById(R.id.imgview_coffeeNE);
+        imgview_a4E = getView().findViewById(R.id.imgview_a4E);
+        imgview_a4NE = getView().findViewById(R.id.imgview_a4NE);
         person_state = getView().findViewById(R.id.person_state);
-        lamp_state = getView().findViewById(R.id.lamp_state);
         coffee_state = getView().findViewById(R.id.coffee_state);
         a4_state = getView().findViewById(R.id.a4_state);
 
+        imgview_personE.setVisibility(View.INVISIBLE);
+        imgview_personNE.setVisibility(View.VISIBLE);
+        imgview_coffeeE.setVisibility(View.INVISIBLE);
+        imgview_coffeeNE.setVisibility(View.VISIBLE);
+        imgview_a4E.setVisibility(View.INVISIBLE);
+        imgview_a4NE.setVisibility(View.VISIBLE);
+
         member_Person_SelectRequest(); // 재실여부 조회
-        member_Lamp_SelectRequest(); // 전등 상태 조회
 
         // 새로고침 리스너
         btn_refresh.setOnClickListener(new View.OnClickListener() {
@@ -71,52 +77,12 @@ public class StatusFragment extends Fragment {
             public void onClick(View view) {
                 // 재실여부/전등상태/커피잔여/A4잔여 상태 조회
                 member_Person_SelectRequest();
-                member_Lamp_SelectRequest();
 				// 네트워크를 동시 처리하기에 경쟁(레이스컨디셔닝) 발생할 수 있기에 동기화 처리 필요
 //              member_Water_SelectRequest();
 //              member_Coffee_SelectRequest();
 //              member_A4_SelectRequest();
             }
         });
-
-        // 불 키는 버튼 리스너
-        btn_lamp_on.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            member_Lamp_OnRequest();
-                            Thread.sleep(1000);
-                            member_Lamp_SelectRequest();
-                        } catch (InterruptedException e) {
-                            System.err.println("Member Lampfragment InterruptedException1 error ");
-                        }
-                    }
-                }).start();
-            }
-        });
-
-        // 불 끄는 버튼 리스너
-        btn_lamp_off.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            member_Lamp_OffRequest();
-                            Thread.sleep(1000);
-                            member_Lamp_SelectRequest();
-                        } catch (InterruptedException e) {
-                            System.err.println("Member Lampfragment InterruptedException2 error ");
-                        }
-                    }
-                }).start();
-            }
-        });
-
     }
 
     // 현재 랩실 재실여부 상태 조회 통신
@@ -130,10 +96,12 @@ public class StatusFragment extends Fragment {
                     public void onResponse(String response) {
                         if("open".equals(response.trim())) {
                             person_state.setText("사람있음");
-                            imgview_person.setImageResource(R.drawable.people_exist);
+                            imgview_personE.setVisibility(View.VISIBLE);
+                            imgview_personNE.setVisibility(View.INVISIBLE);
                         } else if("close".equals(response.trim())) {
                             person_state.setText("사람없음");
-                            imgview_person.setImageResource(R.drawable.people_nonexist);
+                            imgview_personE.setVisibility(View.INVISIBLE);
+                            imgview_personNE.setVisibility(View.VISIBLE);
                         } else if("error".equals(response)) {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }
@@ -160,147 +128,6 @@ public class StatusFragment extends Fragment {
         VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
     }
 
-    // 현재 랩실 전등 상태 조회 통신
-    private void member_Lamp_SelectRequest() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/LightStatusCheck.jsp");
-
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        switch (response.trim()) {
-                            case "on":
-                                //불 켜져 있을 때
-                                lamp_state.setText("현재 상태 : ON");
-                                btn_lamp_on.setVisibility(View.INVISIBLE);
-                                btn_lamp_off.setVisibility(View.VISIBLE);
-                                break;
-                            case "off":
-                                //불 꺼져 있을 때
-                                lamp_state.setText("현재상태 : OFF");
-                                btn_lamp_on.setVisibility(View.VISIBLE);
-                                btn_lamp_off.setVisibility(View.INVISIBLE);
-                                break;
-                            case "error":
-                                Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_LONG).show();
-                                break;
-                            default:
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                                break;
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("check","security");
-
-                return params;
-            }
-        };
-
-        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
-        // 항상 새로운 데이터를 위해 false
-        stringRequest.setShouldCache(false);
-        VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
-    }
-
-    // 불을 on을 위한 통신
-    private void member_Lamp_OnRequest() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/LightAndroidControl.jsp");
-
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        switch (response.trim()){
-                            case "ok":
-                                Toast.makeText(getActivity(), "연구실 불을 ON 하였습니다.", Toast.LENGTH_LONG).show();
-                                break;
-                            case "noAndroid":
-                                Toast.makeText(getActivity(), "체크 값이 알맞지 않습니다.", Toast.LENGTH_LONG).show();
-                                break;
-                            default:
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                                break;
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("check","security");
-                params.put("light","1"); // 불 on 신호
-                return params;
-            }
-        };
-
-        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
-        // 항상 새로운 데이터를 위해 false
-        stringRequest.setShouldCache(false);
-        VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
-    }
-
-    // 불을 off 하기 위한 통신
-    private void member_Lamp_OffRequest() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/LightAndroidControl.jsp");
-
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        switch (response.trim()){
-                            case "ok":
-                                Toast.makeText(getActivity(), "연구실 불을 OFF 하였습니다.", Toast.LENGTH_LONG).show();
-                                break;
-                            case "noAndroid":
-                                Toast.makeText(getActivity(), "체크 값이 알맞지 않습니다.", Toast.LENGTH_LONG).show();
-                                break;
-                            default:
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                                break;
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("check","security");
-                params.put("light","0"); // 불 off 신호
-                return params;
-            }
-        };
-
-        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
-        // 항상 새로운 데이터를 위해 false
-        stringRequest.setShouldCache(false);
-        VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
-    }
-
     // 현재 랩실 커피 잔여량 상태 조회 통신
     private void member_Coffee_SelectRequest() {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/StatusCheck.jsp");
@@ -312,10 +139,12 @@ public class StatusFragment extends Fragment {
                     public void onResponse(String response) {
                         if("open".equals(response.trim())) {
                             coffee_state.setText("충분함");
-                            imgview_coffee.setImageResource(R.drawable.coffee_exist);
+                            imgview_coffeeE.setVisibility(View.VISIBLE);
+                            imgview_coffeeNE.setVisibility(View.INVISIBLE);
                         } else if("close".equals(response.trim())) {
                             coffee_state.setText("부족함");
-                            imgview_coffee.setImageResource(R.drawable.coffee_nonexist);
+                            imgview_coffeeE.setVisibility(View.INVISIBLE);
+                            imgview_coffeeNE.setVisibility(View.VISIBLE);
                         } else if("error".equals(response)) {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }
@@ -353,10 +182,12 @@ public class StatusFragment extends Fragment {
                     public void onResponse(String response) {
                         if("open".equals(response.trim())) {
                             a4_state.setText("충분함");
-                            imgview_a4.setImageResource(R.drawable.a4_exist);
+                            imgview_a4E.setVisibility(View.VISIBLE);
+                            imgview_a4NE.setVisibility(View.INVISIBLE);
                         } else if("close".equals(response.trim())) {
                             a4_state.setText("부족함");
-                            imgview_a4.setImageResource(R.drawable.a4_nonexist);
+                            imgview_a4E.setVisibility(View.INVISIBLE);
+                            imgview_a4NE.setVisibility(View.VISIBLE);
                         } else if("error".equals(response)) {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }

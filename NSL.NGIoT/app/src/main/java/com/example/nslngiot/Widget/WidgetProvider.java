@@ -45,7 +45,6 @@ public class WidgetProvider extends AppWidgetProvider {
     private final static String reflash_Flag = "com.example.nslngiot.imgbtn_widget_refresh";
     private SharedPreferences Preferences; // 앱 XML 저장 및 읽기 전용
     private String calenderTitle; // 연구실 일정 정보
-    private boolean lab_Lamp; // 전등
     private boolean lab_Person; // 재실 여부
     private boolean lab_Coffe; // 커피 잔여량
     private boolean lab_A4; // a4 잔여량
@@ -97,17 +96,11 @@ public class WidgetProvider extends AppWidgetProvider {
             Preferences = context.getSharedPreferences("LAB_CALENDER", Activity.MODE_PRIVATE);
             calenderTitle = Preferences.getString("CALENDER", "NOTHING");
             Preferences = context.getSharedPreferences("LAB_STATUS", Activity.MODE_PRIVATE);
-            lab_Lamp = Preferences.getBoolean("LAMP", false);
             lab_Person = Preferences.getBoolean("PERSON", false);
             lab_Coffe = Preferences.getBoolean("COFFE", false);
             lab_A4 = Preferences.getBoolean("A4", false);
 
             views.setTextViewText(R.id.tv_widget_calendar, " 연구실 대표 일정: " +calenderTitle+"\n 상세 정보는 일정을 눌러 확인하세요.");
-            if (lab_Lamp)
-                views.setImageViewResource(R.id.img_lamp, R.drawable.lamp_on);
-            else
-                views.setImageViewResource(R.id.img_lamp, R.drawable.lamp_off);
-
             if (lab_Person) {
                 views.setImageViewResource(R.id.img_person, R.drawable.people_exist);
             }
@@ -207,7 +200,6 @@ public class WidgetProvider extends AppWidgetProvider {
                         // 위젯에 등록할 '상태' 정보 XML에 저장
                         Preferences = context.getSharedPreferences("LAB_STATUS", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = Preferences.edit();
-                        editor.putBoolean("LAMP", lab_Lamp);
                         editor.putBoolean("PERSON", lab_Person);
                         editor.putBoolean("COFFE", lab_Coffe);
                         editor.putBoolean("A4", lab_A4);
