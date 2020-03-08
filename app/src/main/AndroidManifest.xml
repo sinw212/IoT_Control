@@ -15,33 +15,58 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
 
+        <receiver
+            android:name=".Widget.WidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.nslngiot.imgbtn_widget_refresh" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider" />
+        </receiver>
+
         <activity
             android:name=".SplashActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainMemberActivity"
-            android:exported="false"/>
-        <activity android:name=".MainManagerActivity"
-            android:exported="false"/>
-        <activity android:name=".LoginMemberActivity"
-            android:exported="false"/>
-        <activity android:name=".LoginManagerActivity"
-            android:exported="false"/>
-        <activity android:name=".SignupActivity"
-            android:exported="false"/>
-        <activity android:name=".PasswordReissuanceActivity"
-            android:exported="false"/>
-        <activity android:name=".ManagerCalendarAddActivity"
-            android:exported="false"/>
-        <activity android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:exported="false"/>
+
+        <activity
+            android:name=".MainMemberActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainManagerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginMemberActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginManagerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PasswordReissuanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManagerCalendarAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service android:name=".Widget.WidgetProviderService"
+            android:exported="false"
+            android:enabled="true"/>
+
     </application>
 
 </manifest>

@@ -83,7 +83,7 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                         .setTitle("[공주대학교 네트워크 보안연구실]\n"+item.getName()+"님")
                         .setMessage("상세정보\n\n"+"이름: "+item.getName()+"\n"+"전화번호: "+item.getPhone()+"\n"+
                                 "교육과정: "+item.getCourse()+"\n"+"현 소속: "+item.getGroup()+"\n\n"
-                               +item.getCourse()+"과정의 "+item.getName()+"님\n")
+                                +item.getCourse()+"과정의 "+item.getName()+"님\n")
                         .setPositiveButton("정보 삭제", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

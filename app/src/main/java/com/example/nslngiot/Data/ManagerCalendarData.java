@@ -8,12 +8,15 @@ public class ManagerCalendarData {
     public void setNumber(String number){
         this.Number = number;
     }
+
     public void setTitle(String title){
         this.Title = title;
     }
+
     public String getNumber(){
         return Number;
     }
+
     public String getTitle(){
         return Title;
     }

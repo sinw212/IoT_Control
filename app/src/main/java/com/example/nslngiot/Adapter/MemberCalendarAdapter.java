@@ -136,7 +136,7 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
                             decryptAESkey = null; // 객체 재사용 취약 보호
                             response = null;
                         } catch (UnsupportedEncodingException e) {
-                           System.err.println("MemberCalendarAdapter SelectRequest Response UnsupportedEncodingException error");
+                            System.err.println("MemberCalendarAdapter SelectRequest Response UnsupportedEncodingException error");
                         } catch (NoSuchPaddingException e) {
                             System.err.println("MemberCalendarAdapter SelectRequest Response NoSuchPaddingException error");
                         } catch (NoSuchAlgorithmException e) {

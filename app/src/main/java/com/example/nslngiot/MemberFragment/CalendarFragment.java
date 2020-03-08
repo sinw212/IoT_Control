@@ -89,7 +89,7 @@ public class CalendarFragment extends Fragment {
         tv_date.setText(getTime());
 
         // 등록된 일정 조회
-        member_select_Request();
+        member_calendar_Request();
 
         // Calendar
         //DatePicker Listener
@@ -112,7 +112,7 @@ public class CalendarFragment extends Fragment {
                         tv_date.setText(strDate);
 
                         // 등록된 일정 조회
-                        member_select_Request();
+                        member_calendar_Request();
                     }
                 };
 
@@ -133,7 +133,7 @@ public class CalendarFragment extends Fragment {
     }
 
     // 일정 '제목조회' 조회
-    private void member_select_Request() {
+    private void member_calendar_Request() {
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
 
         StringRequest stringRequest = new StringRequest(

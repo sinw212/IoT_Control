@@ -13,8 +13,6 @@ import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import java.security.NoSuchAlgorithmException;
 
-
-
 public class SplashActivity extends Activity {
 
     private int checkSecurity = 0;

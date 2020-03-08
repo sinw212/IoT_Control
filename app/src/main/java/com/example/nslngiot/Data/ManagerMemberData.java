@@ -1,8 +1,6 @@
 package com.example.nslngiot.Data;
 
 public class ManagerMemberData {
-
-
     // manager와 member 어댑터가 같은 data 공유
     private String Number;
     private String Name;
@@ -50,5 +48,4 @@ public class ManagerMemberData {
     public String getCourse(){
         return Course;
     }
-
 }

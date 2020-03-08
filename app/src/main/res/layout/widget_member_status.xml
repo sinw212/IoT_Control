@@ -3,11 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="294dp"
     android:layout_height="146dp"
-    android:background="#FFFFFF"
+    android:background="@drawable/round_shape"
     android:elevation="10dp"
     android:gravity="center_horizontal"
     android:orientation="vertical" >
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,9 +18,10 @@
             android:layout_width="240dp"
             android:layout_height="33dp"
             android:elevation="10dp"
-            android:text="NSL.NGIoT"
+            android:text=" NSL.NGIoT"
             android:textSize="24dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:scrollbars="vertical" />
 
         <ImageButton
             android:id="@+id/imgbtn_widget_refresh"
@@ -31,6 +31,7 @@
             android:scaleType="fitCenter"
             android:src="@drawable/click_refresh"
             android:text="새로고침" />
+
     </LinearLayout>
 
     <TextView
@@ -38,8 +39,9 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:elevation="10dp"
-        android:text="일정 조회"
-        android:textSize="25dp" />
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:background="@drawable/border"/>
 
     <LinearLayout
         android:layout_width="match_parent"

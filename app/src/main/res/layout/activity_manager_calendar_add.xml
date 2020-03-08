@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:paddingTop="80dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
     tools:context=".ManagerCalendarAddActivity">

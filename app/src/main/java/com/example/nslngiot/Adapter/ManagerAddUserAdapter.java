@@ -254,11 +254,11 @@ public class ManagerAddUserAdapter extends RecyclerView.Adapter<ManagerAddUserAd
                                                 .setMessage("관리자 상세정보\n\n" + "학번: " + resPonse_split[0] + "\n" + "이름: " + resPonse_split[1] + "님\n"
                                                         + "이메일: " + resPonse_split[2])
                                                 .setNegativeButton("닫기", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        }).show();
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                }).show();
                                     }else{ // 관리자가 아닐 시 정보 삭제 가능
                                         new AlertDialog.Builder(context)
                                                 .setCancelable(false)
