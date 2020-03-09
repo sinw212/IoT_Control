@@ -31,47 +31,53 @@
 
     <EditText
         android:id="@+id/manager_name"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/line_remove"
-        android:hint="   이름 "
+        android:hint="이름"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/manager_id"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/line_remove"
-        android:hint="   ID(학번) "
+        android:hint="ID(학번)"
         android:inputType="textPassword" />
+
     <EditText
         android:id="@+id/manager_corrently_pw"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/line_remove"
-        android:hint="   현재 비밀번호"
+        android:hint="현재 비밀번호"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/manager_new_pw"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/line_remove"
-        android:hint="   비밀번호 : (수정할 비밀번호를 입력하세요) "
+        android:hint="비밀번호 : (수정할 비밀번호를 입력하세요) "
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/manager_modifypw"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/line_remove"
-        android:hint="   비밀번호 확인 : (다시 한번 입력하세요) "
+        android:hint="비밀번호 확인 : (다시 한번 입력하세요) "
         android:inputType="textPassword" />
 
     <LinearLayout

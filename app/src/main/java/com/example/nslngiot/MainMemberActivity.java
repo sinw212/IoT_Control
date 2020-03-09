@@ -22,8 +22,6 @@ import com.example.nslngiot.MemberFragment.OrganizationFragment;
 import com.example.nslngiot.MemberFragment.RuleFragment;
 import com.example.nslngiot.MemberFragment.StructureFragment;
 import com.example.nslngiot.MemberFragment.StatusFragment;
-import com.example.nslngiot.MemberFragment.LampFragment;
-import com.example.nslngiot.MemberFragment.CurtainFragment;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -89,14 +87,6 @@ public class MainMemberActivity extends AppCompatActivity
             case R.id.nav_status:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
                         new StatusFragment()).addToBackStack(null).commit();
-                break;
-            case R.id.nav_lamp:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new LampFragment()).addToBackStack(null).commit();
-                break;
-            case R.id.nav_curtain:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new CurtainFragment()).addToBackStack(null).commit();
                 break;
         }
 

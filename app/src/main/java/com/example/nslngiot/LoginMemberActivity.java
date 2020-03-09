@@ -68,6 +68,24 @@ public class LoginMemberActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        // 위젯에서 받은 신호로 새로운 암호키 생성
+        // 코드 삽입 이유: 스마트폰의 '최근 실행목록 내역'을 지우면 암호키 값을 불러오지 못하여,
+        // 암호키가 필요한 기능들의 사용 문제 발생, 하여 위젯의 신호를 기반으로 'LoginMember'에서 암호키 생성
+        // 위젯의 인덴트가 'LoginMember'로 이동하기에 코드 삽입
+        Bundle getExtra = getIntent().getExtras();
+        if(getExtra != null){
+            String widgetSignal = getExtra.getString("signal");
+            if(widgetSignal != null && widgetSignal.equals("keystore")){
+                try {
+                    AES.aesKeyGen();
+                    AES.secretKEY = KEYSTORE.keyStore_Encryption(AES.secretKEY);
+                    // 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 적재
+                } catch (NoSuchAlgorithmException e) {
+                    System.err.println("LoginMemberActivity NoSuchAlgorithmException Keygen error");
+                }
+            }
+        }
+
         initView();
 
         login_Preferences = getSharedPreferences("MemberLogin", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가

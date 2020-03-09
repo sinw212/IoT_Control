@@ -13,8 +13,8 @@
         android:layout_height="40dp"
         android:layout_margin="5dp"
         android:layout_marginTop="10dp"
-        card_view:cardElevation="10dp"
-        card_view:cardCornerRadius="20dp">
+        card_view:cardElevation="20dp"
+        card_view:cardCornerRadius="30dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="넘버"
+                android:text="번호"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:textSize="15sp" />
@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="아이디"
+                android:text="ID(학번)"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:textSize="15sp"

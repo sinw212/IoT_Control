@@ -19,41 +19,44 @@
         android:textStyle="bold"
         android:textSize="40dp" />
 
-
     <EditText
         android:id="@+id/sign_name"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   이름 : "
+        android:hint="이름 :"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/sign_id"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   ID : (학번을 입력하세요)"
+        android:hint="ID : (학번을 입력하세요)"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/sign_pw"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   PW : "
+        android:hint="PW : "
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/sign_email"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   E-Mail : "
+        android:hint="E-Mail : "
         android:inputType="textEmailAddress" />
 
     <LinearLayout
