@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.example.nslngiot.Network_Utill.NetworkCheck;
 import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
-import java.security.NoSuchAlgorithmException;
 
 public class SplashActivity extends Activity {
 
@@ -71,8 +70,6 @@ public class SplashActivity extends Activity {
                 }
             } catch (InterruptedException e) {
                 System.err.println("SplashActivity InterruptedException error ");
-            } catch (NoSuchAlgorithmException e) {
-                System.err.println("SplashActivity NoSuchAlgorithmException error ");
             }
             return null;
         }

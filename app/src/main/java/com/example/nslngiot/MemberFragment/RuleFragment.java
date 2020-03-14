@@ -62,39 +62,23 @@ public class RuleFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
 
-                            if("ruleNotExist".equals(response.trim())) // 등록된 규칙이 없을 시
-                                member_rule.setText("현재 규칙이 등록되어있지 않습니다.");
-                            else if("error".equals(response.trim())){ // 시스템 오류
-                                member_rule.setText("시스템 오류입니다.");
-                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                            }else{
-                                String[] resPonse_split = response.split("-");
-                                if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
-                                    member_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
-                                }
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        if("ruleNotExist".equals(response.trim())) // 등록된 규칙이 없을 시
+                            member_rule.setText("현재 규칙이 등록되어있지 않습니다.");
+                        else if("error".equals(response.trim())){ // 시스템 오류
+                            member_rule.setText("시스템 오류입니다.");
+                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                        }else{
+                            String[] resPonse_split = response.split("-");
+                            if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
+                                member_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
                             }
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("Member RuleFragment Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("Member RuleFragment Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("Member RuleFragment Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("Member RuleFragment Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("Member RuleFragment Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("Member RuleFragment Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("Member RuleFragment Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -108,29 +92,13 @@ public class RuleFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type",AES.aesEncryption("ruleShow",decryptAESkey));
-                } catch (BadPaddingException e) {
-                    System.err.println("Member RuleFragment Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("Member RuleFragment Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("Member RuleFragment Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("Member RuleFragment Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("Member RuleFragment Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("Member RuleFragment Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("Member RuleFragment Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("Member RuleFragment Request UnsupportedEncodingException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type",AES.aesEncryption("ruleShow".toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
                 return params;
             }

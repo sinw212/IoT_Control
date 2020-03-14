@@ -4,13 +4,11 @@ import android.content.Context;
 import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
 
-
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyPairGenerator;
@@ -73,8 +71,10 @@ public class KEYSTORE {
     }
 
     // KeyStore의 RSA로 암호화
-    public static String keyStore_Encryption(String str){
+    public static char[] keyStore_Encryption(char[] str){
+
         String keyStore_Encryption_DATA="";
+        byte[] encrypted = new byte[2060];
 
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore"); // Android KeyStore 접근
@@ -87,7 +87,7 @@ public class KEYSTORE {
             cipher.init(Cipher.ENCRYPT_MODE,publicKey); // 암호화 준비
 
             // RSA 암호화
-            byte[] encrypted = cipher.doFinal(str.getBytes(StandardCharsets.UTF_8));
+            encrypted = cipher.doFinal(String.valueOf(str).getBytes());
 
             // 암호화된 데이터, 인코딩 후 'String'으로 반환
             if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.N)){
@@ -115,27 +115,31 @@ public class KEYSTORE {
             System.err.println("keyStore_Encryption UnrecoverableEntryException error");
         } catch (IOException e) {
             System.err.println("keyStore_Encryption IOException error");
+        } finally {
+            java.util.Arrays.fill(encrypted, (byte) 0x20);
         }
-        return keyStore_Encryption_DATA;
+        return keyStore_Encryption_DATA.toCharArray();
     }
 
     // KeyStore의 RSA로 복호화
-    public static String keyStore_Decryption(String str){
+    public static String keyStore_Decryption(char[] str){
+
         String keyStore_Decryption_DATA="";
+        byte[] decrypted = new byte[2060];
+
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore"); // Android KeyStore 접근
             keyStore.load(null); // 로드
             KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry)keyStore.getEntry(alias,null);
             PrivateKey privateKey = privateKeyEntry.getPrivateKey(); // KeyStore의 개인키 반환
-
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
             // 암호화된 인코딩 데이터 -> 디코딩
-            byte[] byteStr = Base64.decodeBase64(str.getBytes(StandardCharsets.UTF_8));
+            decrypted = Base64.decodeBase64(String.valueOf(str).getBytes());
+
             // 디코딩된 암호문 -> 복호화 후 'String'으로 반환
-            keyStore_Decryption_DATA = new String(cipher.doFinal(byteStr));
+            keyStore_Decryption_DATA = new String(cipher.doFinal(decrypted));
 
         } catch (KeyStoreException e) {
             System.err.println("keyStore_Decryption KeyStoreException error");
@@ -155,6 +159,8 @@ public class KEYSTORE {
             System.err.println("keyStore_Decryption BadPaddingException error");
         } catch (IllegalBlockSizeException e) {
             System.err.println("keyStore_Decryption IllegalBlockSizeException error");
+        }finally {
+            java.util.Arrays.fill(decrypted, (byte) 0x20);
         }
         return keyStore_Decryption_DATA;
     }
