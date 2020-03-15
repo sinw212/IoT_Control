@@ -29,18 +29,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class MemberFragment extends Fragment {
 
@@ -88,7 +79,8 @@ public class MemberFragment extends Fragment {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
+                            response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                            decryptAESkey = null; // 객체 재사용 취약 보호
 
                             layoutManager = new LinearLayoutManager(getActivity());
                             recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
@@ -112,23 +104,6 @@ public class MemberFragment extends Fragment {
                             memberMemberAdapter = new MemberMemberAdapter(getActivity(),arrayList);
                             // 리사이클러뷰에 어답타 연결
                             recyclerView .setAdapter(memberMemberAdapter);
-
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                           System.err.println("Member memberFragment Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("Member memberFragment Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("Member memberFragment Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("Member memberFragment Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("Member memberFragment Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("Member memberFragment Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("Member memberFragment Response IllegalBlockSizeException error");
                         } catch (JSONException e) {
                             System.err.println("Member memberFragment Response JSONException error");
                         }
@@ -144,29 +119,13 @@ public class MemberFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type",AES.aesEncryption("memShow",decryptAESkey));
-                } catch (BadPaddingException e) {
-                    System.err.println("Member memberFragment Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("Member memberFragment Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("Member memberFragment Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("Member memberFragment Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("Member memberFragment Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("Member memberFragment Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("Member memberFragment Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("Member memberFragment Request UnsupportedEncodingException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type",AES.aesEncryption("memShow".toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
                 return params;
             }

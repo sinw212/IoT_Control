@@ -28,18 +28,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class WidgetProvider extends AppWidgetProvider {
 
@@ -82,7 +74,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
             try {
                 status_Request(context); // 연구실 상태정보 호출
-                Thread.sleep(100);
+                Thread.sleep(1000);
                 member_calendar_Request(context); // 연구실 일정정보 호출
             } catch (InterruptedException e) {
                 System.err.println("WidgetProvider InterruptedException error");
@@ -128,7 +120,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
             try {
                 status_Request(context); // 연구실 상태정보 호출
-                Thread.sleep(100);
+                Thread.sleep(1000);
                 member_calendar_Request(context); // 연구실 일정정보 호출
             } catch (InterruptedException e) {
                 System.err.println("WidgetProvider InterruptedException error");
@@ -169,25 +161,20 @@ public class WidgetProvider extends AppWidgetProvider {
          * 위젯이 처음 생성될때 호출됨
          * 동일한 위젯이 생성되도 최초 생성때만 호출됨
          */
-        try {
-            KEYSTORE keystore = new KEYSTORE();
-            keystore.keyStore_init(context); // 최초 1회 KeyStore에 저장할 RSA키 생성
-            AES.aesKeyGen();
-            AES.secretKEY = KEYSTORE.keyStore_Encryption(AES.secretKEY);
-            // 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 적재
+        KEYSTORE keystore = new KEYSTORE();
+        keystore.keyStore_init(context); // 최초 1회 KeyStore에 저장할 RSA키 생성
+        AES.aesKeyGen();
+        AES.secretKEY = KEYSTORE.keyStore_Encryption(AES.secretKEY);
+        // 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 적재
 
-            // 기존 연구실 '일정 정보'&'상태 정보' XML 기본 값 저장
-            Preferences = context.getSharedPreferences("LAB_WIDGET", Activity.MODE_PRIVATE);
-            SharedPreferences.Editor editor = Preferences.edit();
-            editor.putBoolean("PERSON", false);
-            editor.putBoolean("COFFE", false);
-            editor.putBoolean("A4", false);
-            editor.putString("CALENDER", "기본셋팅");
-            editor.apply();
-
-        } catch (NoSuchAlgorithmException e) {
-            System.err.println("WidgetProvider NoSuchAlgorithmException error");
-        }
+        // 기존 연구실 '일정 정보'&'상태 정보' XML 기본 값 저장
+        Preferences = context.getSharedPreferences("LAB_WIDGET", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = Preferences.edit();
+        editor.putBoolean("PERSON", false);
+        editor.putBoolean("COFFE", false);
+        editor.putBoolean("A4", false);
+        editor.putString("CALENDER", "기본셋팅");
+        editor.apply();
     }
 
     @Override
@@ -274,8 +261,9 @@ public class WidgetProvider extends AppWidgetProvider {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response, decryptAESkey);
+                            response = AES.aesDecryption(response.toCharArray(), decryptAESkey);
 
+                            decryptAESkey = null; // 객체 재사용 취약 보호
                             //******* 일정이 없으면,response값으로 scheduleNotExist 던져야 하나, []값이 넘어와 if실행안됨  *******//
                             if ("scheduleNotExist".equals(response.trim())){
                                 // 등록된 일정이 없을 시
@@ -296,22 +284,6 @@ public class WidgetProvider extends AppWidgetProvider {
                                 editor.putString("CALENDER", row.getString("save_title"));
                                 editor.apply();
                             }
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("WidgetProvider Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("WidgetProvider Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("WidgetProvider Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("WidgetProvider Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("WidgetProvider Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("WidgetProvider Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("WidgetProvider Response IllegalBlockSizeException error");
                         } catch (JSONException e) {
                             System.err.println("WidgetProvider Response JSONException error");
                         }
@@ -327,32 +299,17 @@ public class WidgetProvider extends AppWidgetProvider {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                // 오늘 날짜 확인
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey, RSA.serverPublicKey));
-                    params.put("type", AES.aesEncryption("scheduleList", decryptAESkey));
-                    params.put("date", AES.aesEncryption(mFormat.format(mDate), decryptAESkey));
-                } catch (BadPaddingException e) {
-                    System.err.println("WidgetProvider Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("WidgetProvider Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("WidgetProvider Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("WidgetProvider Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("WidgetProvider Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("WidgetProvider Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("WidgetProvider Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("WidgetProvider Request UnsupportedEncodingException error");
-                }
+                // 오늘 날짜 확인
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(), RSA.serverPublicKey.toCharArray()));
+                params.put("type", AES.aesEncryption("scheduleList".toCharArray(), decryptAESkey));
+                params.put("date", AES.aesEncryption(mFormat.format(mDate).toCharArray(), decryptAESkey));
                 decryptAESkey = null;
+
                 return params;
             }
         };

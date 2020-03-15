@@ -26,22 +26,14 @@ import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
 public class MeetLogFragment extends Fragment {
+
     private long mNow;
     private Date mDate;
     private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
@@ -126,40 +118,24 @@ public class MeetLogFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
 
-                            if("error".equals(response.trim())){ // 시스템 에러
-                                member_meetlog.setText("시스템 오류입니다.");
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        if("error".equals(response.trim())){ // 시스템 에러
+                            member_meetlog.setText("시스템 오류입니다.");
+                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
+                        }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
+                            member_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
+                        }else{
+                            String[] resPonse_split = response.split("-");
+                            if("cfExist".equals(resPonse_split[1])){
+                                member_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                            }else
                                 Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                            }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
-                                member_meetlog.setText("현재 회의록이 등록되어있지 않습니다.");
-                            }else{
-                                String[] resPonse_split = response.split("-");
-                                if("cfExist".equals(resPonse_split[1])){
-                                    member_meetlog.setText(XSSFilter.xssFilter(resPonse_split[0]));
-                                }else
-                                    Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                            }
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("Member MeetLogFragment Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("Member MeetLogFragment Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("Member MeetLogFragment Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("Member MeetLogFragment Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("Member MeetLogFragment Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("Member MeetLogFragment Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("Member MeetLogFragment Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -173,31 +149,16 @@ public class MeetLogFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type", AES.aesEncryption("cfShow",decryptAESkey));
-                    params.put("date", AES.aesEncryption(Date = tv_date.getText().toString().trim(),decryptAESkey));
-                } catch (BadPaddingException e) {
-                    System.err.println("Member MeetLogFragment Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("Member MeetLogFragment Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("Member MeetLogFragment Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("Member MeetLogFragment Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("Member MeetLogFragment Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("Member MeetLogFragment Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("Member MeetLogFragment Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("Member MeetLogFragment Request UnsupportedEncodingException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type", AES.aesEncryption("cfShow".toCharArray(),decryptAESkey));
+                params.put("date", AES.aesEncryption(tv_date.getText().toString().toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
+
                 return params;
             }
         };

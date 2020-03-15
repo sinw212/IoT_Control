@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -24,17 +25,8 @@ import com.example.nslngiot.Security_Utill.SQLFilter;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -46,8 +38,8 @@ public class LoginManagerActivity extends AppCompatActivity {
     private SharedPreferences login_Preferences;
     private CheckBox auto_login;
 
-    private String id="",
-            pw="";
+    private char[] id;
+    private char[] pw;
 
     //sql 검증 결과 & default false
     private boolean id_filter = false,
@@ -70,30 +62,31 @@ public class LoginManagerActivity extends AppCompatActivity {
         login_Preferences = getSharedPreferences("ManagerLogin", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
         if(login_Preferences.getBoolean("AUTO",false)) {
             // 자동 로그인 체크 시 if 동작, AUTO에 값이 없으면 false 동작으로 if 동작안함
-            id = KEYSTORE.keyStore_Decryption(login_Preferences.getString("ID", "default"));
+            id = KEYSTORE.keyStore_Decryption(login_Preferences.getString("ID", "default").toCharArray()).toCharArray();
             auto_login.setChecked(true);
-            Toast.makeText(getApplicationContext(), id + " 관리자님 로그인 성공", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), String.valueOf(id) + " 관리자님 로그인 성공", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), MainManagerActivity.class);
             startActivity(intent);
             finish();
+            java.util.Arrays.fill(id, (char) 0x20);
         }
 
         btn_manager_login.setOnClickListener(new View.OnClickListener() { // 로그인 진행
             @Override
             public void onClick(View v) {
-                id = login_id.getText().toString().trim();
-                pw = login_pw.getText().toString().trim();
+                id = login_id.getText().toString().toCharArray();
+                pw = login_pw.getText().toString().toCharArray();
                 //////////////////////////////방어 코드////////////////////////////
                 //SQL 인젝션 방어
-                id_filter = SQLFilter.sqlFilter(id);
-                pw_filter = SQLFilter.sqlFilter(pw);
+                id_filter = SQLFilter.sqlFilter(String.valueOf(id));
+                pw_filter = SQLFilter.sqlFilter(String.valueOf(pw));
                 //////////////////////////////////////////////////////////////////
 
-                if("".equals(id)){ // 아이디(학번)의 공백 입력 및 널문자 입력 시
+                if(TextUtils.isEmpty(String.valueOf(id))){ // 아이디(학번)의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "사용할 학번을 입력하세요.", Toast.LENGTH_LONG).show();
-                }else if("".equals(pw)) { // 비밀번호의 공백 입력 및 널문자 입력 시
+                }else if(TextUtils.isEmpty(String.valueOf(pw))) { // 비밀번호의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "사용할 비밀번호을 입력하세요.", Toast.LENGTH_LONG).show();
-                }else if(!"admin915".equals(id)){ // 관리자 접근 권한 확인
+                }else if(!"admin915".equals(String.valueOf(id))){ // 관리자 접근 권한 확인
                     Toast.makeText(getApplicationContext(),"관리자ID가 아닙니다.",Toast.LENGTH_LONG).show();
                 } else{
                     // 로그인 진행 시 SQL 인젝션 검증 절차 진행
@@ -101,16 +94,16 @@ public class LoginManagerActivity extends AppCompatActivity {
                     if (id_filter || pw_filter) {// SQL패턴 발견 시
                         Toast.makeText(getApplicationContext(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
                         finish();
-                    }else if( id.length()>=20 || pw.length()>=255 ){ // DB 값 오류 방지
+                    }else if( id.length >=20 || pw.length >=255 ){ // DB 값 오류 방지
                         Toast.makeText(getApplicationContext(), "ID or Password too Long error.", Toast.LENGTH_LONG).show();
                         /////////////////////////////////////////////////////////////////////////////////////////////////
                     }else {
-                        if(pw.matches(pw_regex)) { // 비밀번호 정책에 올바른 비밀번호 입력 시
+                        if(String.valueOf(pw).matches(pw_regex)) { // 비밀번호 정책에 올바른 비밀번호 입력 시
                             if(auto_login.isChecked()){ // 자동 로그인 체크 & 로그인 성공
                                 login_Preferences = getSharedPreferences("ManagerLogin", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
                                 SharedPreferences.Editor editor = login_Preferences.edit();
                                 // 프리퍼런스에 암호화 하여 저장
-                                editor.putString("ID", KEYSTORE.keyStore_Encryption(id));
+                                editor.putString("ID", String.valueOf(KEYSTORE.keyStore_Encryption(id)));
                                 editor.putBoolean("AUTO",true);
                                 editor.apply();
                             }
@@ -132,45 +125,33 @@ public class LoginManagerActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
 
-                            if("adminFailed".equals(response.trim())){
-                                Toast.makeText(getApplicationContext(),"관리자 ID가 틀립니다.",Toast.LENGTH_SHORT).show();
-                            }else if("error".equals(response.trim())){
-                                Toast.makeText(getApplicationContext(),"시스템 오류입니다.",Toast.LENGTH_SHORT).show();
-                            }else{
-                                String[] resPonse_split = response.split(" ");
-                                if("adminSuccess".equals(resPonse_split[1])){
-                                    boolean vaild = BCrypt.checkpw(pw, resPonse_split[0]); // 암호화된 비밀번호 추출 및 일치 여부 체크
-                                    if (vaild) { // 비밀번호 적합성 검증 성공 시 true
-                                        Toast.makeText(getApplicationContext(),id+" 관리자님 로그인 성공", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(getApplicationContext(), MainManagerActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else   // 비밀번호 불 일치
-                                        Toast.makeText(getApplicationContext(),"비밀번호를 잘못 입력하였습니다.",Toast.LENGTH_SHORT).show();
-                                }
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        if("adminFailed".equals(response.trim())){
+                            Toast.makeText(getApplicationContext(),"관리자 ID가 틀립니다.",Toast.LENGTH_SHORT).show();
+                        }else if("error".equals(response.trim())){
+                            Toast.makeText(getApplicationContext(),"시스템 오류입니다.",Toast.LENGTH_SHORT).show();
+                        }else{
+                            String[] resPonse_split = response.split(" ");
+                            if("adminSuccess".equals(resPonse_split[1])){
+                                boolean vaild = BCrypt.checkpw(String.valueOf(pw), resPonse_split[0]); // 암호화된 비밀번호 추출 및 일치 여부 체크
+                                if (vaild) { // 비밀번호 적합성 검증 성공 시 true
+                                    Toast.makeText(getApplicationContext(), String.valueOf(id) +" 관리자님 로그인 성공",
+                                            Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getApplicationContext(), MainManagerActivity.class);
+                                    startActivity(intent);
+                                    finish();
+
+                                    java.util.Arrays.fill(pw, (char) 0x20); // 로그인 진행 과정에서 중요정보 메모리 삭제
+                                    java.util.Arrays.fill(id, (char) 0x20);
+                                } else   // 비밀번호 불 일치
+                                    Toast.makeText(getApplicationContext(),"비밀번호를 잘못 입력하였습니다.",Toast.LENGTH_SHORT).show();
                             }
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("LoginManagerActivity Response UnsupportedEncodingExceptio error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("LoginManagerActivity Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("LoginManagerActivity Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("LoginManagerActivity Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("LoginManagerActivity Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("LoginManagerActivity Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("LoginManagerActivity Response IllegalBlockSizeException error");
                         }
                     }
                 },
@@ -184,30 +165,14 @@ public class LoginManagerActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("id", AES.aesEncryption(id,decryptAESkey));
-                    params.put("type",AES.aesEncryption("adminLogin",decryptAESkey));
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("LoginManagerActivity Request UnsupportedEncodingException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("LoginManagerActivity Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("LoginManagerActivity Request NoSuchAlgorithmException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("LoginManagerActivity Request InvalidAlgorithmParameterException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("LoginManagerActivity Request InvalidKeyException error");
-                } catch (BadPaddingException e) {
-                    System.err.println("LoginManagerActivity Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("LoginManagerActivity Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("LoginManagerActivity Request InvalidKeySpecException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("id", AES.aesEncryption(id,decryptAESkey));
+                params.put("type",AES.aesEncryption("adminLogin".toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
                 return params;
             }
@@ -224,5 +189,8 @@ public class LoginManagerActivity extends AppCompatActivity {
         login_pw = findViewById(R.id.login_Manager_pw);
         login_id = findViewById(R.id.login_Manager_id);
         auto_login = findViewById(R.id.cb_login_Manager_autologin);
+
+        id = new char[20];
+        pw = new char[255];
     }
 }

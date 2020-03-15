@@ -1,6 +1,7 @@
 package com.example.nslngiot.ManagerFragment;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,7 +113,7 @@ public class MemberFragment extends Fragment {
                 group_filter=SQLFilter.sqlFilter(group);
                 //////////////////////////////////////////////////////////////////
 
-                if ("".equals(Name) || "".equals(Phone) || "".equals(course) || "".equals(group)) {
+                if (TextUtils.isEmpty(Name) || TextUtils.isEmpty(Phone) || TextUtils.isEmpty(course) || TextUtils.isEmpty(group)) {
                     Toast.makeText(getActivity(), "올바른 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 } else if(name_filter || phone_filter || course_filter || group_filter){ // SQL패턴 발견 시
                     Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_SHORT).show();
@@ -149,10 +150,12 @@ public class MemberFragment extends Fragment {
                     @Override
                     public void onResponse(String response) {
                         try {
+
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
+                            response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                            decryptAESkey = null; // 객체 재사용 취약 보호
 
                             layoutManager = new LinearLayoutManager(getActivity());
                             recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
@@ -176,23 +179,6 @@ public class MemberFragment extends Fragment {
                             managerMemberAdapter = new ManagerMemberAdapter(getActivity(),arrayList);
                             // 리사이클러뷰에 어답타 연결
                             recyclerView .setAdapter(managerMemberAdapter);
-
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("Manager MemberFragment SelectRequest Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("Manager MemberFragment SelectRequest Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("Manager MemberFragment SelectRequest Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("Manager MemberFragment SelectRequest Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("Manager MemberFragment SelectRequest Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("Manager MemberFragment SelectRequest Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("Manager MemberFragment SelectRequest Response IllegalBlockSizeException error");
                         } catch (JSONException e) {
                             System.err.println("Manager MemberFragment SelectRequest Response JSONException error");
                         }
@@ -208,29 +194,13 @@ public class MemberFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type",AES.aesEncryption("memShow",decryptAESkey));
-                } catch (BadPaddingException e) {
-                    System.err.println("Manager MemberFragment SelectRequest Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("Manager MemberFragment SelectRequest Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("Manager MemberFragment SelectRequest Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("Manager MemberFragment SelectRequest Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("Manager MemberFragment SelectRequest Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("Manager MemberFragment SelectRequest Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("Manager MemberFragment SelectRequest Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("Manager MemberFragment SelectRequest Request UnsupportedEncodingException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type",AES.aesEncryption("memShow".toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
                 return params;
             }
@@ -251,42 +221,26 @@ public class MemberFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
 
-                            switch (response.trim()) {
-                                case "memAleadyExist": //해당 ID가 이미 존재 시
-                                    Toast.makeText(getActivity(), "이미 존재하는 아이디입니다.", Toast.LENGTH_SHORT).show();
-                                    break;
-                                case "memAddSuccess": // 정상적으로 입력되었을시
-                                    Toast.makeText(getActivity(), "입력되었습니다.", Toast.LENGTH_SHORT).show();
-                                    break;
-                                case "error": // 오류
-                                    Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
-                                    break;
-                                default:
-                                    Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                    break;
-                            }
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("Manager MemberFragment AddedRequest Reponse UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("Manager MemberFragment AddedRequest Reponse NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("Manager MemberFragment AddedRequest Reponse NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("Manager MemberFragment AddedRequest Reponse InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("Manager MemberFragment AddedRequest Reponse InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("Manager MemberFragment AddedRequest Reponse BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("Manager MemberFragment AddedRequest Reponse IllegalBlockSizeException error");
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        switch (response.trim()) {
+                            case "memAleadyExist": //해당 ID가 이미 존재 시
+                                Toast.makeText(getActivity(), "이미 존재하는 아이디입니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "memAddSuccess": // 정상적으로 입력되었을시
+                                Toast.makeText(getActivity(), "입력되었습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "error": // 오류
+                                Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            default:
+                                Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                break;
                         }
                     }
                 },
@@ -300,33 +254,17 @@ public class MemberFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type",AES.aesEncryption("memAdd",decryptAESkey));
-                    params.put("name", AES.aesEncryption(Name,decryptAESkey));
-                    params.put("phone", AES.aesEncryption(Phone,decryptAESkey));
-                    params.put("dept", AES.aesEncryption(course,decryptAESkey));
-                    params.put("team", AES.aesEncryption(group,decryptAESkey));
-                } catch (BadPaddingException e) {
-                    System.err.println("Manager MemberFragment AddedRequest Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("Manager MemberFragment AddedRequest Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("Manager MemberFragment AddedRequest Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("Manager MemberFragment AddedRequest Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("Manager MemberFragment AddedRequest Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("Manager MemberFragment AddedRequest Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("Manager MemberFragment AddedRequest Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("Manager MemberFragment AddedRequest Request UnsupportedEncodingException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type",AES.aesEncryption("memAdd".toCharArray(),decryptAESkey));
+                params.put("name", AES.aesEncryption(Name.toCharArray(),decryptAESkey));
+                params.put("phone", AES.aesEncryption(Phone.toCharArray(),decryptAESkey));
+                params.put("dept", AES.aesEncryption(course.toCharArray(),decryptAESkey));
+                params.put("team", AES.aesEncryption(group.toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
                 return params;
             }

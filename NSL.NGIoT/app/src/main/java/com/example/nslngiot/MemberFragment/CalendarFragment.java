@@ -33,11 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,17 +40,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
 public class CalendarFragment extends Fragment {
 
+    public static String Data;
     private long mNow;
     private Date mDate;
     private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
 
-    public static String Date;
     private ImageButton btn_calendar;
     private TextView tv_date;
     private RecyclerView recyclerView = null;
@@ -80,7 +71,7 @@ public class CalendarFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Date = "";
+        Data = "";
         tv_date = getView().findViewById(R.id.tv_date);
         btn_calendar = getView().findViewById(R.id.btn_calendar);
         recyclerView  = getView().findViewById(R.id.recyclerview_member_calendar);
@@ -110,7 +101,7 @@ public class CalendarFragment extends Fragment {
                             strDate += String.valueOf(dayOfMonth) + "일";
 
                         tv_date.setText(strDate);
-
+                        Data = tv_date.getText().toString();
                         // 등록된 일정 조회
                         member_calendar_Request();
                     }
@@ -126,7 +117,6 @@ public class CalendarFragment extends Fragment {
             public void onClick(View view) {
                 DatePickerDialog oDialog = new DatePickerDialog(getContext(),
                         mDateSetListener, nYear, nMon, nDay);
-
                 oDialog.show();
             }
         });
@@ -145,7 +135,7 @@ public class CalendarFragment extends Fragment {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
+                            response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
 
                             //******* 일정이 없으면,response값으로 scheduleNotExist 던져야 하나, []값이 넘어와 if실행안됨  *******//
                             if ("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
@@ -174,21 +164,6 @@ public class CalendarFragment extends Fragment {
                                 recyclerView.setAdapter(memberCalendarAdapter);
                             }
                             decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("Member CalendarFragment Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("Member CalendarFragment Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("Member CalendarFragment Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("Member CalendarFragment Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("Member CalendarFragment Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("Member CalendarFragment Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("Member CalendarFragment Response IllegalBlockSizeException error");
                         } catch (JSONException e) {
                             System.err.println("Member CalendarFragment Response JSONException error");
                         }
@@ -204,30 +179,14 @@ public class CalendarFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type",AES.aesEncryption("scheduleList",decryptAESkey));
-                    params.put("date",AES.aesEncryption(Date = tv_date.getText().toString().trim(),decryptAESkey) );
-                } catch (BadPaddingException e) {
-                    System.err.println("Member CalendarFragment Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("Member CalendarFragment Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("Member CalendarFragment Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("Member CalendarFragment Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("Member CalendarFragment Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("Member CalendarFragment Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("Member CalendarFragment Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("Member CalendarFragment Request UnsupportedEncodingException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type",AES.aesEncryption("scheduleList".toCharArray(),decryptAESkey));
+                params.put("date",AES.aesEncryption(tv_date.getText().toString().toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
                 return params;
             }
