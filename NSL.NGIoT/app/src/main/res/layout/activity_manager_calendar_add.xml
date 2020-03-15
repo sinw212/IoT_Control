@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:text="랩실 일정"
             android:textColor="@android:color/black"
             android:textSize="30sp"
@@ -27,7 +27,7 @@
             android:id="@+id/tv_date"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:textSize="17sp"/>
 
         <View
@@ -48,7 +48,6 @@
         android:layout_height="550dp"
         android:orientation="vertical">
 
-
         <EditText
             android:id="@+id/manager_calendar_title"
             android:layout_width="match_parent"
@@ -63,7 +62,7 @@
         <EditText
             android:id="@+id/manager_calendar_detail"
             android:layout_width="match_parent"
-            android:layout_height="480dp"
+            android:layout_height="@dimen/Text"
             android:layout_marginTop="10dp"
             android:background="@android:drawable/edit_text"
             android:gravity="top"
@@ -73,7 +72,6 @@
             android:scrollbars="vertical"
             android:scrollHorizontally="false"
             android:textColor="@android:color/black" />
-
     </LinearLayout>
 
     <Button
@@ -81,8 +79,9 @@
         android:layout_width="70dp"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:layout_gravity="right"
+        android:gravity="center"
         android:text="등록" />
 
 </LinearLayout>

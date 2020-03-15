@@ -12,8 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:gravity="left"
+        android:layout_marginStart="10dp"
         android:text="IP, 출입키 현황"
         android:textColor="@android:color/black"
         android:textSize="30sp"
@@ -23,8 +22,7 @@
         android:id="@+id/pho_member_ip"
         android:layout_width="match_parent"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_height="500dp"
+        android:layout_height="@dimen/photoview"
         android:layout_gravity="center" />
 
 </LinearLayout>

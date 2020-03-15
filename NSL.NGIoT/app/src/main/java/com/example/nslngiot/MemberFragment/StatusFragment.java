@@ -1,6 +1,5 @@
 package com.example.nslngiot.MemberFragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

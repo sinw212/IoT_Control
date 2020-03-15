@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:text="마이페이지"
         android:textColor="@android:color/black"
         android:textSize="30sp"
@@ -21,8 +21,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/border"
         android:gravity="center_vertical"
         android:text="개인정보 수정"
@@ -31,74 +31,67 @@
 
     <EditText
         android:id="@+id/manager_name"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="@dimen/marginText"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
         android:hint="이름"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/manager_id"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
         android:hint="ID(학번)"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/manager_corrently_pw"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
         android:hint="현재 비밀번호"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/manager_new_pw"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
         android:hint="비밀번호 : (수정할 비밀번호를 입력하세요) "
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/manager_modifypw"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
         android:hint="비밀번호 확인 : (다시 한번 입력하세요) "
         android:inputType="textPassword" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/btn_manager_mypage_modify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_manager_mypage_modify"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="수정" />
-    </LinearLayout>
+        android:text="수정" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/border"
         android:gravity="center_vertical"
         android:text="계정"
@@ -110,8 +103,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="로그아웃"
-        android:textSize="18sp" />
+        android:text="로그아웃" />
 
 </LinearLayout>

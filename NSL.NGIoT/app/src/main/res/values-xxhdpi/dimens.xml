@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding">50dp</dimen>
+    <dimen name="recyclerview">380dp</dimen>
+    <dimen name="recyclerview_member">340dp</dimen>
+    <dimen name="photoview">430dp</dimen>
+    <dimen name="Text">440dp</dimen>
+    <dimen name="marginTop">20dp</dimen>
+    <dimen name="marginText">10dp</dimen>
+</resources>

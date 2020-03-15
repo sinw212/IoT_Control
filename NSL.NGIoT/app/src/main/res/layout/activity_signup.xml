@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="50dp"
+    android:padding="@dimen/padding"
     tools:context=".SignupActivity">
 
     <TextView
@@ -17,11 +17,11 @@
         android:gravity="center"
         android:text="회원가입"
         android:textStyle="bold"
-        android:textSize="40dp" />
+        android:textSize="40sp" />
 
     <EditText
         android:id="@+id/sign_name"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -31,7 +31,7 @@
 
     <EditText
         android:id="@+id/sign_id"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -41,7 +41,7 @@
 
     <EditText
         android:id="@+id/sign_pw"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -51,7 +51,7 @@
 
     <EditText
         android:id="@+id/sign_email"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -74,7 +74,7 @@
             android:id="@+id/btn_member_signup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="130dp"
+            android:layout_marginStart="130dp"
             android:text="회원가입" />
     </LinearLayout>
 

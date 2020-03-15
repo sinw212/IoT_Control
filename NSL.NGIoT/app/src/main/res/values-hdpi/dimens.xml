@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
-    <dimen name="wide_size">40px</dimen>
-
+    <dimen name="padding">10dp</dimen>
+    <dimen name="recyclerview">240dp</dimen>
+    <dimen name="recyclerview_member">200dp</dimen>
+    <dimen name="photoview">290dp</dimen>
+    <dimen name="Text">300dp</dimen>
+    <dimen name="marginTop">3dp</dimen>
+    <dimen name="marginText">1dp</dimen>
 </resources>
