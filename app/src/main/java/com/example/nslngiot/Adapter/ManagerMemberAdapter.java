@@ -26,18 +26,9 @@ import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdapter.ViewHolder> {
 
@@ -148,43 +139,27 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
 
-                            switch (response.trim()) {
-                                // deleteAllSucces->memDeleted로 변경됐음 확인필요
-                                case "memDeleted":// 삭제했을 시
-                                    Toast.makeText(context, "회원 정보를 삭제했습니다.", Toast.LENGTH_SHORT).show();
-                                    break;
-                                case "addUserDataNotExist":// 삭제 실패했을 시
-                                    Toast.makeText(context, "회원 정보 삭제를 실패했습니다.", Toast.LENGTH_SHORT).show();
-                                    break;
-                                case "error": // 오류
-                                    Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
-                                    break;
-                                default:
-                                    Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                    break;
-                            }
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("ManagerMemberAdapter DeleteRequest Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("ManagerMemberAdapter DeleteRequest Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("ManagerMemberAdapter DeleteRequest Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("ManagerMemberAdapter DeleteRequest Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("ManagerMemberAdapter DeleteRequest Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("ManagerMemberAdapter DeleteRequest Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("ManagerMemberAdapter DeleteRequest Response IllegalBlockSizeException error");
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        switch (response.trim()) {
+                            // deleteAllSucces->memDeleted로 변경됐음 확인필요
+                            case "memDeleted":// 삭제했을 시
+                                Toast.makeText(context, "회원 정보를 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "addUserDataNotExist":// 삭제 실패했을 시
+                                Toast.makeText(context, "회원 정보 삭제를 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "error": // 오류
+                                Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            default:
+                                Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                break;
                         }
                     }
                 },
@@ -198,34 +173,17 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type",AES.aesEncryption("memDelete",decryptAESkey));
-                    params.put("name",AES.aesEncryption(name,decryptAESkey));
-                    params.put("phone",AES.aesEncryption(phone,decryptAESkey));
-                    params.put("dept",AES.aesEncryption(course,decryptAESkey));
-                    params.put("team",AES.aesEncryption(group,decryptAESkey));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type",AES.aesEncryption("memDelete".toCharArray(),decryptAESkey));
+                params.put("name",AES.aesEncryption(name.toCharArray(),decryptAESkey));
+                params.put("phone",AES.aesEncryption(phone.toCharArray(),decryptAESkey));
+                params.put("dept",AES.aesEncryption(course.toCharArray(),decryptAESkey));
+                params.put("team",AES.aesEncryption(group.toCharArray(),decryptAESkey));
 
-                } catch (BadPaddingException e) {
-                    System.err.println("ManagerMemberAdapter DeleteRequest Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("ManagerMemberAdapter DeleteRequest Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("ManagerMemberAdapter DeleteRequest Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("ManagerMemberAdapter DeleteRequest Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("ManagerMemberAdapter DeleteRequest Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("ManagerMemberAdapter DeleteRequest Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("ManagerMemberAdapter DeleteRequest Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("ManagerMemberAdapter DeleteRequest Request UnsupportedEncodingException error");
-                }
                 decryptAESkey = null;
                 return params;
             }

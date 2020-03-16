@@ -4,7 +4,7 @@ import android.os.Build;
 
 import org.apache.commons.codec.binary.Base64;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -21,77 +21,124 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AES {
 
-    public static String secretKEY="";
+    public static char[] secretKEY;
 
     // AES 대칭키 생성
-    public static void aesKeyGen() throws NoSuchAlgorithmException {
+    public static void aesKeyGen() {
 
-        KeyGenerator generator = KeyGenerator.getInstance("AES"); // 키생성에 사용할 암호 알고리즘
-        SecureRandom secureRandom = new SecureRandom(); // 안전한 난수 생성 'math random'보다 보안 강도가 높음
-        generator.init(256, secureRandom); // 충분한 키 길이 및 난수를 이용하여 키 초기화
-        Key secureKey = generator.generateKey();
+        KeyGenerator generator; // 키생성에 사용할 암호 알고리즘
+        SecureRandom secureRandom = new SecureRandom(); // 안전한 난수 생성 'Math Random'보다 보안 강도가 높음
 
-        // 누가버전까지는 Base64.encodeBase64String NotMethod 이슈발생
-        // 대칭키 객체를 'String'으로 변환
-        if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.N))
-            secretKEY = new String(Base64.encodeBase64(secureKey.getEncoded()));
-        else
-            secretKEY = Base64.encodeBase64String(secureKey.getEncoded());
+        try {
+            byte[] copy_secureKey;
+            generator = KeyGenerator.getInstance("AES");
+            generator.init(256, secureRandom); // 충분한 키 길이 및 난수를 이용하여 키 초기화
+            Key initKey = generator.generateKey();
+            copy_secureKey = initKey.getEncoded();
+            copy_secureKey = Base64.encodeBase64(copy_secureKey);
+
+            int size = copy_secureKey.length;
+            secretKEY = new char[size];
+
+            // convert byte to char array
+            for(int i =0;i<size; i++)
+                secretKEY[i] = (char)copy_secureKey[i];
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("AES KeyGen NoSuchAlgorithmException error");
+        }
     }
 
+    public static String aesEncryption(char[] str, String key) {
 
-    public static String aesEncryption(String str, String key) throws UnsupportedEncodingException,
-            NoSuchPaddingException, NoSuchAlgorithmException,
-            InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException
-    {
-        String iv = "";
+        byte[] encrypted = new byte[str.length];
         Key keySpec;
+        String iv = "";
+        String str_enc = "";
 
-        iv = key.substring(0,16);
-        byte[] keyBytes = new byte[16];
-        byte[] b = key.getBytes("UTF-8");
-        int len = b.length;
-        if(len > keyBytes.length)
-            len = keyBytes.length;
-        System.arraycopy(b, 0, keyBytes, 0, len); // b의 0번지 부터 len길이 만큼 keybytes 0번지부터 복사
-        keySpec = new SecretKeySpec(keyBytes, "AES");
+        try {
+            byte[] keyBytes = new byte[16];
+            byte[] b = key.getBytes(StandardCharsets.UTF_8);
+            iv = key.substring(0,16);
+            int len = b.length;
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes())); // 암호화 준비
+            if(len > keyBytes.length)
+                len = keyBytes.length;
 
-        // AES 암호화
-        byte[] encrypted = cipher.doFinal(str.getBytes("UTF-8"));
+            System.arraycopy(b, 0, keyBytes, 0, len);
+            // 암호화 준비
+            keySpec = new SecretKeySpec(keyBytes, "AES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes()));
 
-        // 암호화된 데이터, 인코딩 후 'String'으로 반환
-        if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.N))
-            return new String(Base64.encodeBase64(encrypted));
-        else
-            return Base64.encodeBase64String(encrypted);
+
+            // AES 암호화
+            encrypted = cipher.doFinal(String.valueOf(str).getBytes());
+            // 암호화된 데이터, 인코딩 후 'String'으로 반환
+            if((Build.VERSION.SDK_INT <= Build.VERSION_CODES.N))
+                str_enc = new String(Base64.encodeBase64(encrypted));
+            else
+                str_enc= Base64.encodeBase64String(encrypted);
+
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("AES Encryption NoSuchAlgorithmException error");
+        } catch (InvalidKeyException e) {
+            System.err.println("AES Encryption InvalidKeyException error");
+        } catch (InvalidAlgorithmParameterException e) {
+            System.err.println("AES Encryption InvalidAlgorithmParameterException error");
+        } catch (NoSuchPaddingException e) {
+            System.err.println("AES Encryption NoSuchPaddingException error");
+        } catch (BadPaddingException e) {
+            System.err.println("AES Encryption BadPaddingException error");
+        } catch (IllegalBlockSizeException e) {
+            System.err.println("AES Encryption IllegalBlockSizeException error");
+        } finally {
+            java.util.Arrays.fill(encrypted, (byte) 0x20);
+        }
+        return str_enc;
     }
 
-    public static String aesDecryption(String str, String key) throws UnsupportedEncodingException,
-            NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
-            InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public static String aesDecryption(char[] str, String key) {
 
+        byte[] decrypted = new byte[str.length];
         String iv = "";
+        String str_dec = "";
         Key keySpec;
 
-        iv = key.substring(0,16);
-        byte[] keyBytes = new byte[16];
-        byte[] b = key.getBytes("UTF-8");
-        int len = b.length;
-        if(len > keyBytes.length)
-            len = keyBytes.length;
-        System.arraycopy(b, 0, keyBytes, 0, len); // b의 0번지 부터 len길이 만큼 keybytes 0번지부터 복사
-        keySpec = new SecretKeySpec(keyBytes, "AES");
+        try {
+            byte[] keyBytes = new byte[16];
+            byte[] b = key.getBytes(StandardCharsets.UTF_8);
+            iv = key.substring(0,16);
+            int len = b.length;
 
+            if(len > keyBytes.length)
+                len = keyBytes.length;
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes("UTF-8"))); // 복호화 준비
+            System.arraycopy(b, 0, keyBytes, 0, len);
+            // 복호화 준비
+            keySpec = new SecretKeySpec(keyBytes, "AES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8)));
 
-        // 암호화된 인코딩 데이터, 디코딩 변환
-        byte[] byteStr = Base64.decodeBase64(str.getBytes());
-        // 디코딩된 암호화 데이터, 복호화 후 'String'으로 반환
-        return new String(cipher.doFinal(byteStr),"UTF-8");
+            // 암호화된 인코딩 데이터, 디코딩 변환
+            decrypted = Base64.decodeBase64(String.valueOf(str).getBytes());
+           // 디코딩된 암호화 데이터, 복호화 후 'String'으로 반환
+            str_dec = new String(cipher.doFinal(decrypted), StandardCharsets.UTF_8);
+
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("AES Decryption NoSuchAlgorithmException error");
+        } catch (InvalidKeyException e) {
+            System.err.println("AES Decryption InvalidKeyException error");
+        } catch (InvalidAlgorithmParameterException e) {
+            System.err.println("AES Decryption InvalidAlgorithmParameterException error");
+        } catch (NoSuchPaddingException e) {
+            System.err.println("AES Decryption NoSuchPaddingException error");
+        } catch (BadPaddingException e) {
+            System.err.println("AES Decryption BadPaddingException error");
+        } catch (IllegalBlockSizeException e) {
+            System.err.println("AES Decryption IllegalBlockSizeException error");
+        }finally {
+            java.util.Arrays.fill(decrypted, (byte) 0x20);
+        }
+        return str_dec;
     }
 }

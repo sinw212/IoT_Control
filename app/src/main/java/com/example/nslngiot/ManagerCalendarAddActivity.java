@@ -2,6 +2,7 @@ package com.example.nslngiot;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -24,20 +25,11 @@ import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class ManagerCalendarAddActivity extends AppCompatActivity {
 
@@ -121,7 +113,7 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                 Detail = XSSFilter.xssFilter(EditDetail.getText().toString().trim());
                 //////////////////////////////////////////////////////////////////
 
-                if ("".equals(Title) || "".equals(Detail)) {
+                if (TextUtils.isEmpty(Title) || TextUtils.isEmpty(Detail)) {
                     Toast.makeText(getApplicationContext(), "올바른 값을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     EditTitle.setText("");
@@ -159,41 +151,24 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                        decryptAESkey = null; // 객체 재사용 취약 보호
 
-                            switch (response.trim()){
-                                case "scheduleAddSuccess": // 일정 등록 성공했을 때
-                                    Toast.makeText(getApplicationContext(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
-                                    break;
-                                case "scheduleAlreadyEist": // 제목이 겹칠 때
-                                    Toast.makeText(getApplicationContext(), "이미 존재하는 일정입니다.", Toast.LENGTH_SHORT).show();
-                                case "error": // 오류
-                                    Toast.makeText(getApplicationContext(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
-                                    break;
-                                default: // 접속 지연 시 확인 사항
-                                    Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-                                    break;
-                            }
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("ManagerCalendarAddActivity Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("ManagerCalendarAddActivity Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("ManagerCalendarAddActivity Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("ManagerCalendarAddActivity Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("ManagerCalendarAddActivity Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("ManagerCalendarAddActivity Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("ManagerCalendarAddActivity Response IllegalBlockSizeException error");
+                        switch (response.trim()){
+                            case "scheduleAddSuccess": // 일정 등록 성공했을 때
+                                Toast.makeText(getApplicationContext(), "회의록을 등록하였습니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "scheduleAlreadyEist": // 제목이 겹칠 때
+                                Toast.makeText(getApplicationContext(), "이미 존재하는 일정입니다.", Toast.LENGTH_SHORT).show();
+                            case "error": // 오류
+                                Toast.makeText(getApplicationContext(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                                break;
+                            default: // 접속 지연 시 확인 사항
+                                Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                                break;
                         }
                     }
                 },
@@ -207,33 +182,18 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type",AES.aesEncryption("scheduleAdd",decryptAESkey));
-                    params.put("date",AES.aesEncryption(Date,decryptAESkey));
-                    params.put("title",AES.aesEncryption(Title,decryptAESkey));
-                    params.put("text", AES.aesEncryption (Detail,decryptAESkey));
-                } catch (BadPaddingException e) {
-                    System.err.println("ManagerCalendarAddActivity Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("ManagerCalendarAddActivity Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("ManagerCalendarAddActivity Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("ManagerCalendarAddActivity Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("ManagerCalendarAddActivity Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("ManagerCalendarAddActivity Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("ManagerCalendarAddActivity Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("ManagerCalendarAddActivity Request UnsupportedEncodingException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type",AES.aesEncryption("scheduleAdd".toCharArray(),decryptAESkey));
+                params.put("date",AES.aesEncryption(Date.toCharArray(),decryptAESkey));
+                params.put("title",AES.aesEncryption(Title.toCharArray(),decryptAESkey));
+                params.put("text", AES.aesEncryption (Detail.toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
+
                 return params;
             }
         };

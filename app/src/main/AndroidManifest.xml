@@ -15,7 +15,10 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
 
-        <receiver android:name=".Widget.widget_provider">
+        <receiver
+            android:name=".Widget.WidgetProvider"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.example.nslngiot.imgbtn_widget_refresh" />
@@ -27,14 +30,14 @@
 
         <activity
             android:name=".SplashActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MainMemberActivity"
             android:exported="false" />

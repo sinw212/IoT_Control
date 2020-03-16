@@ -12,17 +12,17 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:text="마이페이지"
         android:textColor="@android:color/black"
-        android:textSize="30sp"
+        android:textSize="@dimen/titleSize"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/border"
         android:gravity="center_vertical"
         android:text="개인정보 수정"
@@ -31,84 +31,79 @@
 
     <EditText
         android:id="@+id/member_name"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="@dimen/editHeight"
+        android:layout_marginTop="@dimen/marginText"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
-        android:hint="   이름 "
+        android:hint="이름"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/member_id"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="@dimen/editHeight"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
-        android:hint="   ID(학번) "
+        android:hint="ID(학번)"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/member_corrently_pw"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="@dimen/editHeight"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
-        android:hint="   현재 비밀번호"
+        android:hint="현재 비밀번호"
         android:inputType="textPassword" />
 
 
     <EditText
         android:id="@+id/member_new_pw"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="@dimen/editHeight"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
-        android:hint="   비밀번호 : (수정할 비밀번호를 입력하세요) "
+        android:hint="비밀번호 : (수정할 비밀번호를 입력하세요)"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/member_modifypw"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="@dimen/editHeight"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/line_remove"
-        android:hint="   비밀번호 확인 : (다시 한번 입력하세요) "
+        android:hint="비밀번호 확인 : (다시 한번 입력하세요)"
         android:inputType="textPassword" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/btn_member_mypage_modify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:orientation="horizontal">
-
-
-        <Button
-            android:id="@+id/btn_member_mypage_modify"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="수정" />
-    </LinearLayout>
+        android:text="수정" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginBottom="@dimen/marginText"
         android:background="@drawable/border"
         android:gravity="center_vertical"
         android:text="계정"
-        android:textSize="30sp"
+        android:textSize="25sp"
         android:textStyle="bold" />
-
 
     <Button
         android:id="@+id/btn_member_mypage_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"
         android:text="로그아웃" />
 
 </LinearLayout>

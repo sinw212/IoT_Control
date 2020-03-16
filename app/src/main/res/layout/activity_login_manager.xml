@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="50dp"
+    android:padding="@dimen/padding"
     tools:context=".LoginManagerActivity">
 
     <TextView
@@ -17,25 +17,26 @@
         android:gravity="center"
         android:text="관리자 모드\n로그인"
         android:textStyle="bold"
-        android:textSize="40dp" />
-
+        android:textSize="40sp" />
 
     <EditText
         android:id="@+id/login_Manager_id"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   ID :"
+        android:hint="ID :"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/login_Manager_pw"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   PW : "
+        android:hint="PW : "
         android:inputType="textPassword" />
 
     <LinearLayout
@@ -57,7 +58,6 @@
             android:layout_gravity="start"
             android:layout_weight="1"
             android:text="로그인"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
     </LinearLayout>
-
 </LinearLayout>

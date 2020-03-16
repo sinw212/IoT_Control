@@ -19,31 +19,27 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Data.ManagerCalendarData;
-import com.example.nslngiot.MemberFragment.CalendarFragment;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAdapter.ViewHolder> {
 
     private Context context;
     private ArrayList<ManagerCalendarData> calendarData;
-    private String Date = CalendarFragment.Date;
+    private String Date = "";
+
+    private long mNow;
+    private java.util.Date mDate;
+    private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
 
     // ManagerCalendar어댑터에서 관리하는 아이템의 개수를 반환
     @Override
@@ -76,8 +72,8 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 일정 '상세조회' 조회
-                calendar_select_Request(Date, item.getTitle());
+
+                calendar_select_Request(getTime(), item.getTitle());
             }
         });
     }
@@ -107,48 +103,32 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        try {
-                            // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                            // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
-                            response = AES.aesDecryption(response,decryptAESkey);
 
-                            if("error".equals(response.trim())) // 시스템 오류
-                                Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
-                            else {
-                                final String[] resPonse_split = response.split("-");
-                                if ("scheduleExist".equals(resPonse_split[3])) { // 조회 성공 시
-                                    new AlertDialog.Builder(context)
-                                            .setCancelable(false)
-                                            .setTitle("[공주대학교 네트워크 보안연구실]\n")
-                                            .setMessage("상세정보\n\n" + "날짜: " + resPonse_split[0] + "\n" + "제목: " + resPonse_split[1] + "\n" +
-                                                    "일정: " + resPonse_split[2] + "\n")
-                                            .setNegativeButton("닫기", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            }).show();
-                                }
-                                else
-                                    Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        if("error".equals(response.trim())) // 시스템 오류
+                            Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
+                        else {
+                            final String[] resPonse_split = response.split("-");
+                            if ("scheduleExist".equals(resPonse_split[3])) { // 조회 성공 시
+                                new AlertDialog.Builder(context)
+                                        .setCancelable(false)
+                                        .setTitle("[공주대학교 네트워크 보안연구실]\n")
+                                        .setMessage("상세정보\n\n" + "날짜: " + resPonse_split[0] + "\n" + "제목: " + resPonse_split[1] + "\n" +
+                                                "일정: " + resPonse_split[2] + "\n")
+                                        .setNegativeButton("닫기", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        }).show();
                             }
-                            decryptAESkey = null; // 객체 재사용 취약 보호
-                            response = null;
-                        } catch (UnsupportedEncodingException e) {
-                            System.err.println("MemberCalendarAdapter SelectRequest Response UnsupportedEncodingException error");
-                        } catch (NoSuchPaddingException e) {
-                            System.err.println("MemberCalendarAdapter SelectRequest Response NoSuchPaddingException error");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.err.println("MemberCalendarAdapter SelectRequest Response NoSuchAlgorithmException error");
-                        } catch (InvalidAlgorithmParameterException e) {
-                            System.err.println("MemberCalendarAdapter SelectRequest Response InvalidAlgorithmParameterException error");
-                        } catch (InvalidKeyException e) {
-                            System.err.println("MemberCalendarAdapter SelectRequest Response InvalidKeyException error");
-                        } catch (BadPaddingException e) {
-                            System.err.println("MemberCalendarAdapter SelectRequest Response BadPaddingException error");
-                        } catch (IllegalBlockSizeException e) {
-                            System.err.println("MemberCalendarAdapter SelectRequest Response IllegalBlockSizeException error");
+                            else
+                                Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -162,31 +142,15 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                try {
-                    params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey));
-                    params.put("type",AES.aesEncryption( "scheduleShow",decryptAESkey));
-                    params.put("date",AES.aesEncryption(Date,decryptAESkey));
-                    params.put("title",AES.aesEncryption(Title,decryptAESkey));
-                } catch (BadPaddingException e) {
-                    System.err.println("MemberCalendarAdapter SelectRequest Request BadPaddingException error");
-                } catch (IllegalBlockSizeException e) {
-                    System.err.println("MemberCalendarAdapter SelectRequest Request IllegalBlockSizeException error");
-                } catch (InvalidKeySpecException e) {
-                    System.err.println("MemberCalendarAdapter SelectRequest Request InvalidKeySpecException error");
-                } catch (NoSuchPaddingException e) {
-                    System.err.println("MemberCalendarAdapter SelectRequest Request NoSuchPaddingException error");
-                } catch (NoSuchAlgorithmException e) {
-                    System.err.println("MemberCalendarAdapter SelectRequest Request NoSuchAlgorithmException error");
-                } catch (InvalidKeyException e) {
-                    System.err.println("MemberCalendarAdapter SelectRequest Request InvalidKeyException error");
-                } catch (InvalidAlgorithmParameterException e) {
-                    System.err.println("MemberCalendarAdapter SelectRequest Request InvalidAlgorithmParameterException error");
-                } catch (UnsupportedEncodingException e) {
-                    System.err.println("MemberCalendarAdapter SelectRequest Request UnsupportedEncodingException error");
-                }
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type",AES.aesEncryption( "scheduleShow".toCharArray(),decryptAESkey));
+                params.put("date",AES.aesEncryption(Date.toCharArray(),decryptAESkey));
+                params.put("title",AES.aesEncryption(Title.toCharArray(),decryptAESkey));
+
                 decryptAESkey = null;
                 return params;
             }
@@ -196,5 +160,11 @@ public class MemberCalendarAdapter extends RecyclerView.Adapter<MemberCalendarAd
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(context).addToRequestQueue(stringRequest);
+    }
+
+    private String getTime() {
+        mNow = System.currentTimeMillis();
+        mDate = new Date(mNow);
+        return mFormat.format(mDate);
     }
 }

@@ -12,10 +12,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:text="인원 현황"
         android:textColor="@android:color/black"
-        android:textSize="30sp"
+        android:textSize="@dimen/titleSize"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -30,7 +30,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="No."
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
         <TextView
@@ -39,7 +39,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="이름"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
         <TextView
@@ -48,7 +48,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="전화번호"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
         <TextView
@@ -57,7 +57,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="과정"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
         <TextView
@@ -66,15 +66,15 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="소속"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:textStyle="bold" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_member_member"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_marginTop="25dp"
+        android:layout_height="@dimen/recyclerview"
+        android:layout_marginTop="20dp"
         android:scrollbarFadeDuration="0"
         android:scrollbarSize="5dp"
         android:scrollbarThumbVertical="@android:color/darker_gray"

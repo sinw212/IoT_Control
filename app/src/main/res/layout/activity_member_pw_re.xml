@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="50dp"
+    android:padding="@dimen/padding"
     tools:context=".PasswordReissuanceActivity">
 
     <TextView
@@ -17,34 +17,36 @@
         android:gravity="center"
         android:text="비밀번호 재발급"
         android:textStyle="bold"
-        android:textSize="40dp" />
-
+        android:textSize="40sp" />
 
     <EditText
         android:id="@+id/member_re_name"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   이름 : "
+        android:hint="이름 :"
         android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/member_re_id"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   ID : (학번을 입력하세요)"
+        android:hint="ID : (학번을 입력하세요)"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/member_re_mail"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
-        android:hint="   E-Mail : "
+        android:hint="E-Mail :"
         android:inputType="textPassword" />
 
     <Button

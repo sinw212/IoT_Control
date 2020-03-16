@@ -30,13 +30,7 @@
             android:title="마이페이지" />
         <item
             android:id="@+id/nav_status"
-            android:title="재실/물/커피/A4 상태 확인" />
-        <item
-            android:id="@+id/nav_lamp"
-            android:title="형광등 제어" />
-        <item
-            android:id="@+id/nav_curtain"
-            android:title="커튼 제어" />
+            android:title="재실/전등/커피/A4 상태 확인" />
     </group>
 
 </menu>

@@ -1,5 +1,6 @@
 package com.example.nslngiot.MemberFragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,13 +29,14 @@ public class StatusFragment extends Fragment {
 
     private Button btn_refresh;
 
-    private ImageView imgview_person,
-            imgview_water,
-            imgview_coffee,
-            imgview_a4 ;
+    private ImageView imgview_personE,
+            imgview_personNE,
+            imgview_coffeeE,
+            imgview_coffeeNE,
+            imgview_a4E,
+            imgview_a4NE;
 
     private TextView person_state,
-            water_state,
             coffee_state,
             a4_state;
 
@@ -50,23 +52,30 @@ public class StatusFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         btn_refresh = getView().findViewById(R.id.btn_refresh);
-        imgview_person = getView().findViewById(R.id.imgview_person);
-        imgview_water = getView().findViewById(R.id.imgview_water);
-        imgview_coffee = getView().findViewById(R.id.imgview_coffee);
-        imgview_a4 = getView().findViewById(R.id.imgview_a4);
+        imgview_personE = getView().findViewById(R.id.imgview_personE);
+        imgview_personNE = getView().findViewById(R.id.imgview_personNE);
+        imgview_coffeeE = getView().findViewById(R.id.imgview_coffeeE);
+        imgview_coffeeNE = getView().findViewById(R.id.imgview_coffeeNE);
+        imgview_a4E = getView().findViewById(R.id.imgview_a4E);
+        imgview_a4NE = getView().findViewById(R.id.imgview_a4NE);
         person_state = getView().findViewById(R.id.person_state);
-        water_state = getView().findViewById(R.id.water_state);
         coffee_state = getView().findViewById(R.id.coffee_state);
         a4_state = getView().findViewById(R.id.a4_state);
 
-        // 재실여부 조회
-        member_Person_SelectRequest();
+        imgview_personE.setVisibility(View.INVISIBLE);
+        imgview_personNE.setVisibility(View.VISIBLE);
+        imgview_coffeeE.setVisibility(View.INVISIBLE);
+        imgview_coffeeNE.setVisibility(View.VISIBLE);
+        imgview_a4E.setVisibility(View.INVISIBLE);
+        imgview_a4NE.setVisibility(View.VISIBLE);
+
+        member_Person_SelectRequest(); // 재실여부 조회
 
         // 새로고침 리스너
         btn_refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 재실여부/물/커피/A4 잔여 상태 조회
+                // 재실여부/전등상태/커피잔여/A4잔여 상태 조회
                 member_Person_SelectRequest();
 				// 네트워크를 동시 처리하기에 경쟁(레이스컨디셔닝) 발생할 수 있기에 동기화 처리 필요
 //              member_Water_SelectRequest();
@@ -87,51 +96,12 @@ public class StatusFragment extends Fragment {
                     public void onResponse(String response) {
                         if("open".equals(response.trim())) {
                             person_state.setText("사람있음");
-                            imgview_person.setImageResource(R.drawable.people_exist);
+                            imgview_personE.setVisibility(View.VISIBLE);
+                            imgview_personNE.setVisibility(View.INVISIBLE);
                         } else if("close".equals(response.trim())) {
                             person_state.setText("사람없음");
-                            imgview_person.setImageResource(R.drawable.people_nonexist);
-                        } else if("error".equals(response)) {
-                            Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("check","security");
-                return params;
-            }
-        };
-
-        // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
-        // 항상 새로운 데이터를 위해 false
-        stringRequest.setShouldCache(false);
-        VolleyQueueSingleTon.getInstance(this.getActivity()).addToRequestQueue(stringRequest);
-    }
-
-    // 현재 랩실 물 잔여량 상태 조회 통신
-    private void member_Water_SelectRequest() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/StatusCheck.jsp");
-
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        if("open".equals(response.trim())) {
-                            water_state.setText("충분함");
-                            imgview_water.setImageResource(R.drawable.water_exist);
-                        } else if("close".equals(response.trim())) {
-                            water_state.setText("부족함");
-                            imgview_water.setImageResource(R.drawable.water_nonexist);
+                            imgview_personE.setVisibility(View.INVISIBLE);
+                            imgview_personNE.setVisibility(View.VISIBLE);
                         } else if("error".equals(response)) {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }
@@ -169,10 +139,12 @@ public class StatusFragment extends Fragment {
                     public void onResponse(String response) {
                         if("open".equals(response.trim())) {
                             coffee_state.setText("충분함");
-                            imgview_coffee.setImageResource(R.drawable.coffee_exist);
+                            imgview_coffeeE.setVisibility(View.VISIBLE);
+                            imgview_coffeeNE.setVisibility(View.INVISIBLE);
                         } else if("close".equals(response.trim())) {
                             coffee_state.setText("부족함");
-                            imgview_coffee.setImageResource(R.drawable.coffee_nonexist);
+                            imgview_coffeeE.setVisibility(View.INVISIBLE);
+                            imgview_coffeeNE.setVisibility(View.VISIBLE);
                         } else if("error".equals(response)) {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }
@@ -210,10 +182,12 @@ public class StatusFragment extends Fragment {
                     public void onResponse(String response) {
                         if("open".equals(response.trim())) {
                             a4_state.setText("충분함");
-                            imgview_a4.setImageResource(R.drawable.a4_exist);
+                            imgview_a4E.setVisibility(View.VISIBLE);
+                            imgview_a4NE.setVisibility(View.INVISIBLE);
                         } else if("close".equals(response.trim())) {
                             a4_state.setText("부족함");
-                            imgview_a4.setImageResource(R.drawable.a4_nonexist);
+                            imgview_a4E.setVisibility(View.INVISIBLE);
+                            imgview_a4NE.setVisibility(View.VISIBLE);
                         } else if("error".equals(response)) {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }
