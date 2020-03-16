@@ -3,12 +3,14 @@ package com.example.nslngiot.ManagerFragment;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +47,6 @@ import java.util.Map;
 
 public class CalendarFragment extends Fragment {
 
-    public static String Data;
     private long mNow;
     private Date mDate;
     private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
@@ -75,11 +76,11 @@ public class CalendarFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Data = "";
         tv_date = getView().findViewById(R.id.tv_date);
         btn_calendar = getView().findViewById(R.id.btn_calendar);
         btn_add = getView().findViewById(R.id.btn_add);
         recyclerView  = getView().findViewById(R.id.recyclerview_manager_calendar);
+
         // 오늘 날짜 표현
         tv_date.setText(getTime());
 
@@ -103,7 +104,6 @@ public class CalendarFragment extends Fragment {
                             strDate += String.valueOf(dayOfMonth) + "일";
 
                         tv_date.setText(strDate);
-                        Data = tv_date.getText().toString();
                         // 등록된 일정 '제목조회' 조회
                         manager_Calendar_Title_SelectRequest();
                     }
@@ -150,9 +150,19 @@ public class CalendarFragment extends Fragment {
                             response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
                             decryptAESkey = null; // 객체 재사용 취약 보호
 
-                            //******* 일정이 없으면,response값으로 scheduleNotExist 던져야 하나, []값이 넘어와 if실행안됨  *******//
-                            if("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
-                                Toast.makeText(getActivity(), "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
+                            if("scheduleNotExist".equals(response.trim())) { // 등록된 일정이 없을 시
+                                layoutManager = new LinearLayoutManager(getActivity());
+                                recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
+                                recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
+                                // 기존 데이터와 겹치지 않기 위해 생성자를 매번 새롭게 생성
+                                arrayList = new ArrayList<ManagerCalendarData>();
+
+                                // 어댑터에 add한 다량의 데이터 할당
+                                managerCalendarAdapter = new ManagerCalendarAdapter(getActivity(),arrayList);
+                                // 리사이클러뷰에 어답타 연결
+                                recyclerView.setAdapter(managerCalendarAdapter);
+                                Toast.makeText(getActivity(), tv_date.getText().toString() + "의 일정은 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
+                            }
                             else if("error".equals(response.trim())){ // 시스템 오류
                                 Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                             }else{
@@ -174,7 +184,7 @@ public class CalendarFragment extends Fragment {
                                 // 어댑터에 add한 다량의 데이터 할당
                                 managerCalendarAdapter = new ManagerCalendarAdapter(getActivity(),arrayList);
                                 // 리사이클러뷰에 어답타 연결
-                                recyclerView .setAdapter(managerCalendarAdapter);
+                                recyclerView.setAdapter(managerCalendarAdapter);
                             }
                         } catch (JSONException e) {
                             System.err.println("Manager CalendarFragment Response JSONException error");
@@ -195,9 +205,11 @@ public class CalendarFragment extends Fragment {
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                VolleyQueueSingleTon.manager_DATE=tv_date.getText().toString(); // fragment& adapter 날짜 공유
+
                 params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("scheduleList".toCharArray(),decryptAESkey));
-                params.put("date",AES.aesEncryption(tv_date.getText().toString().toCharArray(),decryptAESkey));
+                params.put("date",AES.aesEncryption(VolleyQueueSingleTon.manager_DATE.toCharArray(),decryptAESkey));
 
                 decryptAESkey = null;
                 return params;

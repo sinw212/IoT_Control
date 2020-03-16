@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="50dp"
+    android:padding="@dimen/paddingControl"
     tools:context=".LoginMemberActivity">
 
     <TextView
@@ -17,11 +17,11 @@
         android:gravity="center"
         android:text="랩실 부원 전용\n로그인"
         android:textStyle="bold"
-        android:textSize="40dp" />
+        android:textSize="40sp" />
 
     <EditText
         android:id="@+id/loginMember_name"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -31,7 +31,7 @@
 
     <EditText
         android:id="@+id/loginMember_id"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -41,7 +41,7 @@
 
     <EditText
         android:id="@+id/loginMember_pw"
-        android:paddingLeft="15dp"
+        android:paddingStart="15dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
@@ -64,7 +64,7 @@
             android:id="@+id/btn_re_pw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:text="비밀번호 재발급" />
 
         <Button
@@ -72,6 +72,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="로그인"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
     </LinearLayout>
 </LinearLayout>

@@ -112,6 +112,9 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                                 Intent intent = new Intent(getApplicationContext(),PasswordReissuanceActivity.class);
                                 startActivity(intent);
                                 finish();
+                                java.util.Arrays.fill(member_id, (char) 0x20);
+                                java.util.Arrays.fill(member_name, (char) 0x20);
+                                java.util.Arrays.fill(member_mail, (char) 0x20);
                                 break;
                             case "userNotExist":
                                 Toast.makeText(getApplicationContext(), "학번/이름/메일을 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -146,9 +149,6 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 params.put("type", AES.aesEncryption("find".toCharArray(),decryptAESkey));
 
                 decryptAESkey = null;
-                java.util.Arrays.fill(member_id, (char) 0x20);
-                java.util.Arrays.fill(member_name, (char) 0x20);
-                java.util.Arrays.fill(member_mail, (char) 0x20);
 
                 return params;
             }

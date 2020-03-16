@@ -42,7 +42,6 @@ import java.util.Map;
 
 public class CalendarFragment extends Fragment {
 
-    public static String Data;
     private long mNow;
     private Date mDate;
     private SimpleDateFormat mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
@@ -71,7 +70,6 @@ public class CalendarFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Data = "";
         tv_date = getView().findViewById(R.id.tv_date);
         btn_calendar = getView().findViewById(R.id.btn_calendar);
         recyclerView  = getView().findViewById(R.id.recyclerview_member_calendar);
@@ -101,7 +99,6 @@ public class CalendarFragment extends Fragment {
                             strDate += String.valueOf(dayOfMonth) + "일";
 
                         tv_date.setText(strDate);
-                        Data = tv_date.getText().toString();
                         // 등록된 일정 조회
                         member_calendar_Request();
                     }
@@ -137,9 +134,19 @@ public class CalendarFragment extends Fragment {
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
 
-                            //******* 일정이 없으면,response값으로 scheduleNotExist 던져야 하나, []값이 넘어와 if실행안됨  *******//
-                            if ("scheduleNotExist".equals(response.trim())) // 등록된 일정이 없을 시
-                                Toast.makeText(getActivity(), "현재 일정이 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
+                            if ("scheduleNotExist".equals(response.trim())) { // 등록된 일정이 없을 시
+                                layoutManager = new LinearLayoutManager(getActivity());
+                                recyclerView.setHasFixedSize(true); // 아이템의 뷰를 일정하게하여 퍼포먼스 향상
+                                recyclerView.setLayoutManager(layoutManager); // 앞에 선언한 리사이클러뷰를 매니저에 붙힘
+                                // 기존 데이터와 겹치지 않기 위해생성자를 매번 새롭게 생성
+                                arrayList = new ArrayList<ManagerCalendarData>();
+
+                                // 어댑터에 add한 다량의 데이터 할당
+                                memberCalendarAdapter = new MemberCalendarAdapter(getActivity(), arrayList);
+                                // 리사이클러뷰에 어답타 연결
+                                recyclerView.setAdapter(memberCalendarAdapter);
+                                Toast.makeText(getActivity(), tv_date.getText().toString() + "의 일정은 등록되어있지 않습니다.", Toast.LENGTH_SHORT).show();
+                            }
                             else if ("error".equals(response.trim())) { // 시스템 오류
                                 Toast.makeText(getActivity(), "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                             } else {
@@ -183,9 +190,10 @@ public class CalendarFragment extends Fragment {
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
+                VolleyQueueSingleTon.member_DATE = tv_date.getText().toString();
                 params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("scheduleList".toCharArray(),decryptAESkey));
-                params.put("date",AES.aesEncryption(tv_date.getText().toString().toCharArray(),decryptAESkey));
+                params.put("date",AES.aesEncryption(VolleyQueueSingleTon.member_DATE.toCharArray(),decryptAESkey)); // fragment& adapter 날짜 공유
 
                 decryptAESkey = null;
                 return params;

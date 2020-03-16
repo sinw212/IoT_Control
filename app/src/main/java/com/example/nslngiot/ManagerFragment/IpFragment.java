@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.FileFilter;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.github.chrisbanes.photoview.PhotoView;
 
 
@@ -88,7 +92,7 @@ public class IpFragment extends Fragment {
                         try {
                             // 이미지 저장
                             ipFile_Upload_Request(1);
-                            Thread.sleep(1000);
+                            Thread.sleep(500);
                             // 이미지 조회
                             ipFile_Upload_Request(2);
                         } catch (InterruptedException e) {
@@ -167,6 +171,11 @@ public class IpFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
                         switch (menu) {
                             case 1:
                                 Response(response);
@@ -188,13 +197,22 @@ public class IpFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 switch (menu) {
                     case 1: // 이미지 전송
-                        params.put("type", "ipUpload");
-                        params.put("imgFile", encodeImage);
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey_upload = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        params.put("securitykey", RSA.rsaEncryption(decryptAESkey_upload.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                        params.put("type",AES.aesEncryption("ipUpload".toCharArray(),decryptAESkey_upload));
+                        params.put("imgFile", AES.aesEncryption(encodeImage.toCharArray(),decryptAESkey_upload));
+                        decryptAESkey_upload = null;
                         break;
                     case 2: // 이미지 조회
-                        params.put("type", "ipShow");
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey_show = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        params.put("securitykey", RSA.rsaEncryption(decryptAESkey_show.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                        params.put("type", AES.aesEncryption("ipShow".toCharArray(),decryptAESkey_show));
+                        decryptAESkey_show = null;
                         break;
                 }
                 return params;
@@ -205,8 +223,8 @@ public class IpFragment extends Fragment {
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
 
-    private void Response(String respon) {
-        switch (respon) {
+    private void Response(String response) {
+        switch (response.trim()) {
             case "ipUploaded":
                 Toast.makeText(getActivity(), "업로드 성공", Toast.LENGTH_SHORT).show();
                 break;

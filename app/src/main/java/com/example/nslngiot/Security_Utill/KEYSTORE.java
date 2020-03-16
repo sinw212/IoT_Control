@@ -3,6 +3,7 @@ package com.example.nslngiot.Security_Utill;
 import android.content.Context;
 import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
+import android.util.Log;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -20,6 +21,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -74,9 +76,9 @@ public class KEYSTORE {
     public static char[] keyStore_Encryption(char[] str){
 
         String keyStore_Encryption_DATA="";
-        byte[] encrypted = new byte[2060];
 
         try {
+            byte[] encrypted;
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore"); // Android KeyStore 접근
             keyStore.load(null); // 로드
 
@@ -115,8 +117,6 @@ public class KEYSTORE {
             System.err.println("keyStore_Encryption UnrecoverableEntryException error");
         } catch (IOException e) {
             System.err.println("keyStore_Encryption IOException error");
-        } finally {
-            java.util.Arrays.fill(encrypted, (byte) 0x20);
         }
         return keyStore_Encryption_DATA.toCharArray();
     }
@@ -125,9 +125,9 @@ public class KEYSTORE {
     public static String keyStore_Decryption(char[] str){
 
         String keyStore_Decryption_DATA="";
-        byte[] decrypted = new byte[2060];
 
         try {
+            byte[] decrypted;
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore"); // Android KeyStore 접근
             keyStore.load(null); // 로드
             KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry)keyStore.getEntry(alias,null);
@@ -159,8 +159,6 @@ public class KEYSTORE {
             System.err.println("keyStore_Decryption BadPaddingException error");
         } catch (IllegalBlockSizeException e) {
             System.err.println("keyStore_Decryption IllegalBlockSizeException error");
-        }finally {
-            java.util.Arrays.fill(decrypted, (byte) 0x20);
         }
         return keyStore_Decryption_DATA;
     }

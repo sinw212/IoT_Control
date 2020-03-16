@@ -147,7 +147,7 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                         decryptAESkey = null; // 객체 재사용 취약 보호
 
                         switch (response.trim()) {
-                            // deleteAllSucces->memDeleted로 변경됐음 확인필요
+
                             case "memDeleted":// 삭제했을 시
                                 Toast.makeText(context, "회원 정보를 삭제했습니다.", Toast.LENGTH_SHORT).show();
                                 break;

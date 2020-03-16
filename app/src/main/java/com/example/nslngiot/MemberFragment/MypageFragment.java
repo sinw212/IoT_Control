@@ -178,6 +178,7 @@ public class MypageFragment extends Fragment {
                         String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+
                         switch (response.trim()) {
                             case "pwdChangeSuccess":
                                 Toast.makeText(getActivity(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show();
