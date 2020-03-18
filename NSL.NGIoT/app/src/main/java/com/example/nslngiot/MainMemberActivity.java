@@ -80,13 +80,13 @@ public class MainMemberActivity extends AppCompatActivity
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
                         new RuleFragment()).addToBackStack(null).commit();
                 break;
-            case R.id.nav_mypage:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
-                        new MypageFragment()).addToBackStack(null).commit();
-                break;
             case R.id.nav_status:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
                         new StatusFragment()).addToBackStack(null).commit();
+                break;
+            case R.id.nav_mypage:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_layout,
+                        new MypageFragment()).addToBackStack(null).commit();
                 break;
         }
 

@@ -19,7 +19,7 @@
             android:layout_marginStart="10dp"
             android:text="IP, 출입키 현황"
             android:textColor="@android:color/black"
-            android:textSize="30sp"
+            android:textSize="@dimen/titleSize"
             android:textStyle="bold" />
 
         <View

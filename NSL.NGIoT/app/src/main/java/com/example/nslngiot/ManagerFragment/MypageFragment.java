@@ -170,7 +170,7 @@ public class MypageFragment extends Fragment {
 
     // 사용자 비밀번호 변경
     private void manager_ModifyRequest() {
-      final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),

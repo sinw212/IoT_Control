@@ -50,6 +50,11 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onReceive(final Context context, Intent intent) {
         String action = intent.getAction(); // 새로고침 시, 액션 이벤트 리시브
 
+        // 날짜 셋팅
+        mNow = System.currentTimeMillis();
+        mDate = new Date(mNow);
+        mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+
         // 클릭 이벤트 셋팅
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_member_status);
         Intent setup_intent = new Intent(context, WidgetProvider.class);
@@ -57,74 +62,31 @@ public class WidgetProvider extends AppWidgetProvider {
         PendingIntent pendingIntent_reflash = PendingIntent.getBroadcast(context, 0, setup_intent, 0);
         views.setOnClickPendingIntent(R.id.imgbtn_widget_refresh, pendingIntent_reflash);
 
+
         // 새로 고침 이벤트 체크 진행
-        if (action!= null && action.equals(reflash_Flag.trim())) {
-            // 날짜 셋팅
-            mNow = System.currentTimeMillis();
-            mDate = new Date(mNow);
-            mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+        if (action != null && action.equals(reflash_Flag.trim())) {
 
             // 일정 정보 누를 시, Activity 실행
-            Intent intentCalendar = new Intent(context,LoginMemberActivity.class);
+            Intent intentCalendar = new Intent(context, LoginMemberActivity.class);
             // 로그인 멤버 액티비티로 보내는 암호 키생성 신호
-            intentCalendar.putExtra("signal","keystore");
+            intentCalendar.putExtra("signal", "keystore");
             intentCalendar.setData(Uri.parse(intentCalendar.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent mainActivityPendingIntent = PendingIntent.getActivity(context, 0, intentCalendar, 0);
             views.setOnClickPendingIntent(R.id.tv_widget_calendar, mainActivityPendingIntent);
 
-            try {
-                status_Request(context); // 연구실 상태정보 호출
-                Thread.sleep(1000);
-                member_calendar_Request(context); // 연구실 일정정보 호출
-            } catch (InterruptedException e) {
-                System.err.println("WidgetProvider InterruptedException error");
-            }
-
-            // 네트워크 진행 완료 시, 받아온 데이터가 지워지는 문제 발생, XML에 저장.
-            // 사용 시, 다시 XML 데이터 불러오는 안전한 형태로 진행
-            Preferences = context.getSharedPreferences("LAB_WIDGET", Activity.MODE_PRIVATE);
-            calenderTitle = Preferences.getString("CALENDER", "등록된 일정이 없습니다.");
-            lab_Person = Preferences.getBoolean("PERSON", false);
-            lab_Coffe = Preferences.getBoolean("COFFE", false);
-            lab_A4 = Preferences.getBoolean("A4", false);
-
-            views.setTextViewText(R.id.tv_widget_calendar, " 연구실 대표 일정: " +calenderTitle+"\n 상세 정보는 일정을 눌러 확인하세요.");
-            if (lab_Person)
-                views.setImageViewResource(R.id.img_person, R.drawable.people_exist);
-            else
-                views.setImageViewResource(R.id.img_person, R.drawable.people_nonexist);
-            if (lab_Coffe)
-                views.setImageViewResource(R.id.img_coffee, R.drawable.coffee_exist);
-            else
-                views.setImageViewResource(R.id.img_coffee, R.drawable.coffee_nonexist);
-            if (lab_A4)
-                views.setImageViewResource(R.id.img_a4, R.drawable.a4_exist);
-            else
-                views.setImageViewResource(R.id.img_a4, R.drawable.a4_nonexist);
-
-            Toast.makeText(context,"연구실 정보 조회 성공",Toast.LENGTH_SHORT).show();
+            member_calendar_Request(context); // 연구실 일정정보 호출
         } // 지정 주기마다 위젯 업데이트 시
-        else if(action != null && action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)){
-            // 날짜 셋팅
-            mNow = System.currentTimeMillis();
-            mDate = new Date(mNow);
-            mFormat = new SimpleDateFormat("YYYY년 MM월 dd일");
+        else if (action != null && action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
 
             // 일정 정보 누를 시, Activity 실행
-            Intent intentCalendar = new Intent(context,LoginMemberActivity.class);
+            Intent intentCalendar = new Intent(context, LoginMemberActivity.class);
             // 로그인 멤버 액티비티로 보내는 암호 키생성 신호
-            intentCalendar.putExtra("signal","keystore");
+            intentCalendar.putExtra("signal", "keystore");
             intentCalendar.setData(Uri.parse(intentCalendar.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent mainActivityPendingIntent = PendingIntent.getActivity(context, 0, intentCalendar, 0);
             views.setOnClickPendingIntent(R.id.tv_widget_calendar, mainActivityPendingIntent);
 
-            try {
-                status_Request(context); // 연구실 상태정보 호출
-                Thread.sleep(1000);
-                member_calendar_Request(context); // 연구실 일정정보 호출
-            } catch (InterruptedException e) {
-                System.err.println("WidgetProvider InterruptedException error");
-            }
+            member_calendar_Request(context); // 연구실 일정정보 호출
 
             // 네트워크 진행 완료 시, 받아온 데이터가 지워지는 문제 발생, XML에 저장.
             // 사용 시, 다시 XML 데이터 불러오는 안전한 형태로 진행
@@ -134,7 +96,7 @@ public class WidgetProvider extends AppWidgetProvider {
             lab_Coffe = Preferences.getBoolean("COFFE", false);
             lab_A4 = Preferences.getBoolean("A4", false);
 
-            views.setTextViewText(R.id.tv_widget_calendar, " 연구실 대표 일정: " +calenderTitle+"\n 상세 정보는 일정을 눌러 확인하세요.");
+            views.setTextViewText(R.id.tv_widget_calendar, " 연구실 대표 일정: " + calenderTitle + "\n 상세 정보는 일정을 눌러 확인하세요.");
             if (lab_Person)
                 views.setImageViewResource(R.id.img_person, R.drawable.people_exist);
             else
@@ -147,12 +109,12 @@ public class WidgetProvider extends AppWidgetProvider {
                 views.setImageViewResource(R.id.img_a4, R.drawable.a4_exist);
             else
                 views.setImageViewResource(R.id.img_a4, R.drawable.a4_nonexist);
-        }
-        else
+        } else
             views.setTextViewText(R.id.tv_widget_calendar, " 새로 고침을 눌러주세요.");
 
+
         AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, WidgetProvider.class), views); // 위젯 업데이트
-        super.onReceive(context,intent);
+        super.onReceive(context, intent);
     }
 
     @Override
@@ -179,7 +141,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        super.onUpdate(context,appWidgetManager,appWidgetIds);
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
         /*
          * 위젯을 갱신할때 호출됨
          * 주의 : Configure Activity를 정의했을때는 위젯 등록시 처음 한번은 호출이 되지 않습니다
@@ -200,24 +162,56 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     private void status_Request(final Context context) {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/DoorStatusCheck.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/IoTStatusCheck.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        switch (response.trim()) {
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(), decryptAESkey);
+
+                        String[] resPonse_split = response.split("-");
+
+                        switch (resPonse_split[0].trim()) { // 0번지는 재실여부
                             case "open":
                                 lab_Person = true;
                                 break;
                             case "close":
                                 lab_Person = false;
                                 break;
-                            case "error":
-                                Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                            default:
+                                lab_Person = false;
                                 break;
                         }
+
+                        switch (resPonse_split[1].trim()) { // 1번지는 커피 여부
+                            case "coffeeenough":
+                                lab_Coffe = true;
+                                break;
+                            case "coffeelack":
+                                lab_Coffe = false;
+                                break;
+                            default:
+                                lab_Coffe = false;
+                                break;
+                        }
+
+                        switch (resPonse_split[2].trim()) { // 2번지는 A4 여부
+                            case "A4enough":
+                                lab_A4 = true;
+                                break;
+                            case "A4lack":
+                                lab_A4 = false;
+                                break;
+                            default:
+                                lab_A4 = false;
+                                break;
+                        }
+
                         // 위젯에 등록할 '상태' 정보 XML에 저장
                         Preferences = context.getSharedPreferences("LAB_WIDGET", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = Preferences.edit();
@@ -225,6 +219,8 @@ public class WidgetProvider extends AppWidgetProvider {
                         editor.putBoolean("COFFE", lab_Coffe);
                         editor.putBoolean("A4", lab_A4);
                         editor.apply();
+
+                        ChangeWidget(context);//변경된 아이콘 업데이트
                     }
                 },
                 new Response.ErrorListener() {
@@ -237,7 +233,13 @@ public class WidgetProvider extends AppWidgetProvider {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("check", "security");
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
+                params.put("key", RSA.rsaEncryption(decryptAESkey.toCharArray(), RSA.serverPublicKey.toCharArray()));
+                params.put("check", AES.aesEncryption("security".toCharArray(), decryptAESkey));
+
+                decryptAESkey = null;
                 return params;
             }
         };
@@ -258,21 +260,20 @@ public class WidgetProvider extends AppWidgetProvider {
                     @Override
                     public void onResponse(String response) {
                         try {
+
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
                             String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response.toCharArray(), decryptAESkey);
-
                             decryptAESkey = null; // 객체 재사용 취약 보호
-                            //******* 일정이 없으면,response값으로 scheduleNotExist 던져야 하나, []값이 넘어와 if실행안됨  *******//
-                            if ("scheduleNotExist".equals(response.trim())){
+
+                            if ("scheduleNotExist".equals(response.trim())) {
                                 // 등록된 일정이 없을 시
                                 Preferences = context.getSharedPreferences("LAB_WIDGET", Activity.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = Preferences.edit();
                                 editor.putString("CALENDER", "등록된 일정이 없습니다.");
                                 editor.apply();
-                            }
-                            else if ("error".equals(response.trim())) { // 시스템 오류
+                            } else if ("error".equals(response.trim())) { // 시스템 오류
                                 Toast.makeText(context, "시스템 오류입니다.", Toast.LENGTH_SHORT).show();
                             } else {
                                 JSONArray jarray = new JSONArray(response);
@@ -287,6 +288,7 @@ public class WidgetProvider extends AppWidgetProvider {
                         } catch (JSONException e) {
                             System.err.println("WidgetProvider Response JSONException error");
                         }
+                        status_Request(context);
                     }
                 },
                 new Response.ErrorListener() {
@@ -300,14 +302,12 @@ public class WidgetProvider extends AppWidgetProvider {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
 
-
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
                 String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                // 오늘 날짜 확인
                 params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(), RSA.serverPublicKey.toCharArray()));
                 params.put("type", AES.aesEncryption("scheduleList".toCharArray(), decryptAESkey));
-                params.put("date", AES.aesEncryption(mFormat.format(mDate).toCharArray(), decryptAESkey));
+                params.put("date", AES.aesEncryption(getTime().toCharArray(), decryptAESkey));
                 decryptAESkey = null;
 
                 return params;
@@ -318,5 +318,39 @@ public class WidgetProvider extends AppWidgetProvider {
         // 항상 새로운 데이터를 위해 false
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(context).addToRequestQueue(stringRequest);
+    }
+
+    private String getTime() {
+        mNow = System.currentTimeMillis();
+        mDate = new Date(mNow);
+        return mFormat.format(mDate);
+    }
+
+    private void ChangeWidget(Context context) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_member_status);
+
+        Preferences = context.getSharedPreferences("LAB_WIDGET", Activity.MODE_PRIVATE);
+        calenderTitle = Preferences.getString("CALENDER", "등록된 일정이 없습니다.");
+        lab_Person = Preferences.getBoolean("PERSON", false);
+        lab_Coffe = Preferences.getBoolean("COFFE", false);
+        lab_A4 = Preferences.getBoolean("A4", false);
+
+        views.setTextViewText(R.id.tv_widget_calendar, " 연구실 대표 일정: " + calenderTitle + "\n 상세 정보는 일정을 눌러 확인하세요.");
+        if (lab_Person)
+            views.setImageViewResource(R.id.img_person, R.drawable.people_exist);
+        else
+            views.setImageViewResource(R.id.img_person, R.drawable.people_nonexist);
+        if (lab_Coffe)
+            views.setImageViewResource(R.id.img_coffee, R.drawable.coffee_exist);
+        else
+            views.setImageViewResource(R.id.img_coffee, R.drawable.coffee_nonexist);
+        if (lab_A4)
+            views.setImageViewResource(R.id.img_a4, R.drawable.a4_exist);
+        else
+            views.setImageViewResource(R.id.img_a4, R.drawable.a4_nonexist);
+
+        Toast.makeText(context, "연구실 정보 조회 성공", Toast.LENGTH_SHORT).show();
+        AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, WidgetProvider.class), views); // 위젯 업데이트
+
     }
 }

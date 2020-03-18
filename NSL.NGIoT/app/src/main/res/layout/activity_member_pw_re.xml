@@ -37,7 +37,7 @@
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
         android:hint="ID : (학번을 입력하세요)"
-        android:inputType="textPassword" />
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/member_re_mail"
@@ -47,7 +47,7 @@
         android:layout_marginBottom="30dp"
         android:background="@drawable/line_remove"
         android:hint="E-Mail :"
-        android:inputType="textPassword" />
+        android:inputType="textPersonName" />
 
     <Button
         android:id="@+id/btn_pw_re"

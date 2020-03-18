@@ -19,15 +19,15 @@
             android:layout_marginStart="10dp"
             android:text="회의록"
             android:textColor="@android:color/black"
-            android:textSize="30sp"
+            android:textSize="@dimen/titleSize"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_date"
-            android:layout_width="130dp"
+            android:layout_width="@dimen/dateText"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:textSize="17sp"/>
+            android:textSize="@dimen/dateTextSize"/>
 
         <View
             android:layout_width="0dp"

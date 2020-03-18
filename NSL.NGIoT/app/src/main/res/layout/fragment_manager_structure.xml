@@ -19,7 +19,7 @@
             android:layout_marginStart="10dp"
             android:text="랩실 구성도"
             android:textColor="@android:color/black"
-            android:textSize="30sp"
+            android:textSize="@dimen/titleSize"
             android:textStyle="bold" />
 
         <View

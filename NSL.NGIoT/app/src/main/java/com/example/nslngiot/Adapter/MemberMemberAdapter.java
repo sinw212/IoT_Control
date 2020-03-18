@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -64,7 +63,6 @@ public class MemberMemberAdapter extends RecyclerView.Adapter<MemberMemberAdapte
                         .setNegativeButton("닫기", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(context, item.getCourse() + "과정의 " + item.getName() + "님 닫기", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
                             }
                         }).show();

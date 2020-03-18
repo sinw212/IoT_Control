@@ -6,12 +6,9 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -65,10 +62,10 @@ public class RSA {
         byte[] bytePublicKey = Base64.decodeBase64(String.valueOf(stringPublicKey).getBytes());
         X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(bytePublicKey);
         KeyFactory keyFactory;
-        byte[] byteEncryptedData = new byte[2050];
         String str_enc = "";
 
         try {
+            byte[] byteEncryptedData;
             keyFactory = KeyFactory.getInstance("RSA");
             PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
@@ -97,10 +94,9 @@ public class RSA {
         } catch (IllegalBlockSizeException e) {
             System.err.println("RSA Encryption IllegalBlockSizeException error");
         }finally {
-            java.util.Arrays.fill(byteEncryptedData, (byte) 0x20);
             java.util.Arrays.fill(bytePublicKey, (byte) 0x20);
         }
-       return str_enc;
+        return str_enc;
     }
 
     /*복호화*/
@@ -110,11 +106,11 @@ public class RSA {
         byte[] bytePrivateKey =  Base64.decodeBase64(String.valueOf(stringPrivateKey).getBytes());
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(bytePrivateKey);
         KeyFactory keyFactory;
-        byte[] byteEncryptedData = new byte[2050];
-        byte[] byteDecryptedData = new byte[2050];
         String str_dec="";
 
         try {
+            byte[] byteEncryptedData;
+            byte[] byteDecryptedData;
             keyFactory = KeyFactory.getInstance("RSA");
             PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
             // 만들어진 개인키객체를 기반으로 복호화모드로 설정하는 과정
@@ -127,6 +123,7 @@ public class RSA {
             byteDecryptedData = cipher.doFinal(byteEncryptedData);
             // 복호화 후 'String'으로 반환
             str_dec = new String(byteDecryptedData);
+
         } catch (NoSuchAlgorithmException e) {
             System.err.println("RSA Decryption NoSuchAlgorithmException error");
         } catch (InvalidKeySpecException e) {
@@ -141,9 +138,7 @@ public class RSA {
             System.err.println("RSA Decryption BadPaddingException error");
         }finally {
             java.util.Arrays.fill(bytePrivateKey, (byte) 0x20);
-            java.util.Arrays.fill(byteDecryptedData, (byte) 0x20);
-            java.util.Arrays.fill(byteEncryptedData, (byte) 0x20);
         }
-      return str_dec;
+        return str_dec;
     }
 }

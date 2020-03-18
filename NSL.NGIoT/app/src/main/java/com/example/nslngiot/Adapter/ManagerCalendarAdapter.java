@@ -19,7 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Data.ManagerCalendarData;
-import com.example.nslngiot.ManagerFragment.CalendarFragment;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
@@ -34,7 +33,6 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
 
     private Context context;
     private ArrayList<ManagerCalendarData> calendarData;
-    private String Date = CalendarFragment.Data;
 
     // ManagerCalendar어댑터에서 관리하는 아이템의 개수를 반환
     @Override
@@ -65,10 +63,11 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
         holder.titleText.setText(item.getTitle()); // -
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+
+            String date = VolleyQueueSingleTon.manager_DATE;
             @Override
             public void onClick(View v) {
-                // 일정 '상세조회' 조회
-                calendar_select_Request(item.getTitle(), Date);
+                calendar_select_Request(item.getTitle(), date);
             }
         });
     }
@@ -148,7 +147,7 @@ public class ManagerCalendarAdapter extends RecyclerView.Adapter<ManagerCalendar
         VolleyQueueSingleTon.getInstance(context).addToRequestQueue(stringRequest);
     }
 
-    // 회원정보 상세 조회
+    // 연구실 일정 정보 상세 조회
     private void calendar_select_Request(final String Title , final String Date){
         final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
 

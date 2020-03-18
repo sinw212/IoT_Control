@@ -27,7 +27,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.FileFilter;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.ByteArrayOutputStream;
@@ -48,7 +51,6 @@ public class OrganizationFragment extends Fragment {
     private Bitmap setImage;//화면상 등록되는 이미지 파일
     private String encodeImage;//서버로 전송 할 이미지 String
     private static final int REQUEST_CODE = 0;
-
 
     @Nullable
     @Override
@@ -158,13 +160,18 @@ public class OrganizationFragment extends Fragment {
 
     // 이미지 전송 및 조회
     private void organizationFile_Upload_Request(final int menu) {
-      final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
+        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST, String.valueOf(url),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
                         switch (menu) {
                             case 1:
                                 Response(response);
@@ -188,11 +195,18 @@ public class OrganizationFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 switch (menu) {
                     case 1: // 이미지 전송
-                        params.put("type", "orgUpload");
-                        params.put("imgFile", encodeImage);
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey_upload = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        params.put("securitykey", RSA.rsaEncryption(decryptAESkey_upload.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                        params.put("type",AES.aesEncryption("orgUpload".toCharArray(),decryptAESkey_upload));
+                        params.put("imgFile", AES.aesEncryption(encodeImage.toCharArray(),decryptAESkey_upload));
+
                         break;
                     case 2: // 이미지 조회
-                        params.put("type", "orgShow");
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey_show = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        params.put("securitykey", RSA.rsaEncryption(decryptAESkey_show.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                        params.put("type", AES.aesEncryption("orgShow".toCharArray(),decryptAESkey_show));
                         break;
                 }
                 return params;

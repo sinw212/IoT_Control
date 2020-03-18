@@ -20,7 +20,7 @@
             android:layout_marginStart="10dp"
             android:text="상태 확인"
             android:textColor="@android:color/black"
-            android:textSize="30sp"
+            android:textSize="@dimen/titleSize"
             android:textStyle="bold" />
 
         <View
@@ -28,19 +28,19 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btn_refresh"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_gravity="right"
-            android:background="@drawable/refresh_button" />
+            android:gravity="center"
+            android:background="@drawable/refresh" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/marginTop"
-        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -96,9 +96,9 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:gravity="center"
         android:layout_marginTop="50dp"
         android:orientation="horizontal">
 

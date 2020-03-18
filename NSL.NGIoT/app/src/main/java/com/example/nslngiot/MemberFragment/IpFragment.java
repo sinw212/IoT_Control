@@ -19,6 +19,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
+import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.KEYSTORE;
+import com.example.nslngiot.Security_Utill.RSA;
 import com.github.chrisbanes.photoview.PhotoView;
 
 import java.util.HashMap;
@@ -53,6 +56,11 @@ public class IpFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
+                        response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
                         IPImage.setImageBitmap(StringToBitmap(response));
                     }
                 },
@@ -67,7 +75,10 @@ public class IpFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // IP 주소 이미지 조회
-                params.put("type", "ipShow");
+                //암호화된 대칭키를 키스토어의 개인키로 복호화
+                String decryptAESkey_show = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey_show.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("type", AES.aesEncryption("ipShow".toCharArray(),decryptAESkey_show));
                 return params;
             }
         };
