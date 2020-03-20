@@ -79,6 +79,11 @@ public class CalendarFragment extends Fragment {
         btn_add = getView().findViewById(R.id.btn_add);
         recyclerView  = getView().findViewById(R.id.recyclerview_manager_calendar);
 
+        c = Calendar.getInstance();
+        nYear = c.get(Calendar.YEAR);
+        nMon = c.get(Calendar.MONTH);
+        nDay = c.get(Calendar.DAY_OF_MONTH);
+
         // 오늘 날짜 표현
         tv_date.setText(getTime());
 
@@ -104,13 +109,12 @@ public class CalendarFragment extends Fragment {
                         tv_date.setText(strDate);
                         // 등록된 일정 '제목조회' 조회
                         manager_Calendar_Title_SelectRequest();
+
+                        nYear = year;
+                        nMon = monthOfYear;
+                        nDay = dayOfMonth;
                     }
                 };
-
-        c = Calendar.getInstance();
-        nYear = c.get(Calendar.YEAR);
-        nMon = c.get(Calendar.MONTH);
-        nDay = c.get(Calendar.DAY_OF_MONTH);
 
         // 달력 아이콘 리스너
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {

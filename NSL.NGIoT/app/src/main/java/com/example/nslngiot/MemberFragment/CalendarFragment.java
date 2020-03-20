@@ -54,7 +54,6 @@ public class CalendarFragment extends Fragment {
     private ArrayList<ManagerCalendarData> arrayList;
     private ManagerCalendarData managerCalendarData;
 
-
     private Calendar c;
     private int nYear,nMon,nDay;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
@@ -73,6 +72,11 @@ public class CalendarFragment extends Fragment {
         tv_date = getView().findViewById(R.id.tv_date);
         btn_calendar = getView().findViewById(R.id.btn_calendar);
         recyclerView  = getView().findViewById(R.id.recyclerview_member_calendar);
+
+        c = Calendar.getInstance();
+        nYear = c.get(Calendar.YEAR);
+        nMon = c.get(Calendar.MONTH);
+        nDay = c.get(Calendar.DAY_OF_MONTH);
 
         // 오늘 날짜 표현
         tv_date.setText(getTime());
@@ -101,13 +105,12 @@ public class CalendarFragment extends Fragment {
                         tv_date.setText(strDate);
                         // 등록된 일정 조회
                         member_calendar_Request();
+
+                        nYear = year;
+                        nMon = monthOfYear;
+                        nDay = dayOfMonth;
                     }
                 };
-
-        c = Calendar.getInstance();
-        nYear = c.get(Calendar.YEAR);
-        nMon = c.get(Calendar.MONTH);
-        nDay = c.get(Calendar.DAY_OF_MONTH);
 
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
             @Override

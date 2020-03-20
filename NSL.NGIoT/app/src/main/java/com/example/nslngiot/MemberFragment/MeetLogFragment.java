@@ -62,6 +62,11 @@ public class MeetLogFragment extends Fragment {
         btn_calendar = getView().findViewById(R.id.btn_calendar);
         member_meetlog = getView().findViewById(R.id.member_meetlog);
 
+        c = Calendar.getInstance();
+        nYear = c.get(Calendar.YEAR);
+        nMon = c.get(Calendar.MONTH);
+        nDay = c.get(Calendar.DAY_OF_MONTH);
+
         // 오늘 날짜 표현
         tv_date.setText(getTime());
 
@@ -90,13 +95,12 @@ public class MeetLogFragment extends Fragment {
 
                         // 등록된 회의록 조회
                         member_Meetlog_SelectRequest();
+
+                        nYear = year;
+                        nMon = monthOfYear;
+                        nDay = dayOfMonth;
                     }
                 };
-
-        c = Calendar.getInstance();
-        nYear = c.get(Calendar.YEAR);
-        nMon = c.get(Calendar.MONTH);
-        nDay = c.get(Calendar.DAY_OF_MONTH);
 
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
             @Override

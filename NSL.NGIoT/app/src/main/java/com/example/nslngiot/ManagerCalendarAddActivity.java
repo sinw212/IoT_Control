@@ -63,6 +63,11 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
         btn_calendar = findViewById(R.id.btn_calendar);
         btn_add = findViewById(R.id.btn_add);
 
+        c = Calendar.getInstance();
+        nYear = c.get(Calendar.YEAR);
+        nMon = c.get(Calendar.MONTH);
+        nDay = c.get(Calendar.DAY_OF_MONTH);
+
         // 오늘 날짜 표현
         tv_date.setText(getTime());
 
@@ -85,13 +90,12 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                             strDate += String.valueOf(dayOfMonth) + "일";
 
                         tv_date.setText(strDate);
+
+                        nYear = year;
+                        nMon = monthOfYear;
+                        nDay = dayOfMonth;
                     }
                 };
-
-        c = Calendar.getInstance();
-        nYear = c.get(Calendar.YEAR);
-        nMon = c.get(Calendar.MONTH);
-        nDay = c.get(Calendar.DAY_OF_MONTH);
 
         // 달력 아이콘 리스너
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
