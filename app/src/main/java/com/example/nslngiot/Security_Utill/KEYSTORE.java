@@ -3,7 +3,6 @@ package com.example.nslngiot.Security_Utill;
 import android.content.Context;
 import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
-import android.util.Log;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -21,7 +20,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -122,7 +120,7 @@ public class KEYSTORE {
     }
 
     // KeyStore의 RSA로 복호화
-    public static String keyStore_Decryption(char[] str){
+    public static char[] keyStore_Decryption(char[] str){
 
         String keyStore_Decryption_DATA="";
 
@@ -160,6 +158,6 @@ public class KEYSTORE {
         } catch (IllegalBlockSizeException e) {
             System.err.println("keyStore_Decryption IllegalBlockSizeException error");
         }
-        return keyStore_Decryption_DATA;
+        return keyStore_Decryption_DATA.toCharArray();
     }
 }

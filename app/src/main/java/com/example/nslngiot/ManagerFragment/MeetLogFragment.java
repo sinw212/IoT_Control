@@ -67,6 +67,11 @@ public class MeetLogFragment extends Fragment {
         manager_meetlog = getView().findViewById(R.id.manager_meetlog);
         btn_manager_meetlog_add = getView().findViewById(R.id.btn_manager_meetlog_add);
 
+        c = Calendar.getInstance();
+        nYear = c.get(Calendar.YEAR);
+        nMon = c.get(Calendar.MONTH);
+        nDay = c.get(Calendar.DAY_OF_MONTH);
+
         // 오늘 날짜 표현
         tv_date.setText(getTime());
 
@@ -95,13 +100,12 @@ public class MeetLogFragment extends Fragment {
 
                         // 등록된 회의록 조회
                         manager_Meetlog_SelectRequest();
+
+                        nYear = year;
+                        nMon = monthOfYear;
+                        nDay = dayOfMonth;
                     }
                 };
-
-        c = Calendar.getInstance();
-        nYear = c.get(Calendar.YEAR);
-        nMon = c.get(Calendar.MONTH);
-        nDay = c.get(Calendar.DAY_OF_MONTH);
 
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
@@ -146,10 +150,12 @@ public class MeetLogFragment extends Fragment {
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         switch (response.trim()){
                             case "cfAdded":
@@ -174,15 +180,16 @@ public class MeetLogFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type", AES.aesEncryption("cfAdd".toCharArray(),decryptAESkey));
                 params.put("date", AES.aesEncryption(tv_date.getText().toString().toCharArray(),decryptAESkey));
                 params.put("text", AES.aesEncryption(Meetlog.toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };
@@ -204,12 +211,14 @@ public class MeetLogFragment extends Fragment {
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
 
-                        if("error".equals(response.trim())){ //시스템 에러일때
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
+
+                        if("error".equals(response.trim())){ // 시스템 에러일때
                             manager_meetlog.setText("시스템 오류입니다.");
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }else if("cfNotExist".equals(response.trim())){ // 등록된 회의록이 없을때
@@ -235,13 +244,13 @@ public class MeetLogFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type", AES.aesEncryption("cfShow".toCharArray(),decryptAESkey));
                 params.put("date", AES.aesEncryption(tv_date.getText().toString().toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };

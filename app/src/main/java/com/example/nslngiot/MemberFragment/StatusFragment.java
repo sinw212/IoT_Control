@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,6 +63,7 @@ public class StatusFragment extends Fragment {
             public void onClick(View view) {
                 // 재실여부/커피잔여/A4잔여 상태조회
                 lab_All_SelectRequest();
+                Toast.makeText(getActivity(),"연구실 정보 조회완료",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -77,9 +79,12 @@ public class StatusFragment extends Fragment {
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         String[] resPonse_split = response.split("-");
                         switch (resPonse_split[0].trim()){ // 0번지는 재실여부
@@ -149,12 +154,12 @@ public class StatusFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("key", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("key", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("check",AES.aesEncryption("security".toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };

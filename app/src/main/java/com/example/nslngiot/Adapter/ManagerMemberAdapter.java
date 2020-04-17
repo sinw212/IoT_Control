@@ -141,11 +141,12 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
 
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
                         switch (response.trim()) {
 
                             case "memDeleted":// 삭제했을 시
@@ -175,16 +176,16 @@ public class ManagerMemberAdapter extends RecyclerView.Adapter<ManagerMemberAdap
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("memDelete".toCharArray(),decryptAESkey));
                 params.put("name",AES.aesEncryption(name.toCharArray(),decryptAESkey));
                 params.put("phone",AES.aesEncryption(phone.toCharArray(),decryptAESkey));
                 params.put("dept",AES.aesEncryption(course.toCharArray(),decryptAESkey));
                 params.put("team",AES.aesEncryption(group.toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };

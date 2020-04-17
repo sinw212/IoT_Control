@@ -6,12 +6,9 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -99,7 +96,7 @@ public class RSA {
         }finally {
             java.util.Arrays.fill(bytePublicKey, (byte) 0x20);
         }
-       return str_enc;
+        return str_enc;
     }
 
     /*복호화*/
@@ -142,6 +139,6 @@ public class RSA {
         }finally {
             java.util.Arrays.fill(bytePrivateKey, (byte) 0x20);
         }
-      return str_dec;
+        return str_dec;
     }
 }

@@ -23,17 +23,8 @@ import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.XSSFilter;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class RuleFragment extends Fragment {
 
@@ -64,10 +55,12 @@ public class RuleFragment extends Fragment {
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         if("ruleNotExist".equals(response.trim())) // 등록된 규칙이 없을 시
                             member_rule.setText("현재 규칙이 등록되어있지 않습니다.");
@@ -76,8 +69,10 @@ public class RuleFragment extends Fragment {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }else{
                             String[] resPonse_split = response.split("-");
-                            if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
+                            if("ruleExist".equals(resPonse_split[resPonse_split.length-1])){ // 등록된 규칙을 받았을 시
                                 member_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                            }else{
+                                Toast.makeText(getActivity(), "알 수없는 오류입니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -94,12 +89,12 @@ public class RuleFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("ruleShow".toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };

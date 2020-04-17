@@ -12,6 +12,12 @@ import com.example.nslngiot.Network_Utill.NetworkCheck;
 import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 
+/*
+    보안 담당: 이주완
+    2020.02~03 하이브리드 암호 모듈, KeyStore 암호 모듈, XSS, SQL injection, FileUpload 필터링 장착 
+    2020.03.14 민감정보 메모리 덤프 이슈 - 로직에 맞게 민감정보 메모리 삭제
+    2020.03.20 키보드 복사 캐시 이슈  - 키보드 복사를 통해 캐시에 복사 불가능하도록 캐시 비활성화
+ */
 public class SplashActivity extends Activity {
 
     private int checkSecurity = 0;
@@ -58,8 +64,14 @@ public class SplashActivity extends Activity {
                             break;
                         case 20:
                             AES.aesKeyGen();
+                            // 1. 생성된 대칭키를 추후 삭제하기 위해 대칭키 레퍼런스(secretKey)를 복사
+                            char[] clone_key = AES.secretKEY;
+
+                            // 2. 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 레퍼런스 진행
                             AES.secretKEY = KEYSTORE.keyStore_Encryption(AES.secretKEY);
-                            // 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 적재
+
+                            // 3. 1에서 미리 복사해둔 레퍼런스를 통해 기존의 대칭키를 메모리에서 삭제
+                            java.util.Arrays.fill(clone_key,(char)0x20);
                             checkSecurity += 1;
                             break;
                         default:
@@ -79,12 +91,11 @@ public class SplashActivity extends Activity {
             progressDialog.dismiss();
             super.onPostExecute(result);
             if (checkSecurity == 2) { // 수정필요 추후
-                Toast.makeText(SplashActivity.this, "완전 암호화 설정완료", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 finish();
             } else {
-                Toast.makeText(SplashActivity.this, "암호화 설정에 실패했습니다. 다시 앱을 설치해주세요.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SplashActivity.this, "암호화 설정에 실패했습니다. 다시 앱을 설치해주세요.", Toast.LENGTH_LONG).show();
                 finish();
             }
         }

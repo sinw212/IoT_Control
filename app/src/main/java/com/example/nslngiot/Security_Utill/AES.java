@@ -48,7 +48,7 @@ public class AES {
         }
     }
 
-    public static String aesEncryption(char[] str, String key) {
+    public static String aesEncryption(char[] str, char[] key) {
 
         Key keySpec;
         String iv = "";
@@ -57,8 +57,8 @@ public class AES {
         try {
             byte[] encrypted;
             byte[] keyBytes = new byte[16];
-            byte[] b = key.getBytes(StandardCharsets.UTF_8);
-            iv = key.substring(0,16);
+            byte[] b = String.valueOf(key).getBytes(StandardCharsets.UTF_8);
+            iv = String.valueOf(key).substring(0,16);
             int len = b.length;
 
             if(len > keyBytes.length)
@@ -95,7 +95,8 @@ public class AES {
         return str_enc;
     }
 
-    public static String aesDecryption(char[] str, String key) {
+
+    public static String aesDecryption(char[] str, char[] key) {
 
         String iv = "";
         String str_dec = "";
@@ -104,8 +105,8 @@ public class AES {
         try {
             byte[] decrypted;
             byte[] keyBytes = new byte[16];
-            byte[] b = key.getBytes(StandardCharsets.UTF_8);
-            iv = key.substring(0,16);
+            byte[] b = String.valueOf(key).getBytes(StandardCharsets.UTF_8);
+            iv = String.valueOf(key).substring(0,16);
             int len = b.length;
 
             if(len > keyBytes.length)
@@ -119,7 +120,7 @@ public class AES {
 
             // 암호화된 인코딩 데이터, 디코딩 변환
             decrypted = Base64.decodeBase64(String.valueOf(str).getBytes());
-           // 디코딩된 암호화 데이터, 복호화 후 'String'으로 반환
+            // 디코딩된 암호화 데이터, 복호화 후 'String'으로 반환
             str_dec = new String(cipher.doFinal(decrypted), StandardCharsets.UTF_8);
 
         } catch (NoSuchAlgorithmException e) {

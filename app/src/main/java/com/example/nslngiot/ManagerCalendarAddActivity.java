@@ -63,11 +63,16 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
         btn_calendar = findViewById(R.id.btn_calendar);
         btn_add = findViewById(R.id.btn_add);
 
+        c = Calendar.getInstance();
+        nYear = c.get(Calendar.YEAR);
+        nMon = c.get(Calendar.MONTH);
+        nDay = c.get(Calendar.DAY_OF_MONTH);
+
         // 오늘 날짜 표현
         tv_date.setText(getTime());
 
         // Calendar
-        //DatePicker Listener
+        // DatePicker Listener
         mDateSetListener =
                 new DatePickerDialog.OnDateSetListener() {
                     public void onDateSet(DatePicker view, int year, int monthOfYear,
@@ -85,13 +90,12 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                             strDate += String.valueOf(dayOfMonth) + "일";
 
                         tv_date.setText(strDate);
+
+                        nYear = year;
+                        nMon = monthOfYear;
+                        nDay = dayOfMonth;
                     }
                 };
-
-        c = Calendar.getInstance();
-        nYear = c.get(Calendar.YEAR);
-        nMon = c.get(Calendar.MONTH);
-        nDay = c.get(Calendar.DAY_OF_MONTH);
 
         // 달력 아이콘 리스너
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
@@ -151,11 +155,14 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         switch (response.trim()){
                             case "scheduleAddSuccess": // 일정 등록 성공했을 때
@@ -184,16 +191,15 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("scheduleAdd".toCharArray(),decryptAESkey));
                 params.put("date",AES.aesEncryption(Date.toCharArray(),decryptAESkey));
                 params.put("title",AES.aesEncryption(Title.toCharArray(),decryptAESkey));
                 params.put("text", AES.aesEncryption (Detail.toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
-
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };

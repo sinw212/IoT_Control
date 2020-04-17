@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.EditTextCache;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.SQLFilter;
@@ -72,23 +74,31 @@ public class LoginMemberActivity extends AppCompatActivity {
             String widgetSignal = getExtra.getString("signal");
             if("keystore".equals(widgetSignal)){
                 AES.aesKeyGen();
+                // 1. 생성된 대칭키를 추후 삭제하기 위해 대칭키 레퍼런스(secretKey)를 복사
+                char[] clone_key = AES.secretKEY;
+
+                // 2. 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 레퍼런스 진행
                 AES.secretKEY = KEYSTORE.keyStore_Encryption(AES.secretKEY);
-                // 생성된 개인키/대칭키 keystore의 비대칭암호로 암호화하여 static 메모리 적재
+
+                // 3. 1에서 미리 복사해둔 레퍼런스를 통해 기존의 대칭키를 메모리에서 삭제
+                java.util.Arrays.fill(clone_key,(char)0x20);
             }
         }
 
         login_Preferences = getSharedPreferences("MemberLogin", Activity.MODE_PRIVATE); // 해당 앱 말고는 접근 불가
         if(login_Preferences.getBoolean("AUTO",false)) {
             // 자동 로그인 체크 시 if 동작, AUTO에 값이 없으면 false 동작으로 if 동작안함
-            name = KEYSTORE.keyStore_Decryption(login_Preferences.getString("NAME", "default").toCharArray()).toCharArray();
-            id = KEYSTORE.keyStore_Decryption(login_Preferences.getString("ID", "default").toCharArray()).toCharArray();
+            name = KEYSTORE.keyStore_Decryption(login_Preferences.getString("NAME", "default").toCharArray());
+            id = KEYSTORE.keyStore_Decryption(login_Preferences.getString("ID", "default").toCharArray());
             auto_login.setChecked(true);
 
-            Toast.makeText(getApplicationContext(), String.valueOf(id) + " " +
-                    String.valueOf(name) + "님 로그인 성공", Toast.LENGTH_SHORT).show();
+            Toast toast=Toast.makeText(getApplicationContext(), String.valueOf(id) + " " + String.valueOf(name) + "님 로그인 성공", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
             Intent intent = new Intent(getApplicationContext(), MainMemberActivity.class);
             startActivity(intent);
             finish();
+
             java.util.Arrays.fill(name, (char) 0x20);
             java.util.Arrays.fill(id, (char) 0x20);
         }
@@ -161,10 +171,12 @@ public class LoginMemberActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         if("loginFailed".equals(response.trim()))
                             Toast.makeText(getApplicationContext(),"아이디를 잘못 입력하였습니다.",Toast.LENGTH_SHORT).show();
@@ -175,19 +187,19 @@ public class LoginMemberActivity extends AppCompatActivity {
                             if ("loginSuccess".equals(resPonse_split[1])) {
                                 boolean vaild = BCrypt.checkpw(String.valueOf(pw), resPonse_split[0]); // 암호화된 비밀번호 추출 및 일치 여부 체크
                                 if (vaild) { // 비밀번호 적합성 검증 성공 시 true
-                                    Toast.makeText(getApplicationContext(), String.valueOf(id) + " " +
-                                            String.valueOf(name) + "님 로그인 성공", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), MainMemberActivity.class);
-                                    startActivity(intent);
-                                    finish();
-
-                                    java.util.Arrays.fill(name, (char)0x20); // 로그인 진행 과정에서 중요정보 메모리 삭제
-                                    java.util.Arrays.fill(pw, (char)0x20);
-                                    java.util.Arrays.fill(id, (char)0x20);
+                                   Toast toast=Toast.makeText(getApplicationContext(), String.valueOf(id) + " " + String.valueOf(name) + "님 로그인 성공", Toast.LENGTH_SHORT);
+                                   toast.setGravity(Gravity.CENTER,0,0);
+                                   toast.show();
+                                   Intent intent = new Intent(getApplicationContext(), MainMemberActivity.class);
+                                   startActivity(intent);
+                                   finish();
                                 } else // 비밀번호 불 일치
                                     Toast.makeText(getApplicationContext(), "비밀번호를 잘못 입력하였습니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
+                        java.util.Arrays.fill(name, (char)0x20); // 로그인 진행 과정에서 중요정보 메모리 삭제
+                        java.util.Arrays.fill(pw, (char)0x20);
+                        java.util.Arrays.fill(id, (char)0x20);
                     }
                 },
                 new Response.ErrorListener() {
@@ -202,14 +214,14 @@ public class LoginMemberActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey",RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey",RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("id", AES.aesEncryption(id,decryptAESkey));
                 params.put("name",AES.aesEncryption(name,decryptAESkey));
                 params.put("type",AES.aesEncryption("login".toCharArray(),decryptAESkey));
 
-                decryptAESkey = null; // 객체 재사용 취약 보호
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };
@@ -231,5 +243,9 @@ public class LoginMemberActivity extends AppCompatActivity {
         name = new char[20];
         id = new char[20];
         pw = new char[255];
+
+        EditTextCache.editTextCacheSecurity(login_pw);
+        EditTextCache.editTextCacheSecurity(login_id);
+        EditTextCache.editTextCacheSecurity(login_name);
     }
 }

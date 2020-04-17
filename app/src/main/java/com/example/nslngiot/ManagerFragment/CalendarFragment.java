@@ -3,14 +3,12 @@ package com.example.nslngiot.ManagerFragment;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,6 +79,11 @@ public class CalendarFragment extends Fragment {
         btn_add = getView().findViewById(R.id.btn_add);
         recyclerView  = getView().findViewById(R.id.recyclerview_manager_calendar);
 
+        c = Calendar.getInstance();
+        nYear = c.get(Calendar.YEAR);
+        nMon = c.get(Calendar.MONTH);
+        nDay = c.get(Calendar.DAY_OF_MONTH);
+
         // 오늘 날짜 표현
         tv_date.setText(getTime());
 
@@ -106,13 +109,12 @@ public class CalendarFragment extends Fragment {
                         tv_date.setText(strDate);
                         // 등록된 일정 '제목조회' 조회
                         manager_Calendar_Title_SelectRequest();
+
+                        nYear = year;
+                        nMon = monthOfYear;
+                        nDay = dayOfMonth;
                     }
                 };
-
-        c = Calendar.getInstance();
-        nYear = c.get(Calendar.YEAR);
-        nMon = c.get(Calendar.MONTH);
-        nDay = c.get(Calendar.DAY_OF_MONTH);
 
         // 달력 아이콘 리스너
         btn_calendar.setOnClickListener(new ImageButton.OnClickListener() {
@@ -145,10 +147,12 @@ public class CalendarFragment extends Fragment {
                     public void onResponse(String response) {
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                            decryptAESkey = null; // 객체 재사용 취약 보호
+
+                            java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                             if("scheduleNotExist".equals(response.trim())) { // 등록된 일정이 없을 시
                                 layoutManager = new LinearLayoutManager(getActivity());
@@ -203,19 +207,18 @@ public class CalendarFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
                 VolleyQueueSingleTon.manager_DATE=tv_date.getText().toString(); // fragment& adapter 날짜 공유
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("scheduleList".toCharArray(),decryptAESkey));
                 params.put("date",AES.aesEncryption(VolleyQueueSingleTon.manager_DATE.toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };
-
         // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
         // 항상 새로운 데이터를 위해 false
         VolleyQueueSingleTon.manager_calendar_selectSharing.setShouldCache(false);
