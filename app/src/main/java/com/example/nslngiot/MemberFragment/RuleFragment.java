@@ -1,6 +1,7 @@
 package com.example.nslngiot.MemberFragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,11 @@ public class RuleFragment extends Fragment {
                         }else{
                             String[] resPonse_split = response.split("-");
                             if("ruleExist".equals(resPonse_split[resPonse_split.length-1])){ // 등록된 규칙을 받았을 시
-                                member_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                                StringBuilder resPonseBuilder = new StringBuilder(4096);
+                                int size = resPonse_split.length-1;
+                                for(int i=0 ; i <size ;i++)
+                                    resPonseBuilder.append(resPonse_split[i]);
+                                member_rule.setText(XSSFilter.xssFilter(resPonseBuilder.toString().trim()));
                             }else{
                                 Toast.makeText(getActivity(), "알 수없는 오류입니다.", Toast.LENGTH_SHORT).show();
                             }

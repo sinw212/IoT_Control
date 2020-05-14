@@ -15,8 +15,9 @@ import com.example.nslngiot.Security_Utill.KEYSTORE;
 /*
     보안 담당: 이주완
     2020.02~03 하이브리드 암호 모듈, KeyStore 암호 모듈, XSS, SQL injection, FileUpload 필터링 장착 
-    2020.03.14 민감정보 메모리 덤프 이슈 - 로직에 맞게 민감정보 메모리 삭제
-    2020.03.20 키보드 복사 캐시 이슈  - 키보드 복사를 통해 캐시에 복사 불가능하도록 캐시 비활성화
+    2020.03.14 민감정보 메모리 덤프 이슈 > 로직에 맞게 민감정보 메모리 삭제
+    2020.03.20 키보드 복사 캐시 이슈 > 키보드 복사를 통해 캐시에 복사 불가능하도록 캐시 비활성화
+    2020.05.14 랩실규칙 - 이슈 > -으로 split 진행 과정중 사용자 입력 중 'wi-fi' 입력 시 - 구분자로 인해 뒷 데이터 짤려나가는 이슈 제거
  */
 public class SplashActivity extends Activity {
 
