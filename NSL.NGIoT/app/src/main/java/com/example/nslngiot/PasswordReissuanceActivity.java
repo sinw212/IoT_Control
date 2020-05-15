@@ -3,6 +3,7 @@ package com.example.nslngiot;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -14,8 +15,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.nslngiot.Network_Utill.NetworkURL;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.EditTextCache;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.SQLFilter;
@@ -73,11 +76,11 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 } else if (TextUtils.isEmpty(String.valueOf(member_mail))) { // 이메일의 공백 입력 및 널문자 입력 시
                     Toast.makeText(getApplicationContext(), "발급받을 이메일을 입력해 주세요.", Toast.LENGTH_SHORT).show();
                 } else if (member_name.length >= 20 || member_id.length >= 20 || member_mail.length >= 30) { // DB 값 오류 방지
-                    Toast.makeText(getApplicationContext(), "Name or ID or Email too Long error.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Name or ID or Email too Long error.", Toast.LENGTH_SHORT).show();
                 } else {
                     if (String.valueOf(member_mail).matches(e_maile_regex)) { // 이메일을 올바르게 입력 시
                         if(name_filter || id_filter || mail_filter) { // SQL패턴 발견 시
-                            Toast.makeText(getApplicationContext(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "공격시도가 발견되었습니다.", Toast.LENGTH_SHORT).show();
                             finish();
                         }else
                             reissuanceRequest();
@@ -90,19 +93,19 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
     }
 
     private void reissuanceRequest() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
-
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+                Request.Method.POST, String.valueOf(NetworkURL.LOGIN_URL),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         switch (response.trim()) {
                             case "emailSendSuccess":
@@ -111,9 +114,6 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                                 Intent intent = new Intent(getApplicationContext(),PasswordReissuanceActivity.class);
                                 startActivity(intent);
                                 finish();
-                                java.util.Arrays.fill(member_id, (char) 0x20);
-                                java.util.Arrays.fill(member_name, (char) 0x20);
-                                java.util.Arrays.fill(member_mail, (char) 0x20);
                                 break;
                             case "userNotExist":
                                 Toast.makeText(getApplicationContext(), "학번/이름/메일을 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -125,6 +125,9 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                 break;
                         }
+                        java.util.Arrays.fill(member_id, (char) 0x20);
+                        java.util.Arrays.fill(member_name, (char) 0x20);
+                        java.util.Arrays.fill(member_mail, (char) 0x20);
                     }
                 },
                 new Response.ErrorListener() {
@@ -139,16 +142,19 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("id", AES.aesEncryption(member_id,decryptAESkey));
                 params.put("name", AES.aesEncryption(member_name,decryptAESkey));
                 params.put("mail", AES.aesEncryption(member_mail,decryptAESkey));
                 params.put("type", AES.aesEncryption("find".toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
+                Toast toast = Toast.makeText(getApplicationContext(),"비밀번호 발급 중입니다.\n잠시기다려주세요.",Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
                 return params;
             }
         };
@@ -168,5 +174,9 @@ public class PasswordReissuanceActivity extends AppCompatActivity {
         member_name = new char[20];
         member_id = new char[20];
         member_mail=new char[50];
+
+        EditTextCache.editTextCacheSecurity(re_id);
+        EditTextCache.editTextCacheSecurity(re_mail);
+        EditTextCache.editTextCacheSecurity(re_name);
     }
 }

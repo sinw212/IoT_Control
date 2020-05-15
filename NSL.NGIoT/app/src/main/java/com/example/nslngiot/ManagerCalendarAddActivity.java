@@ -19,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.nslngiot.Network_Utill.NetworkURL;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.AES;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
@@ -72,7 +73,7 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
         tv_date.setText(getTime());
 
         // Calendar
-        //DatePicker Listener
+        // DatePicker Listener
         mDateSetListener =
                 new DatePickerDialog.OnDateSetListener() {
                     public void onDateSet(DatePicker view, int year, int monthOfYear,
@@ -148,18 +149,19 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
 
     // 일정 등록 통신
     private void manager_Calendar_SaveRequest(){
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
-
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+                Request.Method.POST, String.valueOf(NetworkURL.SCHEDULE_URL),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         switch (response.trim()){
                             case "scheduleAddSuccess": // 일정 등록 성공했을 때
@@ -188,16 +190,15 @@ public class ManagerCalendarAddActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("scheduleAdd".toCharArray(),decryptAESkey));
                 params.put("date",AES.aesEncryption(Date.toCharArray(),decryptAESkey));
                 params.put("title",AES.aesEncryption(Title.toCharArray(),decryptAESkey));
                 params.put("text", AES.aesEncryption (Detail.toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
-
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };

@@ -169,13 +169,16 @@ public class WidgetProvider extends AppWidgetProvider {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(), decryptAESkey);
 
-                        String[] resPonse_split = response.split("-");
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
+                        String[] resPonse_split = response.split("-");
                         switch (resPonse_split[0].trim()) { // 0번지는 재실여부
                             case "open":
                                 lab_Person = true;
@@ -234,9 +237,9 @@ public class WidgetProvider extends AppWidgetProvider {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("key", RSA.rsaEncryption(decryptAESkey.toCharArray(), RSA.serverPublicKey.toCharArray()));
+                params.put("key", RSA.rsaEncryption(decryptAESkey, RSA.serverPublicKey.toCharArray()));
                 params.put("check", AES.aesEncryption("security".toCharArray(), decryptAESkey));
 
                 decryptAESkey = null;
@@ -260,12 +263,13 @@ public class WidgetProvider extends AppWidgetProvider {
                     @Override
                     public void onResponse(String response) {
                         try {
-
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response.toCharArray(), decryptAESkey);
-                            decryptAESkey = null; // 객체 재사용 취약 보호
+
+                            java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                             if ("scheduleNotExist".equals(response.trim())) {
                                 // 등록된 일정이 없을 시
@@ -303,13 +307,13 @@ public class WidgetProvider extends AppWidgetProvider {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(), RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey, RSA.serverPublicKey.toCharArray()));
                 params.put("type", AES.aesEncryption("scheduleList".toCharArray(), decryptAESkey));
                 params.put("date", AES.aesEncryption(getTime().toCharArray(), decryptAESkey));
-                decryptAESkey = null;
 
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };

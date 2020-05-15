@@ -120,7 +120,7 @@ public class KEYSTORE {
     }
 
     // KeyStore의 RSA로 복호화
-    public static String keyStore_Decryption(char[] str){
+    public static char[] keyStore_Decryption(char[] str){
 
         String keyStore_Decryption_DATA="";
 
@@ -158,6 +158,6 @@ public class KEYSTORE {
         } catch (IllegalBlockSizeException e) {
             System.err.println("keyStore_Decryption IllegalBlockSizeException error");
         }
-        return keyStore_Decryption_DATA;
+        return keyStore_Decryption_DATA.toCharArray();
     }
 }

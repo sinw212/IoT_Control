@@ -26,6 +26,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.Adapter.ManagerCalendarAdapter;
 import com.example.nslngiot.Data.ManagerCalendarData;
 import com.example.nslngiot.ManagerCalendarAddActivity;
+import com.example.nslngiot.Network_Utill.NetworkURL;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
@@ -138,19 +139,19 @@ public class CalendarFragment extends Fragment {
 
     // 현재 등록된 일정 제목조회 통신
     private void manager_Calendar_Title_SelectRequest() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Schedule.jsp");
-
         VolleyQueueSingleTon.manager_calendar_selectSharing = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+                Request.Method.POST, String.valueOf(NetworkURL.SCHEDULE_URL),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
                             // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                            String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                            char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                             // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                             response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                            decryptAESkey = null; // 객체 재사용 취약 보호
+
+                            java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                             if("scheduleNotExist".equals(response.trim())) { // 등록된 일정이 없을 시
                                 layoutManager = new LinearLayoutManager(getActivity());
@@ -205,19 +206,18 @@ public class CalendarFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
                 VolleyQueueSingleTon.manager_DATE=tv_date.getText().toString(); // fragment& adapter 날짜 공유
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("scheduleList".toCharArray(),decryptAESkey));
                 params.put("date",AES.aesEncryption(VolleyQueueSingleTon.manager_DATE.toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };
-
         // 캐시 데이터 가져오지 않음 왜냐면 기존 데이터 가져올 수 있기때문
         // 항상 새로운 데이터를 위해 false
         VolleyQueueSingleTon.manager_calendar_selectSharing.setShouldCache(false);

@@ -1,6 +1,7 @@
 package com.example.nslngiot.MemberFragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.nslngiot.Network_Utill.NetworkURL;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
@@ -46,19 +49,19 @@ public class RuleFragment extends Fragment {
 
     // 현재 등록된 규칙 조회 통신
     private void member_Rule_SelectRequest(){
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Rule.jsp");
-
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+                Request.Method.POST, String.valueOf(NetworkURL.RULE_URL),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         if("ruleNotExist".equals(response.trim())) // 등록된 규칙이 없을 시
                             member_rule.setText("현재 규칙이 등록되어있지 않습니다.");
@@ -67,8 +70,14 @@ public class RuleFragment extends Fragment {
                             Toast.makeText(getActivity(), "다시 시도해주세요.", Toast.LENGTH_LONG).show();
                         }else{
                             String[] resPonse_split = response.split("-");
-                            if("ruleExist".equals(resPonse_split[1])){ // 등록된 규칙을 받았을 시
-                                member_rule.setText(XSSFilter.xssFilter(resPonse_split[0]));
+                            if("ruleExist".equals(resPonse_split[resPonse_split.length-1])){ // 등록된 규칙을 받았을 시
+                                StringBuilder resPonseBuilder = new StringBuilder(4096);
+                                int size = resPonse_split.length-1;
+                                for(int i=0 ; i <size ;i++)
+                                    resPonseBuilder.append(resPonse_split[i]);
+                                member_rule.setText(XSSFilter.xssFilter(resPonseBuilder.toString().trim()));
+                            }else{
+                                Toast.makeText(getActivity(), "알 수없는 오류입니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -85,12 +94,12 @@ public class RuleFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("type",AES.aesEncryption("ruleShow".toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };

@@ -17,6 +17,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.nslngiot.Network_Utill.NetworkURL;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
@@ -41,26 +42,26 @@ public class IpFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        IPImage = (PhotoView)getView().findViewById(R.id.pho_member_ip);
-
+        IPImage = getView().findViewById(R.id.pho_member_ip);
         ipFile_Upload_Request(); // 이미지 조회
     }
 
 
     // 이미지 조회
     private void ipFile_Upload_Request() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/ImageUpload.jsp");
-
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+                Request.Method.POST, String.valueOf(NetworkURL.IMAGE_UPLOAD_URL),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
                         IPImage.setImageBitmap(StringToBitmap(response));
                     }
                 },
@@ -74,11 +75,14 @@ public class IpFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
+
                 // IP 주소 이미지 조회
                 //암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey_show = KEYSTORE.keyStore_Decryption(AES.secretKEY);
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey_show.toCharArray(),RSA.serverPublicKey.toCharArray()));
-                params.put("type", AES.aesEncryption("ipShow".toCharArray(),decryptAESkey_show));
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
+                params.put("type", AES.aesEncryption("ipShow".toCharArray(),decryptAESkey));
+
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };
@@ -86,7 +90,6 @@ public class IpFragment extends Fragment {
         stringRequest.setShouldCache(false);
         VolleyQueueSingleTon.getInstance(getActivity().getApplicationContext()).addToRequestQueue(stringRequest);
     }
-
 
     // 이미지 String을 Bitmap으로 변환
     private Bitmap StringToBitmap(String encodedString) {

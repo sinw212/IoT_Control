@@ -24,9 +24,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.nslngiot.MainActivity;
+import com.example.nslngiot.Network_Utill.NetworkURL;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.R;
 import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.EditTextCache;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.SQLFilter;
@@ -98,26 +100,26 @@ public class MypageFragment extends Fragment {
                 manager_modify_pw_filter = SQLFilter.sqlFilter(String.valueOf(manager_modify_pw));
                 //////////////////////////////////////////////////////////////////
                 if (TextUtils.isEmpty(String.valueOf(manager_name))) { // 현재 이름의 공백 입력 및 널문자 입력 시
-                    Toast.makeText(getActivity(), "이름를 입력하세요.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "이름를 입력하세요.", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(String.valueOf(manager_id))) { // 현재 아이디(학번)의 공백 입력 및 널문자 입력 시
-                    Toast.makeText(getActivity(), "학번을 입력하세요.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "학번을 입력하세요.", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(String.valueOf(manager_corrently_pw))) { // 현재 비밀번호의 공백 입력 및 널문자 입력 시
-                    Toast.makeText(getActivity(), "현재 비밀번호을 입력하세요.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "현재 비밀번호을 입력하세요.", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(String.valueOf(manager_new_pw))) { // 변경할 비밀번호의 공백 입력 및 널문자 입력 시
-                    Toast.makeText(getActivity(), "변경할 비밀번호을 입력하세요.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "변경할 비밀번호을 입력하세요.", Toast.LENGTH_SHORT).show();
                 } else if (TextUtils.isEmpty(String.valueOf(manager_modify_pw))) { // 변경을 확인할 비밀번호의 공백 입력 및 널문자 입력 시
-                    Toast.makeText(getActivity(), "변경 비밀번호를 한번 더 입력하세요.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "변경 비밀번호를 한번 더 입력하세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     // 비밀번호 진행 시 SQL 인젝션 검증 절차 진행
                     //////////////////////////////////////////방어 코드////////////////////////////
                     if (manager_name_filter || manager_id_filter ||manager_corrently_pw_filter ) {// SQL패턴 발견 시
-                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_SHORT).show();
                     } else if(manager_new_pw_filter || manager_modify_pw_filter){
-                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "공격시도가 발견되었습니다.", Toast.LENGTH_SHORT).show();
                     } else if (manager_name.length >= 20 || manager_id.length >= 20 || manager_corrently_pw.length >= 255) { // DB 값 오류 방지
-                        Toast.makeText(getActivity(), "Name or ID or Password too Long error.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Name or ID or Password too Long error.", Toast.LENGTH_SHORT).show();
                     } else if (manager_new_pw.length >= 255 || manager_modify_pw.length >= 255) { // DB 값 오류 방지
-                        Toast.makeText(getActivity(), "New Password or Modify Password too Long error.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "New Password or Modify Password too Long error.", Toast.LENGTH_SHORT).show();
                     } else {
                         if(String.valueOf(manager_corrently_pw).matches(pw_regex)){ // 비밀번호 정책에 올바른 비밀번호 입력 시
                             if(Arrays.equals(manager_new_pw, manager_modify_pw)){ // 새로운 비밀번호 비교 검증
@@ -127,12 +129,12 @@ public class MypageFragment extends Fragment {
                                     manager_new_pw = BCrypt.hashpw(String.valueOf(manager_new_pw), BCrypt.gensalt(10)).toCharArray();
                                     manager_ModifyRequest(); // DB로 개인정보 전송
                                 } else // 비밀번호 정책에 위배된 비밀번호 입력 시
-                                    Toast.makeText(getActivity(), "수정할 비밀번호는 특수문자+숫자+영문자 혼합 8자이상입니다.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(), "수정할 비밀번호는 특수문자+숫자+영문자 혼합 8자이상입니다.", Toast.LENGTH_SHORT).show();
                             }
                             else
-                                Toast.makeText(getActivity(), "변경 할 비밀번호를 올바르게 입력해주세요.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "변경 할 비밀번호를 올바르게 입력해주세요.", Toast.LENGTH_SHORT).show();
                         }else
-                            Toast.makeText(getActivity(), "현재 비밀번호는 특수문자+숫자+영문자 혼합 8자이상입니다.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "현재 비밀번호는 특수문자+숫자+영문자 혼합 8자이상입니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -170,19 +172,19 @@ public class MypageFragment extends Fragment {
 
     // 사용자 비밀번호 변경
     private void manager_ModifyRequest() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
-
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+                Request.Method.POST, String.valueOf(NetworkURL.LOGIN_URL),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null; // 객체 재사용 취약 보호
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         switch (response.trim()) {
                             case "pwdChangeSuccess":
@@ -223,15 +225,15 @@ public class MypageFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
 
                 // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("id", AES.aesEncryption( manager_id,decryptAESkey));
                 params.put("pwd", AES.aesEncryption(manager_new_pw,decryptAESkey));
                 params.put("b_pwd", AES.aesEncryption(manager_corrently_pw,decryptAESkey));
                 params.put("type", AES.aesEncryption("change".toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 java.util.Arrays.fill(manager_name, (char) 0x20);  // 로그아웃 진행 과정에서 중요정보 메모리 삭제
                 java.util.Arrays.fill(manager_id, (char) 0x20);
                 java.util.Arrays.fill(manager_corrently_pw, (char) 0x20);
@@ -261,5 +263,11 @@ public class MypageFragment extends Fragment {
         manager_corrently_pw = new char[255];
         manager_new_pw = new char[255];
         manager_modify_pw = new char[255];
+
+        EditTextCache.editTextCacheSecurity(name);
+        EditTextCache.editTextCacheSecurity(id);
+        EditTextCache.editTextCacheSecurity(corr_pw);
+        EditTextCache.editTextCacheSecurity(new_pw);
+        EditTextCache.editTextCacheSecurity(modify_pw);
     }
 }

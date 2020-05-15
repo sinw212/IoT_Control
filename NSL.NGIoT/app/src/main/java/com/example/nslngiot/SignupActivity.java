@@ -14,8 +14,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.nslngiot.Network_Utill.NetworkURL;
 import com.example.nslngiot.Network_Utill.VolleyQueueSingleTon;
 import com.example.nslngiot.Security_Utill.AES;
+import com.example.nslngiot.Security_Utill.EditTextCache;
 import com.example.nslngiot.Security_Utill.KEYSTORE;
 import com.example.nslngiot.Security_Utill.RSA;
 import com.example.nslngiot.Security_Utill.SQLFilter;
@@ -117,19 +119,19 @@ public class SignupActivity extends AppCompatActivity {
 
     // 회원가입 DB로 전송
     private void joinRequest() {
-        final StringBuffer url = new StringBuffer("http://210.125.212.191:8888/IoT/Login.jsp");
-
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST, String.valueOf(url),
+                Request.Method.POST, String.valueOf(NetworkURL.LOGIN_URL),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response){
 
                         // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                        String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+                        char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
                         // 복호화된 대칭키를 이용하여 암호화된 데이터를 복호화 하여 진행
                         response = AES.aesDecryption(response.toCharArray(),decryptAESkey);
-                        decryptAESkey = null;
+
+                        java.util.Arrays.fill(decryptAESkey,(char)0x20);
 
                         switch (response.trim()) {
                             case "accountAleadyExist":
@@ -151,6 +153,11 @@ public class SignupActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                                 break;
                         }
+                        java.util.Arrays.fill(encryption_pw, (char) 0x20);  // 회원가입 진행 과정에서 중요정보 메모리 삭제
+                        java.util.Arrays.fill(pw, (char) 0x20);
+                        java.util.Arrays.fill(email, (char) 0x20);
+                        java.util.Arrays.fill(name, (char) 0x20);
+                        java.util.Arrays.fill(id, (char) 0x20);
                     }
                 },
                 new Response.ErrorListener() {
@@ -163,20 +170,18 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                // 암호화된 대칭키를 키스토어의 개인키로 복호화
-                String decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
 
-                params.put("securitykey", RSA.rsaEncryption(decryptAESkey.toCharArray(),RSA.serverPublicKey.toCharArray()));
+                // 암호화된 대칭키를 키스토어의 개인키로 복호화
+                char[] decryptAESkey = KEYSTORE.keyStore_Decryption(AES.secretKEY);
+
+                params.put("securitykey", RSA.rsaEncryption(decryptAESkey,RSA.serverPublicKey.toCharArray()));
                 params.put("id", AES.aesEncryption(id,decryptAESkey));
                 params.put("pwd",AES.aesEncryption(encryption_pw,decryptAESkey));
                 params.put("name",AES.aesEncryption(name,decryptAESkey));
                 params.put("mail",AES.aesEncryption(email,decryptAESkey));
                 params.put("type",AES.aesEncryption("join".toCharArray(),decryptAESkey));
 
-                decryptAESkey = null;
-                java.util.Arrays.fill(encryption_pw, (char) 0x20);  // 회원가입 진행 과정에서 중요정보 메모리 삭제
-                java.util.Arrays.fill(pw, (char) 0x20);
-                java.util.Arrays.fill(email, (char) 0x20);
+                java.util.Arrays.fill(decryptAESkey,(char)0x20);
                 return params;
             }
         };
@@ -200,5 +205,10 @@ public class SignupActivity extends AppCompatActivity {
         id= new char[20];
         pw = new char[255];
         encryption_pw = new char[255];
+
+        EditTextCache.editTextCacheSecurity(sign_name);
+        EditTextCache.editTextCacheSecurity(sign_pw);
+        EditTextCache.editTextCacheSecurity(sign_mail);
+        EditTextCache.editTextCacheSecurity(sign_id);
     }
 }

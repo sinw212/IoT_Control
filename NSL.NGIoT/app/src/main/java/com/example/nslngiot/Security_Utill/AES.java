@@ -48,7 +48,7 @@ public class AES {
         }
     }
 
-    public static String aesEncryption(char[] str, String key) {
+    public static String aesEncryption(char[] str, char[] key) {
 
         Key keySpec;
         String iv = "";
@@ -57,8 +57,8 @@ public class AES {
         try {
             byte[] encrypted;
             byte[] keyBytes = new byte[16];
-            byte[] b = key.getBytes(StandardCharsets.UTF_8);
-            iv = key.substring(0,16);
+            byte[] b = String.valueOf(key).getBytes(StandardCharsets.UTF_8);
+            iv = String.valueOf(key).substring(0,16);
             int len = b.length;
 
             if(len > keyBytes.length)
@@ -95,7 +95,8 @@ public class AES {
         return str_enc;
     }
 
-    public static String aesDecryption(char[] str, String key) {
+
+    public static String aesDecryption(char[] str, char[] key) {
 
         String iv = "";
         String str_dec = "";
@@ -104,8 +105,8 @@ public class AES {
         try {
             byte[] decrypted;
             byte[] keyBytes = new byte[16];
-            byte[] b = key.getBytes(StandardCharsets.UTF_8);
-            iv = key.substring(0,16);
+            byte[] b = String.valueOf(key).getBytes(StandardCharsets.UTF_8);
+            iv = String.valueOf(key).substring(0,16);
             int len = b.length;
 
             if(len > keyBytes.length)
